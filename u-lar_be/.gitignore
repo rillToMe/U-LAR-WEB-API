@@ -1,0 +1,14 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+db_table.md
+.claude
+CLAUDE.md
+.claude
+.codegraph
+appsettings.json
+appsettings.*.json
+!appsettings.Example.json
+appsettings.Development.json

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>u_lar_be</RootNamespace>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Menarik Asp.Versioning.Mvc + ApiExplorer secara transitif. Dipakai agar
+             OpenAPI menulis path konkret (/api/v1/...) dan satu dokumen per versi. -->
+        <PackageReference Include="Asp.Versioning.OpenApi" Version="10.2.1"/>
+        <PackageReference Include="EFCore.NamingConventions" Version="10.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10"/>
+        <!-- Pin transitif: Microsoft.OpenApi 2.0.0 punya advisory GHSA-v5pm-xwqc-g5wc. -->
+        <PackageReference Include="Microsoft.OpenApi" Version="2.11.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3"/>
+        <PackageReference Include="Scalar.AspNetCore" Version="2.16.16"/>
+    </ItemGroup>
+
+</Project>

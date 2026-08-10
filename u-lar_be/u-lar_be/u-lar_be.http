@@ -1,0 +1,7 @@
+@u_lar_be_HostAddress = http://localhost:5116
+
+### OpenAPI document
+GET {{u_lar_be_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
