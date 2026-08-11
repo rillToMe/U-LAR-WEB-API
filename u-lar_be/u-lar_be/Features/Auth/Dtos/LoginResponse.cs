@@ -1,8 +1,10 @@
 ﻿namespace u_lar_be.Features.Auth.Dtos;
 
-public sealed record RegisterRequest(
+public sealed record LoginResponse(
+    int UserId,
     string Nim,
     string Name,
     string Email,
-    string Password
+    string Role,
+    string AccessToken
 );

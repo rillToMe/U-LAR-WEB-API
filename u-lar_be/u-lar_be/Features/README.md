@@ -19,3 +19,4 @@ Aturan:
   Controller tidak menangkap exception.
 - Registrasi DI-nya satu baris di `Configuration/ServiceCollectionExtensions.AddFeatureServices`.
 - Antar-fitur tidak saling import service. Yang dipakai bersama naik ke `Common/` atau `Domain/`.
+- Mahasiswa tidak register sendiri tapi admin yang akan membuatkan akun untuk Mahasiswa

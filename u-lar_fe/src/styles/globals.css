@@ -1,0 +1,27 @@
+@layer base {
+  /* Tailwind v4 default border-color = currentColor. Pakai token biar
+     utility `border` polos tetap abu-abu. */
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-surface-muted);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::placeholder {
+    color: var(--color-fg-placeholder);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}

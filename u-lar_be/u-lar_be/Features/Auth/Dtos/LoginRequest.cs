@@ -3,4 +3,4 @@
 public sealed record LoginRequest(
     string Nim,
     string Password
-    );
+);

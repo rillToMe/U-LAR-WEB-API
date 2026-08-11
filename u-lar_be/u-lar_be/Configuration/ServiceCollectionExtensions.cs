@@ -1,10 +1,15 @@
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using u_lar_be.Common.Exceptions;
 using u_lar_be.Configuration.Options;
 using u_lar_be.Infrastructure.Persistence;
 using u_lar_be.Features.Auth;
+using u_lar_be.Features.Admin;
+using Microsoft.AspNetCore.Identity;
+using u_lar_be.Domain.Users;
 
 namespace u_lar_be.Configuration;
 
@@ -15,13 +20,11 @@ namespace u_lar_be.Configuration;
 public static class ServiceCollectionExtensions
 {
     /// <summary>Controller, OpenAPI, dan penanganan error global.</summary>
-    public static IServiceCollection AddApiServices(this IServiceCollection services)
+    public static IServiceCollection AddApiServices(
+        this IServiceCollection services)
     {
         services.AddControllers();
 
-        // Versi API dibaca dari segmen URL (api/v1/...). Controller tanpa
-        // [ApiVersion] ikut DefaultApiVersion, dan SubstituteApiVersionInUrl
-        // membuat OpenAPI menampilkan /api/v1/... bukan /api/v{version}/...
         services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -41,13 +44,69 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+    
+    public static IServiceCollection AddJwtAuthentication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var jwt = configuration
+                      .GetSection(JwtOptions.SectionName)
+                      .Get<JwtOptions>()
+                  ?? throw new InvalidOperationException(
+                      "Konfigurasi JWT belum tersedia.");
 
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwt.Key));
+
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+
+                    ValidateIssuer = true,
+                    ValidIssuer = jwt.Issuer,
+
+                    ValidateAudience = true,
+                    ValidAudience = jwt.Audience,
+
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
+        services.AddAuthorization();
+
+        return services;
+    }
+
+    public static IServiceCollection AddCorsConfiguration(
+        this IServiceCollection services)
+    {
+        services.AddCors(options =>
+        {
+            options.AddPolicy("UlarAdminWeb", policy =>
+            {
+                policy
+                    .WithOrigins("http://localhost:5173")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+        });
+
+        return services;
+    }
+    
     /// <summary>
     /// Binding seluruh konfigurasi appsettings ke strongly-typed options.
     /// ValidateOnStart membuat konfigurasi salah/kosong gagal saat startup,
     /// bukan saat request pertama masuk.
     /// </summary>
-    public static IServiceCollection AddOptionsConfiguration(this IServiceCollection services)
+    public static IServiceCollection AddOptionsConfiguration(
+        this IServiceCollection services)
     {
         services.AddOptions<JwtOptions>()
             .BindConfiguration(JwtOptions.SectionName)
@@ -77,9 +136,13 @@ public static class ServiceCollectionExtensions
     /// Service milik tiap vertical slice di folder Features.
     /// Tambahkan registrasi per fitur di sini, satu baris per fitur.
     /// </summary>
-    public static IServiceCollection AddFeatureServices(this IServiceCollection services)
+    public static IServiceCollection AddFeatureServices(
+        this IServiceCollection services)
     {
+        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAdminService, AdminService>();
+
         return services;
     }
 }

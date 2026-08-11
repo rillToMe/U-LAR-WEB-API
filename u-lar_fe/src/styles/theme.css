@@ -1,0 +1,52 @@
+/* Design tokens. Semua warna dipakai lewat utility Tailwind (bg-surface,
+   text-fg-muted, border-border, ...). Jangan hardcode warna di komponen.
+
+   Base = netral hitam-putih. Biru langit dipakai sebagai aksen saja
+   (focus ring, link, highlight) — bukan warna dominan. */
+@theme {
+  /* Surfaces (terang) */
+  --color-surface: oklch(1 0 0);
+  --color-surface-muted: oklch(0.985 0.002 247.839);
+  --color-surface-hover: oklch(0.967 0.003 264.542);
+
+  /* Surfaces (gelap) — panel visual, backdrop */
+  --color-surface-dark: oklch(0.17 0.012 264.665);
+  --color-surface-dark-soft: oklch(0.25 0.014 264.665);
+
+  /* Foreground */
+  --color-fg: oklch(0.21 0.034 264.665);
+  --color-fg-muted: oklch(0.373 0.034 259.733);
+  --color-fg-subtle: oklch(0.551 0.027 264.364);
+  --color-fg-placeholder: oklch(0.707 0.022 261.325);
+  --color-fg-inverse: oklch(1 0 0);
+
+  /* Lines */
+  --color-border: oklch(0.928 0.006 264.531);
+  --color-border-strong: oklch(0.872 0.01 258.338);
+
+  /* Primary action — tetap netral gelap */
+  --color-primary: oklch(0.21 0.034 264.665);
+  --color-primary-hover: oklch(0.278 0.033 256.848);
+  --color-primary-fg: oklch(1 0 0);
+
+  /* Aksen biru langit — focus, link, highlight */
+  --color-accent: oklch(0.588 0.158 241.966);
+  --color-accent-hover: oklch(0.5 0.134 242.749);
+  --color-accent-fg: oklch(1 0 0);
+  --color-accent-surface: oklch(0.97 0.013 236.62);
+  --color-accent-border: oklch(0.901 0.058 230.902);
+  --color-ring: oklch(0.588 0.158 241.966);
+
+  /* Feedback */
+  --color-danger: oklch(0.577 0.245 27.325);
+  --color-danger-hover: oklch(0.505 0.213 27.518);
+  --color-danger-fg: oklch(1 0 0);
+  --color-danger-surface: oklch(0.971 0.013 17.38);
+  --color-danger-border: oklch(0.885 0.062 18.334);
+
+  --color-success-surface: oklch(0.962 0.044 156.743);
+  --color-success-fg: oklch(0.527 0.154 150.069);
+
+  --color-link: oklch(0.588 0.158 241.966);
+  --color-link-hover: oklch(0.5 0.134 242.749);
+}
