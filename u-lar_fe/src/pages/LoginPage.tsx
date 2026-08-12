@@ -9,7 +9,7 @@ import heroImage from "../assets/hero.png";
 export default function LoginPage() {
   const navigate = useNavigate();
 
-  const [nim, setNim] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function LoginPage() {
       setLoading(true);
       setError("");
 
-      const result = await login({ nim, password });
+      const result = await login({ username, password });
 
       localStorage.setItem(
         "accessToken",
@@ -33,10 +33,8 @@ export default function LoginPage() {
       localStorage.setItem(
         "user",
         JSON.stringify({
-          userId: result.userId,
-          nim: result.nim,
-          name: result.name,
-          email: result.email,
+          adminId: result.adminId,
+          username: result.username,
           role: result.role,
         })
       );
@@ -82,12 +80,12 @@ export default function LoginPage() {
               className="mt-8 space-y-5"
             >
               <Input
-                id="nim"
+                id="username"
                 label="Username"
                 type="text"
-                value={nim}
+                value={username}
                 onChange={(event) =>
-                  setNim(event.target.value)
+                  setUsername(event.target.value)
                 }
                 placeholder="Masukkan Username"
                 autoComplete="username"

@@ -7,4 +7,8 @@ public interface IAuthService
     Task<LoginResponse> LoginAsync(
         LoginRequest request,
         CancellationToken cancellationToken);
+
+    Task<AdminLoginResponse> LoginAdminAsync(
+        AdminLoginRequest request,
+        CancellationToken cancellationToken);
 }

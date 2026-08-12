@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using u_lar_be.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using u_lar_be.Configuration.Options;
 using u_lar_be.Domain.Users;
 using u_lar_be.Infrastructure.Persistence;
 using u_lar_be.Infrastructure.Persistence.Seed;
@@ -24,11 +26,13 @@ using (var scope = app.Services.CreateScope())
         .GetRequiredService<AppDbContext>();
 
     var passwordHasher = scope.ServiceProvider
-        .GetRequiredService<IPasswordHasher<User>>();
+        .GetRequiredService<IPasswordHasher<AdminUser>>();
 
-    await DbSeeder.SeedAsync(
-        dbContext,
-        passwordHasher);
+    var seedOptions = scope.ServiceProvider
+        .GetRequiredService<IOptions<AdminSeedOptions>>()
+        .Value;
+
+    await DbSeeder.SeedAsync(dbContext, passwordHasher, seedOptions);
 }
 
 

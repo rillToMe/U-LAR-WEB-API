@@ -5,7 +5,7 @@ export async function login(
   request: LoginRequest
 ): Promise<LoginResponse> {
   const response = await api.post<LoginResponse>(
-    "/Auth/login",
+    "/Auth/admin/login",
     request
   );
 

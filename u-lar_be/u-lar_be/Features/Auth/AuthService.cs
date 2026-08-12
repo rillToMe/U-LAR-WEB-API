@@ -1,20 +1,28 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using u_lar_be.Common.Exceptions;
 using u_lar_be.Configuration.Options;
+using u_lar_be.Domain.Common;
 using u_lar_be.Domain.Users;
 using u_lar_be.Features.Auth.Dtos;
 using u_lar_be.Infrastructure.Persistence;
 
 namespace u_lar_be.Features.Auth;
 
+/// <summary>
+/// Admin dan mahasiswa disimpan di tabel berbeda, jadi login-nya juga
+/// terpisah: mahasiswa pakai NIM, admin pakai username. Claim "role" di token
+/// yang membedakan keduanya — id boleh bertabrakan antar tabel.
+/// </summary>
 public sealed class AuthService(
     AppDbContext dbContext,
-    IPasswordHasher<User> passwordHasher,
+    IPasswordHasher<Student> studentPasswordHasher,
+    IPasswordHasher<AdminUser> adminPasswordHasher,
     IOptions<JwtOptions> jwtOptions
 ) : IAuthService
 {
@@ -24,73 +32,96 @@ public sealed class AuthService(
         LoginRequest request,
         CancellationToken cancellationToken)
     {
-        var user = await dbContext.Users
+        var student = await dbContext.Students
             .SingleOrDefaultAsync(
                 x => x.Nim == request.Nim,
                 cancellationToken);
 
-        if (user is null || !user.IsActive)
+        if (student is null || !student.IsActive)
         {
-            throw new UnauthorizedAccessException(
+            throw new UnauthorizedException(
                 "NIM atau password salah.");
         }
 
         var passwordResult =
-            passwordHasher.VerifyHashedPassword(
-                user,
-                user.PasswordHash,
+            studentPasswordHasher.VerifyHashedPassword(
+                student,
+                student.PasswordHash,
                 request.Password);
 
         if (passwordResult == PasswordVerificationResult.Failed)
         {
-            throw new UnauthorizedAccessException(
+            throw new UnauthorizedException(
                 "NIM atau password salah.");
         }
 
-        user.LastLoginAt = DateTime.UtcNow;
+        student.LastLoginAt = DateTime.UtcNow;
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        var accessToken = GenerateAccessToken(user);
+        var accessToken = WriteToken(
+        [
+            new Claim(JwtRegisteredClaimNames.Sub, student.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
+            new Claim(ClaimTypes.Name, student.Name),
+            new Claim(ClaimTypes.Email, student.Email),
+            new Claim(ClaimTypes.Role, UserRoles.Student),
+            new Claim("nim", student.Nim)
+        ]);
 
         return new LoginResponse(
-            user.Id,
-            user.Nim,
-            user.Name,
-            user.Email,
-            user.Role,
+            student.Id,
+            student.Nim,
+            student.Name,
+            student.Email,
+            UserRoles.Student,
             accessToken);
     }
 
-    private string GenerateAccessToken(User user)
+    public async Task<AdminLoginResponse> LoginAdminAsync(
+        AdminLoginRequest request,
+        CancellationToken cancellationToken)
     {
-        var claims = new List<Claim>
+        var admin = await dbContext.Admins
+            .SingleOrDefaultAsync(
+                x => x.Username == request.Username,
+                cancellationToken);
+
+        if (admin is null)
         {
-            new(
-                JwtRegisteredClaimNames.Sub,
-                user.Id.ToString()),
+            throw new UnauthorizedException(
+                "Username atau password salah.");
+        }
 
-            new(
-                ClaimTypes.NameIdentifier,
-                user.Id.ToString()),
+        var passwordResult =
+            adminPasswordHasher.VerifyHashedPassword(
+                admin,
+                admin.PasswordHash,
+                request.Password);
 
-            new(
-                ClaimTypes.Name,
-                user.Name),
+        if (passwordResult == PasswordVerificationResult.Failed)
+        {
+            throw new UnauthorizedException(
+                "Username atau password salah.");
+        }
 
-            new(
-                ClaimTypes.Email,
-                user.Email),
+        var accessToken = WriteToken(
+        [
+            new Claim(JwtRegisteredClaimNames.Sub, admin.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, admin.Id.ToString()),
+            new Claim(ClaimTypes.Name, admin.Username),
+            new Claim(ClaimTypes.Role, UserRoles.Admin)
+        ]);
 
-            new(
-                ClaimTypes.Role,
-                user.Role),
+        return new AdminLoginResponse(
+            admin.Id,
+            admin.Username,
+            UserRoles.Admin,
+            accessToken);
+    }
 
-            new(
-                "nim",
-                user.Nim)
-        };
-
+    private string WriteToken(IEnumerable<Claim> claims)
+    {
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_jwt.Key)),

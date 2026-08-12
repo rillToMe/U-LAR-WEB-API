@@ -1,38 +1,38 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using u_lar_be.Domain.Common;
+using u_lar_be.Configuration.Options;
 using u_lar_be.Domain.Users;
 
 namespace u_lar_be.Infrastructure.Persistence.Seed;
 
 public static class DbSeeder
 {
+    /// <summary>
+    /// Membuat admin pertama kalau tabel admins masih kosong. Kredensial
+    /// datang dari AdminSeedOptions, bukan literal di kode.
+    /// Kalau admin sudah ada, password di config diabaikan — ganti password
+    /// admin dilakukan lewat aplikasi, bukan dengan restart.
+    /// </summary>
     public static async Task SeedAsync(
         AppDbContext dbContext,
-        IPasswordHasher<User> passwordHasher)
+        IPasswordHasher<AdminUser> passwordHasher,
+        AdminSeedOptions seed)
     {
-        var adminExists = await dbContext.Users
-            .AnyAsync(x => x.Role == UserRoles.Admin);
-
-        if (adminExists)
+        if (await dbContext.Admins.AnyAsync())
         {
             return;
         }
 
-        var admin = new User
+        var admin = new AdminUser
         {
-            Nim = "ADMIN001",
-            Name = "U-LAR Administrator",
-            Email = "admin@ular.local",
-            Role = UserRoles.Admin,
-            IsActive = true
+            Username = seed.Username
         };
 
         admin.PasswordHash = passwordHasher.HashPassword(
             admin,
-            "Admin123!");
+            seed.Password);
 
-        dbContext.Users.Add(admin);
+        dbContext.Admins.Add(admin);
 
         await dbContext.SaveChangesAsync();
     }

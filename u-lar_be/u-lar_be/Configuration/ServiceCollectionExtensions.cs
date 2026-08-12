@@ -9,7 +9,6 @@ using u_lar_be.Infrastructure.Persistence;
 using u_lar_be.Features.Auth;
 using u_lar_be.Features.Admin;
 using Microsoft.AspNetCore.Identity;
-using u_lar_be.Domain.Users;
 
 namespace u_lar_be.Configuration;
 
@@ -113,6 +112,11 @@ public static class ServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<AdminSeedOptions>()
+            .BindConfiguration(AdminSeedOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 
@@ -139,7 +143,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFeatureServices(
         this IServiceCollection services)
     {
-        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        // PasswordHasher<T> tidak memakai T sama sekali, jadi satu registrasi
+        // open generic cukup untuk Student maupun AdminUser.
+        services.AddScoped(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAdminService, AdminService>();
 

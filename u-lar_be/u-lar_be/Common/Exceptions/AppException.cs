@@ -21,3 +21,6 @@ public sealed class ConflictException(string message)
 
 public sealed class ForbiddenException(string message)
     : AppException(StatusCodes.Status403Forbidden, message);
+
+public sealed class UnauthorizedException(string message)
+    : AppException(StatusCodes.Status401Unauthorized, message);

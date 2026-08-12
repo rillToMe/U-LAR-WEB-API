@@ -12,8 +12,11 @@ namespace u_lar_be.Infrastructure.Persistence;
 /// </summary>
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public DbSet<User> Users => Set<User>();
-    
+    public DbSet<AdminUser> Admins => Set<AdminUser>();
+
+    public DbSet<Student> Students => Set<Student>();
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

@@ -1,13 +1,11 @@
 export interface LoginRequest {
-  nim: string;
+  username: string;
   password: string;
 }
 
 export interface LoginResponse {
-  userId: number;
-  nim: string;
-  name: string;
-  email: string;
+  adminId: number;
+  username: string;
   role: string;
   accessToken: string;
 }

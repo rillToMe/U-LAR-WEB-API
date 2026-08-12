@@ -19,4 +19,16 @@ public sealed class AuthController(
 
         return Ok(response);
     }
+
+    [HttpPost("admin/login")]
+    public async Task<ActionResult<AdminLoginResponse>> LoginAdmin(
+        AdminLoginRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await authService.LoginAdminAsync(
+            request,
+            cancellationToken);
+
+        return Ok(response);
+    }
 }
