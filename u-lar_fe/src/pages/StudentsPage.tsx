@@ -1,14 +1,26 @@
 import { useEffect, useState } from "react";
-import { getStudents } from "../services/studentApi";
+import {
+  getStudents,
+  updateStudentStatus,
+} from "../services/studentApi";
 import type { StudentListItem } from "../types/student";
 import Button from "../components/ui/Button";
 import CreateStudentModal from "../components/students/CreateStudentModal";
+import StudentDetailModal from "../components/students/StudentDetailModal";
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<StudentListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [detailUserId, setDetailUserId] = useState<number | null>(
+    null
+  );
+  const [updatingStatusId, setUpdatingStatusId] = useState<
+    number | null
+  >(null);
+  const [statusError, setStatusError] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -23,6 +35,26 @@ export default function StudentsPage() {
       })
       .finally(() => setLoading(false));
   }, [reloadKey]);
+
+  async function handleToggleStatus(student: StudentListItem) {
+    setStatusError("");
+    setStatusMessage("");
+    setUpdatingStatusId(student.id);
+
+    try {
+      const result = await updateStudentStatus(
+        student.id,
+        !student.isActive
+      );
+      setStatusMessage(result.message);
+      setReloadKey((key) => key + 1);
+    } catch (error) {
+      console.error(error);
+      setStatusError("Gagal memperbarui status mahasiswa.");
+    } finally {
+      setUpdatingStatusId(null);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -51,6 +83,30 @@ export default function StudentsPage() {
         <div className="rounded-xl border border-danger-border bg-danger-surface p-4">
           <p className="text-sm text-danger">
             {error}
+          </p>
+        </div>
+      )}
+
+      {/* Status message */}
+      {statusMessage && (
+        <div
+          role="status"
+          className="rounded-xl border border-success-border bg-success-surface p-4"
+        >
+          <p className="text-sm text-success-fg">
+            {statusMessage}
+          </p>
+        </div>
+      )}
+
+      {/* Status error */}
+      {statusError && (
+        <div
+          role="alert"
+          className="rounded-xl border border-danger-border bg-danger-surface p-4"
+        >
+          <p className="text-sm text-danger">
+            {statusError}
           </p>
         </div>
       )}
@@ -124,7 +180,7 @@ export default function StudentsPage() {
                 <tbody className="divide-y">
                   {students.map((student) => (
                     <tr
-                      key={student.userId}
+                      key={student.id}
                       className="hover:bg-surface-muted"
                     >
                       {/* NIM */}
@@ -166,12 +222,38 @@ export default function StudentsPage() {
 
                       {/* Action */}
                       <td className="px-6 py-4">
-                        <button
-                          type="button"
-                          className="text-sm font-medium text-link hover:text-link-hover"
-                        >
-                          Detail
-                        </button>
+                        <div className="flex items-center gap-4">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setDetailUserId(student.id)
+                            }
+                            className="text-sm font-medium text-link hover:text-link-hover"
+                          >
+                            Detail
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleToggleStatus(student)
+                            }
+                            disabled={
+                              updatingStatusId === student.id
+                            }
+                            className={`text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                              student.isActive
+                                ? "text-danger hover:text-danger-hover"
+                                : "text-success-fg"
+                            }`}
+                          >
+                            {updatingStatusId === student.id
+                              ? "Memproses..."
+                              : student.isActive
+                                ? "Disable"
+                                : "Enable"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -187,6 +269,14 @@ export default function StudentsPage() {
         open={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
         onCreated={() => setReloadKey((key) => key + 1)}
+      />
+
+      {/* Detail Modal */}
+      <StudentDetailModal
+        open={detailUserId !== null}
+        onClose={() => setDetailUserId(null)}
+        onUpdated={() => setReloadKey((key) => key + 1)}
+        studentId={detailUserId}
       />
     </div>
   );

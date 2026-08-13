@@ -18,6 +18,16 @@ builder.Services
     .AddJwtAuthentication(builder.Configuration)
     .AddCorsConfiguration();
 
+builder.Services.AddScoped<
+    IPasswordHasher<Student>,
+    PasswordHasher<Student>
+>();
+
+builder.Services.AddScoped<
+    IPasswordHasher<AdminUser>,
+    PasswordHasher<AdminUser>
+>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

@@ -10,4 +10,12 @@ public interface IAdminService
 
     Task<IReadOnlyList<StudentListItemResponse>> GetStudentsAsync(
         CancellationToken cancellationToken);
+
+    Task<UpdateStudentResponse> UpdateStudentAsync(
+        int studentId,
+        UpdateStudentRequest request,
+        CancellationToken cancellationToken);
+    
+    Task<AdminDashboardResponse> GetDashboardAsync(
+        CancellationToken cancellationToken);
 }

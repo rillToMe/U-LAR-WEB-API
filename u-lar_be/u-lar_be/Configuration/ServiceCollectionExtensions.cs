@@ -8,6 +8,8 @@ using u_lar_be.Configuration.Options;
 using u_lar_be.Infrastructure.Persistence;
 using u_lar_be.Features.Auth;
 using u_lar_be.Features.Admin;
+using u_lar_be.Features.Admin.Students;
+using u_lar_be.Features.Admin.Students.DTOs;
 using Microsoft.AspNetCore.Identity;
 
 namespace u_lar_be.Configuration;
@@ -148,7 +150,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAdminService, AdminService>();
-
+        services.AddScoped<IStudentService, StudentService>();
+        
         return services;
     }
 }

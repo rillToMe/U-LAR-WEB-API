@@ -80,4 +80,93 @@ public sealed class AdminService(
             ))
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<UpdateStudentResponse> UpdateStudentAsync(
+        int studentId,
+        UpdateStudentRequest request,
+        CancellationToken cancellationToken)
+    {
+        var student = await dbContext.Students
+            .SingleOrDefaultAsync(
+                x => x.Id == studentId,
+                cancellationToken);
+
+        if (student is null)
+        {
+            throw new NotFoundException(
+                "Student tidak ditemukan.");
+        }
+
+        var nimExists = await dbContext.Students
+            .AnyAsync(
+                x => x.Nim == request.Nim && x.Id != studentId,
+                cancellationToken);
+
+        if (nimExists)
+        {
+            throw new ConflictException(
+                "NIM sudah terdaftar.");
+        }
+
+        var emailExists = await dbContext.Students
+            .AnyAsync(
+                x => x.Email == request.Email && x.Id != studentId,
+                cancellationToken);
+
+        if (emailExists)
+        {
+            throw new ConflictException(
+                "Email sudah terdaftar.");
+        }
+
+        student.Nim = request.Nim;
+        student.Name = request.Name;
+        student.Email = request.Email;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return new UpdateStudentResponse(
+            "Student updated successfully");
+    }
+    
+    public async Task<AdminDashboardResponse> GetDashboardAsync(
+        CancellationToken cancellationToken)
+    {
+        var totalStudents = await dbContext.Students
+            .CountAsync(cancellationToken);
+
+        var activeStudents = await dbContext.Students
+            .CountAsync(
+                x => x.IsActive,
+                cancellationToken);
+
+        var inactiveStudents = totalStudents - activeStudents;
+
+        var studentsWhoHaveLoggedIn = await dbContext.Students
+            .CountAsync(
+                x => x.LastLoginAt != null,
+                cancellationToken);
+
+        var recentStudents = await dbContext.Students
+            .AsNoTracking()
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(5)
+            .Select(x => new RecentStudentResponse(
+                x.Id,
+                x.Nim,
+                x.Name,
+                x.IsActive,
+                x.CreatedAt,
+                x.LastLoginAt
+            ))
+            .ToListAsync(cancellationToken);
+
+        return new AdminDashboardResponse(
+            totalStudents,
+            activeStudents,
+            inactiveStudents,
+            studentsWhoHaveLoggedIn,
+            recentStudents
+        );
+    }
 }

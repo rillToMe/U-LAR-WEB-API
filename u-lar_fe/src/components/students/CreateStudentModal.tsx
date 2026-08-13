@@ -90,6 +90,7 @@ export default function CreateStudentModal({
     <Modal
       open={open}
       onClose={handleClose}
+      dirty={Boolean(nim || name || email || password)}
       title="Tambah Mahasiswa"
       description="Buat akun baru untuk mahasiswa U-LAR."
       footer={

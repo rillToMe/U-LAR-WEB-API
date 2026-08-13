@@ -13,7 +13,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "nim": "ADMIN001",
+  "username": "admin",
   "password": "Admin123!"
 }
 
@@ -59,6 +59,16 @@ Content-Type: application/json
   "name": "Mahasiswa Lain",
   "email": "lain@test.com",
   "password": "Student123!"
+}
+
+### Disable Student
+
+PATCH {{u_lar_be_HostAddress}}/api/v1/Admin/students/1/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiIyIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZSI6ImFkbWluIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiYWRtaW4iLCJleHAiOjE3ODY1MjYwMDUsImlzcyI6InUtbGFyLWFwaSIsImF1ZCI6InUtbGFyLWNsaWVudCJ9.CG16RS5NVuFdUbMCuOt-Ur8D1UhSC5TGJaR-hbGBoXw
+Content-Type: application/json
+
+{
+  "isActive": false
 }
 
 ### Admin protected endpoint

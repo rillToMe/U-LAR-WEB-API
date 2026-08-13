@@ -45,8 +45,56 @@
   --color-danger-border: oklch(0.885 0.062 18.334);
 
   --color-success-surface: oklch(0.962 0.044 156.743);
+  --color-success-border: oklch(0.88 0.08 155);
   --color-success-fg: oklch(0.527 0.154 150.069);
 
   --color-link: oklch(0.588 0.158 241.966);
   --color-link-hover: oklch(0.5 0.134 242.749);
+}
+
+/* Mode gelap — timpa token di bawah selector .dark. Semua utility
+   (bg-surface, text-fg, ...) otomatis menyesuaikan. */
+.dark {
+  /* Surfaces */
+  --color-surface: oklch(0.205 0.012 264.665);
+  --color-surface-muted: oklch(0.165 0.011 264.665);
+  --color-surface-hover: oklch(0.26 0.013 264.665);
+
+  /* Foreground */
+  --color-fg: oklch(0.94 0.006 264.665);
+  --color-fg-muted: oklch(0.75 0.008 259.733);
+  --color-fg-subtle: oklch(0.6 0.008 264.364);
+  --color-fg-placeholder: oklch(0.46 0.008 261.325);
+  --color-fg-inverse: oklch(0.17 0.012 264.665);
+
+  /* Lines */
+  --color-border: oklch(0.28 0.012 264.531);
+  --color-border-strong: oklch(0.36 0.012 258.338);
+
+  /* Primary action — dibalik jadi terang */
+  --color-primary: oklch(0.94 0.006 264.665);
+  --color-primary-hover: oklch(0.86 0.008 256.848);
+  --color-primary-fg: oklch(0.18 0.012 264.665);
+
+  /* Aksen biru langit */
+  --color-accent: oklch(0.68 0.15 241.966);
+  --color-accent-hover: oklch(0.76 0.14 242.749);
+  --color-accent-fg: oklch(0.15 0.03 264.665);
+  --color-accent-surface: oklch(0.24 0.03 236.62);
+  --color-accent-border: oklch(0.34 0.04 230.902);
+  --color-ring: oklch(0.68 0.15 241.966);
+
+  /* Feedback */
+  --color-danger: oklch(0.68 0.2 27.325);
+  --color-danger-hover: oklch(0.75 0.19 27.518);
+  --color-danger-fg: oklch(1 0 0);
+  --color-danger-surface: oklch(0.26 0.03 17.38);
+  --color-danger-border: oklch(0.4 0.05 18.334);
+
+  --color-success-surface: oklch(0.24 0.04 156.743);
+  --color-success-border: oklch(0.36 0.05 155);
+  --color-success-fg: oklch(0.7 0.16 150.069);
+
+  --color-link: oklch(0.68 0.15 241.966);
+  --color-link-hover: oklch(0.76 0.14 242.749);
 }

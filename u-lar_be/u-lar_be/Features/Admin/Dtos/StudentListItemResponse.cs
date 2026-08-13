@@ -1,7 +1,7 @@
 ﻿namespace u_lar_be.Features.Admin.Dtos;
 
 public sealed record StudentListItemResponse(
-    int UserId,
+    int Id,
     string Nim,
     string Name,
     string Email,
