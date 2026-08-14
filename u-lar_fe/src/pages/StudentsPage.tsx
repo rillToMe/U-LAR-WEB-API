@@ -1,12 +1,68 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   getStudents,
   updateStudentStatus,
 } from "../services/studentApi";
 import type { StudentListItem } from "../types/student";
 import Button from "../components/ui/Button";
-import CreateStudentModal from "../components/students/CreateStudentModal";
-import StudentDetailModal from "../components/students/StudentDetailModal";
+import Skeleton from "../components/ui/Skeleton";
+
+const CreateStudentModal = lazy(
+  () => import("../components/students/CreateStudentModal")
+);
+const StudentDetailModal = lazy(
+  () => import("../components/students/StudentDetailModal")
+);
+
+function StudentsSkeleton() {
+  return (
+    <div
+      className="overflow-hidden rounded-xl border bg-surface"
+      role="status"
+      aria-label="Memuat daftar mahasiswa"
+    >
+      <div className="flex items-center justify-between border-b px-6 py-4">
+        <div>
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="mt-2 h-4 w-32" />
+        </div>
+        <Skeleton className="h-10 w-40 rounded-lg" />
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="border-b bg-surface-muted">
+            <tr>
+              {Array.from({ length: 6 }, (_, index) => (
+                <th key={index} className="px-6 py-3">
+                  <Skeleton className="h-4 w-20" />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {Array.from({ length: 7 }, (_, rowIndex) => (
+              <tr key={rowIndex}>
+                {Array.from({ length: 6 }, (_, cellIndex) => (
+                  <td key={cellIndex} className="px-6 py-4">
+                    <Skeleton
+                      className={`h-4 ${
+                        cellIndex === 1 || cellIndex === 2
+                          ? "w-32"
+                          : "w-24"
+                      }`}
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <span className="sr-only">Memuat data mahasiswa...</span>
+    </div>
+  );
+}
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<StudentListItem[]>([]);
@@ -70,13 +126,7 @@ export default function StudentsPage() {
       </div>
 
       {/* Loading */}
-      {loading && (
-        <div className="rounded-xl border bg-surface p-8 text-center">
-          <p className="text-sm text-fg-subtle">
-            Memuat data mahasiswa...
-          </p>
-        </div>
-      )}
+      {loading && <StudentsSkeleton />}
 
       {/* Error */}
       {!loading && error && (
@@ -265,19 +315,24 @@ export default function StudentsPage() {
       )}
 
       {/* Create Modal */}
-      <CreateStudentModal
-        open={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        onCreated={() => setReloadKey((key) => key + 1)}
-      />
+      <Suspense fallback={null}>
+        {isCreateOpen && (
+          <CreateStudentModal
+            open
+            onClose={() => setIsCreateOpen(false)}
+            onCreated={() => setReloadKey((key) => key + 1)}
+          />
+        )}
 
-      {/* Detail Modal */}
-      <StudentDetailModal
-        open={detailUserId !== null}
-        onClose={() => setDetailUserId(null)}
-        onUpdated={() => setReloadKey((key) => key + 1)}
-        studentId={detailUserId}
-      />
+        {detailUserId !== null && (
+          <StudentDetailModal
+            open
+            onClose={() => setDetailUserId(null)}
+            onUpdated={() => setReloadKey((key) => key + 1)}
+            studentId={detailUserId}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

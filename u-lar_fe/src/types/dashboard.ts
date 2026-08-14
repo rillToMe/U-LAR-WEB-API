@@ -3,14 +3,14 @@ export interface RecentStudent {
   nim: string;
   name: string;
   isActive: boolean;
-  createAt: string;
+  createdAt: string;
   lastLoginAt: string | null;
 }
 
 export interface AdminDashboard {
   totalStudents: number;
-  activeStudent: number;
+  activeStudents: number;
   inactiveStudents: number;
-  studentWhoHaveLoggedIn: number;
+  studentsWhoHaveLoggedIn: number;
   recentStudents: RecentStudent[];
 }

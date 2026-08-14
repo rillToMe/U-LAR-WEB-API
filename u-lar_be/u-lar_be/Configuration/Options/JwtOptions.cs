@@ -22,4 +22,19 @@ public sealed class JwtOptions
 
     [Range(1, 1440)]
     public int AccessTokenMinutes { get; init; }
+
+    /// <summary>
+    /// Masa berlaku token admin. Dibatasi 60 menit untuk menjaga keamanan
+    /// sesi aktif admin.
+    /// </summary>
+    [Range(1, 60)]
+    public int AdminAccessTokenMinutes { get; init; } = 60;
+
+    /// <summary>
+    /// Masa berlaku token mahasiswa. Mahasiswa login dari game dan tidak
+    /// memakai session server — token dibuat sangat lama (persistent login,
+    /// login ulang cukup sekali) dan disimpan di perangkat.
+    /// </summary>
+    [Range(1, 525600)]
+    public int StudentAccessTokenMinutes { get; init; } = 525600;
 }

@@ -60,6 +60,7 @@ public sealed class AuthService(
         await dbContext.SaveChangesAsync(cancellationToken);
 
         var accessToken = WriteToken(
+            _jwt.StudentAccessTokenMinutes,
         [
             new Claim(JwtRegisteredClaimNames.Sub, student.Id.ToString()),
             new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
@@ -106,6 +107,7 @@ public sealed class AuthService(
         }
 
         var accessToken = WriteToken(
+            _jwt.AdminAccessTokenMinutes,
         [
             new Claim(JwtRegisteredClaimNames.Sub, admin.Id.ToString()),
             new Claim(ClaimTypes.NameIdentifier, admin.Id.ToString()),
@@ -120,7 +122,9 @@ public sealed class AuthService(
             accessToken);
     }
 
-    private string WriteToken(IEnumerable<Claim> claims)
+    private string WriteToken(
+        int expiresInMinutes,
+        IEnumerable<Claim> claims)
     {
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(
@@ -132,7 +136,7 @@ public sealed class AuthService(
             audience: _jwt.Audience,
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(
-                _jwt.AccessTokenMinutes),
+                expiresInMinutes),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler()

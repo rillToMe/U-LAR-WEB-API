@@ -1,6 +1,65 @@
 import { useEffect, useState } from "react";
 import { getAdminDashboard } from "../services/dasboardApi";
+import Skeleton from "../components/ui/Skeleton";
 import type { AdminDashboard } from "../types/dashboard";
+
+function DashboardSkeleton() {
+  return (
+    <div
+      className="space-y-6"
+      role="status"
+      aria-label="Memuat dashboard"
+    >
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div
+            key={index}
+            className="rounded-xl border bg-surface p-6"
+          >
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="mt-3 h-9 w-16" />
+          </div>
+        ))}
+      </div>
+
+      <div className="overflow-hidden rounded-xl border bg-surface">
+        <div className="border-b px-6 py-4">
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="mt-2 h-4 w-44" />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b bg-surface-muted">
+              <tr>
+                {Array.from({ length: 5 }, (_, index) => (
+                  <th key={index} className="px-6 py-3">
+                    <Skeleton className="h-4 w-20" />
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {Array.from({ length: 5 }, (_, rowIndex) => (
+                <tr key={rowIndex}>
+                  {Array.from({ length: 5 }, (_, cellIndex) => (
+                    <td key={cellIndex} className="px-6 py-4">
+                      <Skeleton
+                        className={`h-4 ${
+                          cellIndex === 1 ? "w-28" : "w-24"
+                        }`}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <span className="sr-only">Memuat data dashboard...</span>
+    </div>
+  );
+}
 
 function StatCard({
   label,
@@ -48,13 +107,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Loading */}
-      {loading && (
-        <div className="rounded-xl border bg-surface p-8 text-center">
-          <p className="text-sm text-fg-subtle">
-            Memuat data dashboard...
-          </p>
-        </div>
-      )}
+      {loading && <DashboardSkeleton />}
 
       {/* Error */}
       {!loading && error && (
@@ -68,14 +121,14 @@ export default function DashboardPage() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard label="Total Mahasiswa" value={data.totalStudents} />
-            <StatCard label="Mahasiswa Aktif" value={data.activeStudent} />
+            <StatCard label="Mahasiswa Aktif" value={data.activeStudents} />
             <StatCard
               label="Mahasiswa Nonaktif"
               value={data.inactiveStudents}
             />
             <StatCard
               label="Sudah Pernah Login"
-              value={data.studentWhoHaveLoggedIn}
+              value={data.studentsWhoHaveLoggedIn}
             />
           </div>
 
@@ -146,7 +199,7 @@ export default function DashboardPage() {
                           )}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 text-fg-subtle">
-                          {new Date(student.createAt).toLocaleString(
+                          {new Date(student.createdAt).toLocaleString(
                             "id-ID"
                           )}
                         </td>

@@ -1,0 +1,74 @@
+Scene
+
+Assets
+├── 01_Scenes
+│   │
+│   ├── 00_Boot
+│   │   └── Boot.unity
+│   │
+│   ├── 01_Auth
+│   │   ├── Login.unity
+│   │   └── Onboarding.unity
+│   │
+│   ├── 02_MainMenu
+│   │   └── MainMenu.unity
+│   │
+│   ├── 03_Game
+│   │   ├── CableSelection.unity
+│   │   ├── Straight.unity
+│   │   └── Crossover.unity
+│   │
+│   └── 04_Result
+│       └── Result.unity
+
+
+WORK-FLOW
+
+┌─────────────┐
+│   BOOT          │
+│ Loading         │
+└──────┬──────┘
+       ↓
+┌─────────────┐
+│ ONBOARDING      │ ← first install only
+└──────┬──────┘
+       ↓
+┌─────────────┐
+│    LOGIN        │
+└──────┬──────┘
+       ↓
+┌─────────────┐
+│  MAIN MENU      │
+└──────┬──────┘
+       ↓
+┌──────────────────┐
+│ CABLE SELECTION       │
+│                       │
+│ Straight              │
+│ Cross-over            │
+└──────┬───────────┘
+       ↓
+   ┌───┴────┐
+   ↓        ↓
+Straight  Cross-over
+   │          │
+   └───┬────┘
+       ↓
+┌─────────────────┐
+│    GAMEPLAY          │
+│                      │
+│  Cable Module        │
+│  Tool Module         │
+│  Puzzle Module       │
+│  Tester Module       │
+│                      │
+│       [Pause]        │
+└────────┬────────┘
+         ↓
+┌─────────────────┐
+│     RESULT           │
+│ Score / Status       │
+│ Retry / Menu         │
+└────────┬────────┘
+         ↓
+      MAIN MENU
