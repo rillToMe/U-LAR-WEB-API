@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
@@ -57,18 +58,10 @@ public sealed class AuthService(
 
         student.LastLoginAt = DateTime.UtcNow;
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        var accessToken = WriteStudentToken(student);
+        var refreshToken = CreateRefreshToken(student.Id);
 
-        var accessToken = WriteToken(
-            _jwt.StudentAccessTokenMinutes,
-        [
-            new Claim(JwtRegisteredClaimNames.Sub, student.Id.ToString()),
-            new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
-            new Claim(ClaimTypes.Name, student.Name),
-            new Claim(ClaimTypes.Email, student.Email),
-            new Claim(ClaimTypes.Role, UserRoles.Student),
-            new Claim("nim", student.Nim)
-        ]);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return new LoginResponse(
             student.Id,
@@ -76,7 +69,63 @@ public sealed class AuthService(
             student.Name,
             student.Email,
             UserRoles.Student,
-            accessToken);
+            accessToken,
+            refreshToken);
+    }
+
+    public async Task<RefreshTokenResponse> RefreshStudentTokenAsync(
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var tokenHash = HashToken(request.RefreshToken);
+        var storedToken = await dbContext.StudentRefreshTokens
+            .Include(x => x.Student)
+            .SingleOrDefaultAsync(
+                x => x.TokenHash == tokenHash,
+                cancellationToken);
+
+        if (storedToken is null
+            || storedToken.RevokedAt is not null
+            || storedToken.ExpiresAt <= DateTime.UtcNow
+            || !storedToken.Student.IsActive)
+        {
+            throw new UnauthorizedException("Refresh token tidak valid.");
+        }
+
+        storedToken.RevokedAt = DateTime.UtcNow;
+
+        var accessToken = WriteStudentToken(storedToken.Student);
+        var refreshToken = CreateRefreshToken(storedToken.StudentId);
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return new RefreshTokenResponse(accessToken, refreshToken);
+    }
+
+    /// <summary>
+    /// Logout mahasiswa: refresh token yang dikirim langsung dicabut supaya
+    /// tidak bisa dipakai memperbarui access token lagi. Sengaja idempotent —
+    /// token yang tidak ditemukan atau sudah dicabut tidak dianggap error,
+    /// karena client cukup menghapus token lokalnya.
+    /// </summary>
+    public async Task LogoutStudentAsync(
+        LogoutRequest request,
+        CancellationToken cancellationToken)
+    {
+        var tokenHash = HashToken(request.RefreshToken);
+        var storedToken = await dbContext.StudentRefreshTokens
+            .SingleOrDefaultAsync(
+                x => x.TokenHash == tokenHash,
+                cancellationToken);
+
+        if (storedToken is null || storedToken.RevokedAt is not null)
+        {
+            return;
+        }
+
+        storedToken.RevokedAt = DateTime.UtcNow;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<AdminLoginResponse> LoginAdminAsync(
@@ -141,5 +190,39 @@ public sealed class AuthService(
 
         return new JwtSecurityTokenHandler()
             .WriteToken(token);
+    }
+
+    private string WriteStudentToken(Student student)
+    {
+        return WriteToken(
+            _jwt.StudentAccessTokenMinutes,
+        [
+            new Claim(JwtRegisteredClaimNames.Sub, student.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
+            new Claim(ClaimTypes.Name, student.Name),
+            new Claim(ClaimTypes.Email, student.Email),
+            new Claim(ClaimTypes.Role, UserRoles.Student),
+            new Claim("nim", student.Nim)
+        ]);
+    }
+
+    private string CreateRefreshToken(int studentId)
+    {
+        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+        dbContext.StudentRefreshTokens.Add(new StudentRefreshToken
+        {
+            StudentId = studentId,
+            TokenHash = HashToken(token),
+            ExpiresAt = DateTime.UtcNow.AddDays(_jwt.RefreshTokenDays)
+        });
+
+        return token;
+    }
+
+    private static string HashToken(string token)
+    {
+        return Convert.ToHexString(
+            SHA256.HashData(Encoding.UTF8.GetBytes(token)));
     }
 }

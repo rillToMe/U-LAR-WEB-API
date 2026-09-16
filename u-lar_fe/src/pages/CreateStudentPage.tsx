@@ -2,6 +2,8 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { createStudent } from "../services/studentApi";
+import { getApiErrorMessage } from "../services/apiError";
+import { useToast } from "../components/common/toastContext";
 import {
   VALIDATION,
   validateStudentEmail,
@@ -20,46 +22,27 @@ export default function CreateStudentPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
 
-    const nimError = validateStudentNim(nim);
-
-    if (nimError) {
-      setError(nimError);
-      return;
-    }
-
-    const nameError = validateStudentName(name);
-
-    if (nameError) {
-      setError(nameError);
-      return;
-    }
-
-    const emailError = validateStudentEmail(email);
-
-    if (emailError) {
-      setError(emailError);
-      return;
-    }
-
-    const passwordError =
+    const validationError =
+      validateStudentNim(nim) ??
+      validateStudentName(name) ??
+      validateStudentEmail(email) ??
       validateStudentPassword(password);
 
-    if (passwordError) {
-      setError(passwordError);
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
 
     try {
       setLoading(true);
-      setError("");
 
       await createStudent({
         nim,
@@ -68,10 +51,16 @@ export default function CreateStudentPage() {
         password,
       });
 
+      toast.success(`Akun mahasiswa ${name} berhasil dibuat.`);
       navigate("/admin/students");
     } catch (error) {
       console.error(error);
-      setError("Gagal membuat akun mahasiswa.");
+      toast.error(
+        getApiErrorMessage(
+          error,
+          "Gagal membuat akun mahasiswa."
+        )
+      );
     } finally {
       setLoading(false);
     }
@@ -84,7 +73,7 @@ export default function CreateStudentPage() {
         <button
           type="button"
           onClick={() => navigate("/admin/students")}
-          className="mb-3 text-sm text-fg-subtle hover:text-fg"
+          className="-ml-2 mb-3 inline-flex items-center rounded-lg px-2 py-1 text-sm text-fg-subtle transition-colors duration-150 hover:bg-surface-hover hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           ← Kembali
         </button>
@@ -101,7 +90,7 @@ export default function CreateStudentPage() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 rounded-xl border bg-surface p-6"
+        className="space-y-5 rounded-xl border bg-surface p-6 max-md:p-4"
       >
         <Input
           id="nim"
@@ -153,17 +142,8 @@ export default function CreateStudentPage() {
           helperText={`Minimal ${VALIDATION.student.password.minLength} karakter.`}
         />
 
-        {/* Error */}
-        {error && (
-          <div className="rounded-lg border border-danger-border bg-danger-surface px-4 py-3">
-            <p className="text-sm text-danger">
-              {error}
-            </p>
-          </div>
-        )}
-
         {/* Actions */}
-        <div className="flex justify-end gap-3 border-t pt-5">
+        <div className="flex justify-end gap-3 border-t pt-5 max-md:flex-col-reverse max-md:[&>button]:w-full">
           <Button
             type="button"
             variant="secondary"

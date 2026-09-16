@@ -16,7 +16,7 @@ builder.Services
     .AddPersistence(builder.Configuration)
     .AddFeatureServices()
     .AddJwtAuthentication(builder.Configuration)
-    .AddCorsConfiguration();
+    .AddCorsConfiguration(builder.Configuration);
 
 builder.Services.AddScoped<
     IPasswordHasher<Student>,

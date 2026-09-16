@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using u_lar_be.Common;
 using u_lar_be.Controllers;
 using u_lar_be.Domain.Common;
 using u_lar_be.Features.Admin.Dtos;
@@ -34,11 +35,24 @@ public sealed class AdminController(
         return Ok(dashboard);
     }
 
+    /// <summary>
+    /// Daftar mahasiswa satu halaman. Gunakan search untuk mencari NIM, nama,
+    /// atau email, isActive untuk menyaring status, dan page/pageSize untuk
+    /// berpindah halaman (default 30 mahasiswa per halaman).
+    /// </summary>
     [HttpGet("students")]
-    public async Task<ActionResult<IReadOnlyList<StudentListItemResponse>>> GetStudents(
+    public async Task<ActionResult<PagedResult<StudentListItemResponse>>> GetStudents(
+        [FromQuery] string? search,
+        [FromQuery] bool? isActive,
+        [FromQuery] int page,
+        [FromQuery] int pageSize,
         CancellationToken cancellationToken)
     {
         var students = await adminService.GetStudentsAsync(
+            search,
+            isActive,
+            page,
+            pageSize,
             cancellationToken);
 
         return Ok(students);

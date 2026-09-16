@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { createStudent } from "../../services/studentApi";
+import { getApiErrorMessage } from "../../services/apiError";
+import { useToast } from "../common/toastContext";
 import {
   VALIDATION,
   validateStudentEmail,
@@ -28,15 +30,14 @@ export default function CreateStudentModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
 
   function resetForm() {
     setNim("");
     setName("");
     setEmail("");
     setPassword("");
-    setError("");
   }
 
   function handleClose() {
@@ -60,13 +61,12 @@ export default function CreateStudentModal({
       validateStudentPassword(password);
 
     if (validationError) {
-      setError(validationError);
+      toast.error(validationError);
       return;
     }
 
     try {
       setLoading(true);
-      setError("");
 
       await createStudent({
         nim,
@@ -78,9 +78,15 @@ export default function CreateStudentModal({
       resetForm();
       onCreated();
       onClose();
+      toast.success(`Akun mahasiswa ${name} berhasil dibuat.`);
     } catch (error) {
       console.error(error);
-      setError("Gagal membuat akun mahasiswa.");
+      toast.error(
+        getApiErrorMessage(
+          error,
+          "Gagal membuat akun mahasiswa."
+        )
+      );
     } finally {
       setLoading(false);
     }
@@ -169,13 +175,6 @@ export default function CreateStudentModal({
           helperText={`Minimal ${VALIDATION.student.password.minLength} karakter.`}
         />
 
-        {error && (
-          <div className="rounded-lg border border-danger-border bg-danger-surface px-4 py-3">
-            <p className="text-sm text-danger">
-              {error}
-            </p>
-          </div>
-        )}
       </form>
     </Modal>
   );

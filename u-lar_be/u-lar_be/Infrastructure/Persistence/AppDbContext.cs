@@ -16,6 +16,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<Student> Students => Set<Student>();
 
+    public DbSet<StudentRefreshToken> StudentRefreshTokens =>
+        Set<StudentRefreshToken>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

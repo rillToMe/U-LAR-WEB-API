@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import {
   resetStudentPassword,
   updateStudent,
 } from "../../services/studentApi";
+import { getApiErrorMessage } from "../../services/apiError";
+import { useToast } from "../common/toastContext";
 import {
   VALIDATION,
   validateStudentEmail,
@@ -19,7 +21,7 @@ import Input from "../ui/Input";
 interface StudentEditModalProps {
   open: boolean;
   onClose: () => void;
-  onSaved?: (message: string) => void;
+  onSaved?: () => void;
   student: StudentDetail | null;
 }
 
@@ -29,28 +31,22 @@ export default function StudentEditModal({
   onSaved,
   student,
 }: StudentEditModalProps) {
-  const [nim, setNim] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
   const [newPassword, setNewPassword] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const [resetting, setResetting] = useState(false);
-  const [passwordMessage, setPasswordMessage] = useState("");
+  const toast = useToast();
 
-  useEffect(() => {
-    if (open && student) {
-      setNim(student.nim);
-      setName(student.name);
-      setEmail(student.email);
-      setError("");
-      setNewPassword("");
-      setPasswordError("");
-      setPasswordMessage("");
-    }
-  }, [open, student]);
+  // State form diinisialisasi langsung dari props: komponen ini hanya
+  // di-mount saat modal terbuka (pemanggil memberi `key` per mahasiswa),
+  // jadi tidak perlu effect untuk menyalin props ke state.
+  const [nim, setNim] = useState(student?.nim ?? "");
+  const [name, setName] = useState(student?.name ?? "");
+  const [email, setEmail] = useState(student?.email ?? "");
+
+  if (!open || !student) {
+    return null;
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -65,13 +61,12 @@ export default function StudentEditModal({
       validateStudentEmail(email);
 
     if (validationError) {
-      setError(validationError);
+      toast.error(validationError);
       return;
     }
 
     try {
       setSaving(true);
-      setError("");
 
       const result = await updateStudent(student.id, {
         nim,
@@ -79,25 +74,29 @@ export default function StudentEditModal({
         email,
       });
 
-      onSaved?.(
+      toast.success(
         result.message ||
           "Data mahasiswa berhasil diperbarui."
       );
+      onSaved?.();
     } catch (error) {
       console.error(error);
-      setError("Gagal memperbarui data mahasiswa.");
+      toast.error(
+        getApiErrorMessage(
+          error,
+          "Gagal memperbarui data mahasiswa."
+        )
+      );
     } finally {
       setSaving(false);
     }
   }
 
-  const dirty = Boolean(
-    student &&
-      (nim !== student.nim ||
-        name !== student.name ||
-        email !== student.email ||
-        Boolean(newPassword))
-  );
+  const dirty =
+    nim !== student.nim ||
+    name !== student.name ||
+    email !== student.email ||
+    Boolean(newPassword);
 
   async function handleResetPassword(
     event: FormEvent<HTMLFormElement>
@@ -111,26 +110,30 @@ export default function StudentEditModal({
     const validationError = validateStudentPassword(newPassword);
 
     if (validationError) {
-      setPasswordError(validationError);
+      toast.error(validationError);
       return;
     }
 
     try {
       setResetting(true);
-      setPasswordError("");
 
       const result = await resetStudentPassword(student.id, {
         newPassword,
       });
 
       setNewPassword("");
-      setPasswordMessage(
+      toast.success(
         result.message ||
           "Password mahasiswa berhasil direset."
       );
     } catch (error) {
       console.error(error);
-      setPasswordError("Gagal mereset password mahasiswa.");
+      toast.error(
+        getApiErrorMessage(
+          error,
+          "Gagal mereset password mahasiswa."
+        )
+      );
     } finally {
       setResetting(false);
     }
@@ -142,7 +145,7 @@ export default function StudentEditModal({
       onClose={onClose}
       dirty={dirty}
       title="Edit Mahasiswa"
-      description={student ? student.nim : undefined}
+      description={student.nim}
       footer={
         <>
           <Button
@@ -204,11 +207,6 @@ export default function StudentEditModal({
           maxLength={VALIDATION.student.email.maxLength}
         />
 
-        {error && (
-          <div className="rounded-lg border border-danger-border bg-danger-surface px-4 py-3">
-            <p className="text-sm text-danger">{error}</p>
-          </div>
-        )}
       </form>
 
       <div className="mt-6 border-t pt-5">
@@ -244,28 +242,13 @@ export default function StudentEditModal({
             helperText={`Minimal ${VALIDATION.student.password.minLength} karakter.`}
           />
 
-          {passwordError && (
-            <div className="rounded-lg border border-danger-border bg-danger-surface px-4 py-3">
-              <p className="text-sm text-danger">
-                {passwordError}
-              </p>
-            </div>
-          )}
-
-          {passwordMessage && (
-            <div className="rounded-lg border border-success-border bg-success-surface px-4 py-3">
-              <p className="text-sm text-success-fg">
-                {passwordMessage}
-              </p>
-            </div>
-          )}
-
           <div className="flex justify-end">
             <Button
               type="submit"
               form="reset-password-form"
               variant="secondary"
               loading={resetting}
+              className="max-md:w-full"
             >
               Reset Password
             </Button>

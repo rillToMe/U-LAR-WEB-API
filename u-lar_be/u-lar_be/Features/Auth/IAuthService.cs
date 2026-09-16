@@ -11,4 +11,12 @@ public interface IAuthService
     Task<AdminLoginResponse> LoginAdminAsync(
         AdminLoginRequest request,
         CancellationToken cancellationToken);
+
+    Task<RefreshTokenResponse> RefreshStudentTokenAsync(
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken);
+
+    Task LogoutStudentAsync(
+        LogoutRequest request,
+        CancellationToken cancellationToken);
 }

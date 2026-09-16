@@ -1,18 +1,24 @@
 import { api } from "./api";
 import type {
   CreateStudentRequest,
+  PagedResult,
   ResetStudentPasswordRequest,
   ResetStudentPasswordResponse,
   StudentDetail,
   StudentListItem,
+  StudentListParams,
   UpdateStudentRequest,
   UpdateStudentResponse,
   UpdateStudentStatusResponse,
 } from "../types/student";
 
-export async function getStudents(): Promise<StudentListItem[]> {
-  const response = await api.get<StudentListItem[]>(
-    "/Admin/students"
+export async function getStudents(
+  params: StudentListParams = {},
+  signal?: AbortSignal
+): Promise<PagedResult<StudentListItem>> {
+  const response = await api.get<PagedResult<StudentListItem>>(
+    "/Admin/students",
+    { params, signal }
   );
 
   return response.data;

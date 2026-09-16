@@ -1,22 +1,11 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-
-type Theme = "light" | "dark";
-
-interface ThemeContextValue {
-  theme: Theme;
-  toggleTheme: () => void;
-}
+import IconButton from "../ui/IconButton";
+import { ThemeContext } from "./themeContext";
+import type { Theme } from "./themeContext";
+import { useTheme } from "./themeContext";
 
 const STORAGE_KEY = "u-lar-theme";
-
-const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -52,29 +41,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error(
-      "useTheme harus dipakai di dalam <ThemeProvider>."
-    );
-  }
-  return context;
-}
-
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === "dark";
 
   return (
-    <button
-      type="button"
+    <IconButton
       onClick={toggleTheme}
-      aria-label={
+      label={
         isDark ? "Aktifkan mode terang" : "Aktifkan mode gelap"
       }
       title={isDark ? "Mode terang" : "Mode gelap"}
-      className="group flex size-9 shrink-0 items-center justify-center rounded-lg text-fg-subtle transition-[color,background-color,transform] duration-200 hover:bg-surface-hover hover:text-fg active:scale-90 motion-reduce:transition-none"
     >
       <span className="relative block size-5 overflow-hidden">
         <svg
@@ -121,6 +98,6 @@ export function ThemeToggle() {
           <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
         </svg>
       </span>
-    </button>
+    </IconButton>
   );
 }

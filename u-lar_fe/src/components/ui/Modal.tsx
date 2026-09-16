@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import Button from "./Button";
+import IconButton from "./IconButton";
 
 let modalStack: number[] = [];
 let nextModalId = 0;
@@ -37,7 +38,6 @@ export default function Modal({
 
   useEffect(() => {
     if (!open) {
-      setConfirmClose(false);
       return;
     }
 
@@ -84,12 +84,17 @@ export default function Modal({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, confirmClose, dirty, onClose]);
 
+  function closeModal() {
+    setConfirmClose(false);
+    onClose();
+  }
+
   function requestClose() {
     if (dirty) {
       setConfirmClose(true);
       return;
     }
-    onClose();
+    closeModal();
   }
 
   if (!open) {
@@ -97,7 +102,7 @@ export default function Modal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center md:p-4">
       {/* Backdrop */}
       <button
         type="button"
@@ -108,11 +113,14 @@ export default function Modal({
 
       {/* Modal */}
       <div
-        className={`relative w-full ${sizeClasses[size]} rounded-xl bg-surface shadow-xl`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className={`relative w-full ${sizeClasses[size]} rounded-xl bg-surface shadow-xl max-md:flex max-md:max-h-dvh max-md:flex-col max-md:rounded-b-none`}
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b px-6 py-4">
-          <div>
+        <div className="flex items-start justify-between border-b px-6 py-4 max-md:px-4">
+          <div className="min-w-0">
             <h2 className="text-lg font-semibold text-fg">
               {title}
             </h2>
@@ -124,24 +132,33 @@ export default function Modal({
             )}
           </div>
 
-          <button
-            type="button"
+          <IconButton
+            label="Tutup"
             onClick={requestClose}
-            className="rounded-lg px-2 py-1 text-fg-subtle hover:bg-surface-hover hover:text-fg"
-            aria-label="Tutup"
+            className="max-md:size-11"
           >
-            ×
-          </button>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden="true"
+              className="size-5"
+            >
+              <path d="m6 6 12 12M18 6 6 18" />
+            </svg>
+          </IconButton>
         </div>
 
         {/* Content */}
-        <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
+        <div className="max-h-[70vh] overflow-y-auto px-6 py-5 max-md:min-h-0 max-md:flex-1 max-md:px-4 max-md:py-4">
           {children}
         </div>
 
         {/* Footer */}
         {footer && (
-          <div className="flex justify-end gap-3 border-t px-6 py-4">
+          <div className="flex justify-end gap-3 border-t px-6 py-4 max-md:flex-col-reverse max-md:px-4 max-md:[&>button]:w-full">
             {footer}
           </div>
         )}
@@ -160,7 +177,7 @@ export default function Modal({
             onClick={() => setConfirmClose(false)}
             className="absolute inset-0 bg-fg/40"
           />
-          <div className="relative w-full max-w-sm rounded-xl bg-surface p-6 shadow-xl">
+          <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-xl bg-surface p-6 shadow-xl">
             <h3 className="text-base font-semibold text-fg">
               Keluar dari modal?
             </h3>
@@ -168,7 +185,7 @@ export default function Modal({
               Masih ada isian yang belum disimpan. Jika keluar,
               data yang sudah diketik akan hilang.
             </p>
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-6 flex justify-end gap-3 max-md:flex-col-reverse max-md:[&>button]:w-full">
               <Button
                 type="button"
                 variant="secondary"
@@ -179,7 +196,7 @@ export default function Modal({
               <Button
                 type="button"
                 variant="danger"
-                onClick={onClose}
+                onClick={closeModal}
               >
                 Keluar
               </Button>

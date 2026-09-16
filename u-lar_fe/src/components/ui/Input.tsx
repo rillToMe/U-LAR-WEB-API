@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { InputHTMLAttributes } from "react";
+import IconButton from "./IconButton";
 
 interface InputProps
   extends InputHTMLAttributes<HTMLInputElement> {
@@ -60,16 +61,15 @@ export default function Input({
         />
 
         {isPassword && (
-          <button
-            type="button"
+          <IconButton
             onClick={() => setReveal((value) => !value)}
-            aria-label={
+            label={
               reveal
                 ? "Sembunyikan password"
                 : "Tampilkan password"
             }
             aria-pressed={reveal}
-            className="absolute inset-y-0 right-0 flex items-center rounded-r-lg px-3 text-fg-subtle transition hover:text-fg"
+            className="absolute right-1 top-1/2 -translate-y-1/2"
           >
             <svg
               viewBox="0 0 24 24"
@@ -90,7 +90,7 @@ export default function Input({
                 </>
               )}
             </svg>
-          </button>
+          </IconButton>
         )}
       </div>
 

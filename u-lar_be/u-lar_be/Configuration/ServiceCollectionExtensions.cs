@@ -131,14 +131,21 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddCorsConfiguration(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
+        var cors = configuration
+                       .GetSection(CorsOptions.SectionName)
+                       .Get<CorsOptions>()
+                   ?? throw new InvalidOperationException(
+                       "Konfigurasi CORS belum tersedia.");
+
         services.AddCors(options =>
         {
             options.AddPolicy("UlarAdminWeb", policy =>
             {
                 policy
-                    .WithOrigins("http://localhost:5173")
+                    .WithOrigins(cors.AllowedOrigins)
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
@@ -162,6 +169,11 @@ public static class ServiceCollectionExtensions
 
         services.AddOptions<AdminSeedOptions>()
             .BindConfiguration(AdminSeedOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddOptions<CorsOptions>()
+            .BindConfiguration(CorsOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

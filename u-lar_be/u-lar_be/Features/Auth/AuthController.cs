@@ -31,4 +31,28 @@ public sealed class AuthController(
 
         return Ok(response);
     }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult<RefreshTokenResponse>> Refresh(
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await authService.RefreshStudentTokenAsync(
+            request,
+            cancellationToken);
+
+        return Ok(response);
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(
+        LogoutRequest request,
+        CancellationToken cancellationToken)
+    {
+        await authService.LogoutStudentAsync(
+            request,
+            cancellationToken);
+
+        return NoContent();
+    }
 }

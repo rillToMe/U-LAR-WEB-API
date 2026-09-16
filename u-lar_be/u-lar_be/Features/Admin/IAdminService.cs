@@ -1,4 +1,5 @@
-﻿using u_lar_be.Features.Admin.Dtos;
+﻿using u_lar_be.Common;
+using u_lar_be.Features.Admin.Dtos;
 
 namespace u_lar_be.Features.Admin;
 
@@ -8,7 +9,11 @@ public interface IAdminService
         CreateStudentRequest request,
         CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<StudentListItemResponse>> GetStudentsAsync(
+    Task<PagedResult<StudentListItemResponse>> GetStudentsAsync(
+        string? search,
+        bool? isActive,
+        int page,
+        int pageSize,
         CancellationToken cancellationToken);
 
     Task<UpdateStudentResponse> UpdateStudentAsync(

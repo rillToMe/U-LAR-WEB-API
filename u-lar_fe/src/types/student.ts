@@ -5,6 +5,21 @@ export interface CreateStudentRequest {
   password: string;
 }
 
+export interface StudentListParams {
+  search?: string;
+  isActive?: boolean;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
 export interface StudentListItem {
   id: number;
   nim: string;

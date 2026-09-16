@@ -37,4 +37,7 @@ public sealed class JwtOptions
     /// </summary>
     [Range(1, 525600)]
     public int StudentAccessTokenMinutes { get; init; } = 525600;
+
+    [Range(1, 3650)]
+    public int RefreshTokenDays { get; init; } = 30;
 }

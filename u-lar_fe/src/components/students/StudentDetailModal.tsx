@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getStudentDetail } from "../../services/studentApi";
+import { getApiErrorMessage } from "../../services/apiError";
+import { useToast } from "../common/toastContext";
 import type { StudentDetail } from "../../types/student";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
@@ -20,9 +22,11 @@ function DetailRow({
   value: string;
 }) {
   return (
-    <div className="flex justify-between gap-4 py-3">
+    <div className="flex justify-between gap-4 py-3 max-md:flex-col max-md:gap-1">
       <dt className="text-sm text-fg-subtle">{label}</dt>
-      <dd className="text-sm font-medium text-fg">{value}</dd>
+      <dd className="text-sm font-medium text-fg max-md:min-w-0 max-md:break-words">
+        {value}
+      </dd>
     </div>
   );
 }
@@ -33,22 +37,45 @@ export default function StudentDetailModal({
   onUpdated,
   studentId,
 }: StudentDetailModalProps) {
+  if (!open || studentId === null) {
+    return null;
+  }
+
+  // `key` membuat konten detail di-mount ulang setiap kali modal dibuka
+  // untuk seorang mahasiswa, sehingga state data/error terreset otomatis
+  // tanpa perlu memanggil setState di dalam effect.
+  return (
+    <DetailContent
+      key={studentId}
+      studentId={studentId}
+      onClose={onClose}
+      onUpdated={onUpdated}
+    />
+  );
+}
+
+interface DetailContentProps {
+  studentId: number;
+  onClose: () => void;
+  onUpdated?: () => void;
+}
+
+function DetailContent({
+  studentId,
+  onClose,
+  onUpdated,
+}: DetailContentProps) {
   const [detail, setDetail] = useState<StudentDetail | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
+  const toast = useToast();
+
+  // "Loading" diturunkan dari data: fetch sedang berjalan selama belum ada
+  // hasil maupun error, jadi tidak perlu state loading terpisah.
+  const loading = detail === null && !error;
 
   useEffect(() => {
-    if (!open || studentId === null) {
-      return;
-    }
-
     let cancelled = false;
-
-    setLoading(true);
-    setError("");
-    setSuccessMessage("");
 
     getStudentDetail(studentId)
       .then((data) => {
@@ -56,39 +83,38 @@ export default function StudentDetailModal({
           setDetail(data);
         }
       })
-      .catch((error) => {
-        console.error(error);
+      .catch((fetchError) => {
+        console.error(fetchError);
+
         if (!cancelled) {
-          setError("Gagal mengambil detail mahasiswa.");
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
+          const message = getApiErrorMessage(
+            fetchError,
+            "Gagal mengambil detail mahasiswa."
+          );
+
+          setError(message);
+          toast.error(message);
         }
       });
 
     return () => {
       cancelled = true;
     };
-  }, [open, studentId]);
+  }, [studentId, toast]);
 
-  function handleSaved(message: string) {
-    setSuccessMessage(message);
+  function handleSaved() {
     setIsEditOpen(false);
     onUpdated?.();
 
-    if (studentId !== null) {
-      getStudentDetail(studentId)
-        .then(setDetail)
-        .catch((error) => console.error(error));
-    }
+    getStudentDetail(studentId)
+      .then(setDetail)
+      .catch((fetchError) => console.error(fetchError));
   }
 
   return (
     <>
       <Modal
-        open={open}
+        open
         onClose={onClose}
         title="Detail Mahasiswa"
         description={detail ? detail.nim : undefined}
@@ -110,24 +136,16 @@ export default function StudentDetailModal({
         )}
 
         {!loading && error && (
-          <div className="rounded-lg border border-danger-border bg-danger-surface px-4 py-3">
+          <div
+            role="alert"
+            className="rounded-lg border border-danger-border bg-danger-surface px-4 py-3"
+          >
             <p className="text-sm text-danger">{error}</p>
           </div>
         )}
 
         {!loading && !error && detail && (
           <>
-            {successMessage && (
-              <div
-                role="status"
-                className="rounded-lg border border-success-border bg-success-surface px-4 py-3"
-              >
-                <p className="text-sm text-success-fg">
-                  {successMessage}
-                </p>
-              </div>
-            )}
-
             <dl className="divide-y">
               <DetailRow label="Nama" value={detail.name} />
               <DetailRow label="NIM" value={detail.nim} />
@@ -157,12 +175,15 @@ export default function StudentDetailModal({
         )}
       </Modal>
 
-      <StudentEditModal
-        open={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        onSaved={handleSaved}
-        student={detail}
-      />
+      {isEditOpen && detail !== null && (
+        <StudentEditModal
+          key={detail.id}
+          open
+          onClose={() => setIsEditOpen(false)}
+          onSaved={handleSaved}
+          student={detail}
+        />
+      )}
     </>
   );
 }

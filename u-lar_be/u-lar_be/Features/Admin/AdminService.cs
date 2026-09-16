@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using u_lar_be.Common;
 using u_lar_be.Common.Exceptions;
 using u_lar_be.Domain.Common;
 using u_lar_be.Domain.Users;
@@ -13,6 +14,12 @@ public sealed class AdminService(
     IPasswordHasher<Student> passwordHasher
 ) : IAdminService
 {
+    /// <summary>Jumlah mahasiswa per halaman kalau klien tidak menentukan.</summary>
+    public const int DefaultPageSize = 30;
+
+    /// <summary>Batas atas supaya satu request tidak menarik seluruh tabel.</summary>
+    public const int MaxPageSize = 100;
+
     public async Task<CreateStudentResponse> CreateStudentAsync(
         CreateStudentRequest request,
         CancellationToken cancellationToken)
@@ -25,7 +32,8 @@ public sealed class AdminService(
         if (nimExists)
         {
             throw new ConflictException(
-                "NIM sudah terdaftar.");
+                $"NIM {request.Nim} sudah dipakai akun mahasiswa lain. " +
+                "Periksa daftar mahasiswa atau gunakan NIM yang benar.");
         }
 
         var emailExists = await dbContext.Students
@@ -36,7 +44,8 @@ public sealed class AdminService(
         if (emailExists)
         {
             throw new ConflictException(
-                "Email sudah terdaftar.");
+                $"Email {request.Email} sudah dipakai akun mahasiswa lain. " +
+                "Gunakan email lain.");
         }
 
         var student = new Student
@@ -63,12 +72,48 @@ public sealed class AdminService(
             UserRoles.Student);
     }
 
-    public async Task<IReadOnlyList<StudentListItemResponse>> GetStudentsAsync(
+    public async Task<PagedResult<StudentListItemResponse>> GetStudentsAsync(
+        string? search,
+        bool? isActive,
+        int page,
+        int pageSize,
         CancellationToken cancellationToken)
     {
-        return await dbContext.Students
-            .AsNoTracking()
+        // Nilai dari query string tidak dipercaya: halaman minimal 1 dan
+        // jumlah per halaman dibatasi.
+        var currentPage = page < 1 ? 1 : page;
+
+        var currentPageSize = pageSize < 1
+            ? DefaultPageSize
+            : Math.Min(pageSize, MaxPageSize);
+
+        var query = dbContext.Students
+            .AsNoTracking();
+
+        // Pencarian bebas di NIM, nama, dan email. Dipakai ToLower (bukan
+        // LIKE dengan wildcard) supaya karakter % atau _ dari input tidak
+        // dianggap wildcard.
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+
+            query = query.Where(x =>
+                x.Nim.ToLower().Contains(term) ||
+                x.Name.ToLower().Contains(term) ||
+                x.Email.ToLower().Contains(term));
+        }
+
+        if (isActive is not null)
+        {
+            query = query.Where(x => x.IsActive == isActive);
+        }
+
+        var totalItems = await query.CountAsync(cancellationToken);
+
+        var items = await query
             .OrderBy(x => x.Nim)
+            .Skip((currentPage - 1) * currentPageSize)
+            .Take(currentPageSize)
             .Select(x => new StudentListItemResponse(
                 x.Id,
                 x.Nim,
@@ -79,6 +124,12 @@ public sealed class AdminService(
                 x.CreatedAt
             ))
             .ToListAsync(cancellationToken);
+
+        return new PagedResult<StudentListItemResponse>(
+            items,
+            currentPage,
+            currentPageSize,
+            totalItems);
     }
 
     public async Task<UpdateStudentResponse> UpdateStudentAsync(
@@ -94,7 +145,8 @@ public sealed class AdminService(
         if (student is null)
         {
             throw new NotFoundException(
-                "Student tidak ditemukan.");
+                $"Mahasiswa dengan id {studentId} tidak ditemukan. " +
+                "Data mungkin sudah dihapus, muat ulang halaman.");
         }
 
         var nimExists = await dbContext.Students
@@ -105,7 +157,8 @@ public sealed class AdminService(
         if (nimExists)
         {
             throw new ConflictException(
-                "NIM sudah terdaftar.");
+                $"NIM {request.Nim} sudah dipakai akun mahasiswa lain. " +
+                "Gunakan NIM yang berbeda.");
         }
 
         var emailExists = await dbContext.Students
@@ -116,7 +169,8 @@ public sealed class AdminService(
         if (emailExists)
         {
             throw new ConflictException(
-                "Email sudah terdaftar.");
+                $"Email {request.Email} sudah dipakai akun mahasiswa lain. " +
+                "Gunakan email yang berbeda.");
         }
 
         student.Nim = request.Nim;

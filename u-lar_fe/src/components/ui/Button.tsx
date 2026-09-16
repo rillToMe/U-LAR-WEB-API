@@ -8,15 +8,17 @@ interface ButtonProps
   loading?: boolean;
 }
 
+/* Hover hanya mengubah warna (tanpa transform/shadow) supaya feedback-nya
+   jelas tapi tidak berlebihan. */
 const variantClasses = {
   primary:
     "bg-primary text-primary-fg hover:bg-primary-hover",
   secondary:
-    "border border-border-strong bg-surface text-fg-muted hover:bg-surface-hover",
+    "border border-border-strong bg-surface text-fg-muted hover:border-fg-placeholder hover:bg-surface-hover hover:text-fg",
   danger:
     "bg-danger text-danger-fg hover:bg-danger-hover",
   ghost:
-    "text-fg-subtle hover:bg-surface-hover",
+    "text-fg-subtle hover:bg-surface-hover hover:text-fg",
 };
 
 const sizeClasses = {
@@ -43,8 +45,12 @@ export default function Button({
         justify-center
         rounded-lg
         font-medium
-        transition
-        disabled:cursor-not-allowed
+        transition-colors
+        duration-150
+        focus-visible:outline-2
+        focus-visible:outline-offset-2
+        focus-visible:outline-ring
+        disabled:pointer-events-none
         disabled:opacity-50
         ${variantClasses[variant]}
         ${sizeClasses[size]}
