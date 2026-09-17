@@ -1,0 +1,8 @@
+# IDE
+.idea/
+
+# Game structure docs
+u-lar_be/struktur-game.txt
+
+# Frontend scripts
+u-lar_fe/scripts/
