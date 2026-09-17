@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 
 namespace u_lar_be.Controllers;
@@ -15,4 +16,14 @@ namespace u_lar_be.Controllers;
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Produces("application/json")]
-public abstract class ApiControllerBase : ControllerBase;
+public abstract class ApiControllerBase : ControllerBase
+{
+    /// <summary>
+    /// Id pemilik token yang sedang request (admin ATAU mahasiswa — id-nya
+    /// boleh bertabrakan karena tabelnya terpisah, jadi selalu dipakai
+    /// bersama role dari token). Endpoint ber-[Authorize] selalu punya claim
+    /// ini, jadi bagian pemanggil tidak perlu mengecek null.
+    /// </summary>
+    protected int CurrentUserId =>
+        int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+}

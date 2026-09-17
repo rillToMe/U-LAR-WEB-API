@@ -1,10 +1,7 @@
 import { AxiosError } from "axios";
 
 /**
- * Backend mengirim ProblemDetails (RFC 7807) dengan pesan spesifik di `title`,
- * misal "NIM 23076052 sudah terdaftar.". Sebelumnya pesan itu dibuang dan
- * diganti teks generik, jadi admin tidak tahu penyebab kegagalan.
- * Helper ini mengambil pesan paling spesifik yang tersedia.
+ * Helper untuk mengambil pesan error API yang aman dan ramah bagi pengguna awam.
  */
 interface ProblemDetails {
   title?: string;
@@ -13,34 +10,36 @@ interface ProblemDetails {
 }
 
 const STATUS_MESSAGE: Record<number, string> = {
-  400: "Data yang dikirim tidak valid. Periksa kembali isian form.",
-  401: "Sesi login sudah berakhir. Silakan masuk ulang.",
-  403: "Akun Anda tidak punya izin untuk tindakan ini.",
-  404: "Data yang dituju tidak ditemukan. Mungkin sudah dihapus.",
-  409: "Data bentrok dengan yang sudah ada di sistem.",
-  500: "Server bermasalah saat memproses permintaan. Coba lagi sebentar.",
+  400: "Data yang dikirim tidak valid. Mohon periksa kembali isian Anda.",
+  401: "Sesi Anda telah berakhir. Silakan masuk kembali.",
+  403: "Anda tidak memiliki akses untuk melakukan tindakan ini.",
+  404: "Data yang dituju tidak ditemukan.",
+  409: "Data sudah ada di dalam sistem dan tidak bisa diduplikasi.",
+  500: "Terjadi kendala pada server kami. Silakan coba beberapa saat lagi.",
 };
 
 export function getApiErrorMessage(
   error: unknown,
-  fallback: string
+  fallback: string = "Terjadi kesalahan yang tidak diketahui. Silakan coba lagi."
 ): string {
   if (!(error instanceof AxiosError)) {
     return fallback;
   }
 
+  // 1. Masalah Koneksi Internet / Server Down
   if (error.code === "ERR_NETWORK") {
-    return "Tidak bisa terhubung ke server. Pastikan backend berjalan lalu coba lagi.";
+    return "Gagal terhubung ke sistem. Periksa koneksi internet Anda atau coba muat ulang halaman.";
   }
 
+  // 2. Masalah Timeout (Koneksi Lemot)
   if (error.code === "ECONNABORTED") {
-    return "Permintaan timeout sebelum server menjawab. Coba lagi.";
+    return "Waktu koneksi habis sebelum server merespons. Silakan coba beberapa saat lagi.";
   }
 
   const status = error.response?.status;
   const problem = error.response?.data as ProblemDetails | undefined;
 
-  // Validasi model dari [ApiController] — tampilkan field yang salah.
+  // 3. Validasi Field dari Backend (Model Validation)
   const fieldErrors = problem?.errors
     ? Object.values(problem.errors).flat().filter(Boolean)
     : [];
@@ -49,18 +48,21 @@ export function getApiErrorMessage(
     return fieldErrors.join(" ");
   }
 
+  // 4. Pesan Spesifik dari Backend (Problem Details)
   const serverMessage = problem?.detail?.trim() || problem?.title?.trim();
 
   if (serverMessage) {
     return serverMessage;
   }
 
+  // 5. Pesan Berdasarkan HTTP Status Code
   if (status && STATUS_MESSAGE[status]) {
     return STATUS_MESSAGE[status];
   }
 
+  // 6. Fallback jika ada status code tak terduga
   if (status) {
-    return `${fallback} Server menjawab dengan status ${status}.`;
+    return `${fallback} (Kode status: ${status})`;
   }
 
   return fallback;

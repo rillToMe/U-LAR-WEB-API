@@ -1,0 +1,63 @@
+/* Tema web ujian.
+
+   Web ujian dipakai mahasiswa dari HP dan berdampingan dengan web admin di
+   browser yang sama, jadi tampilannya sengaja dibedakan tanpa mengubah token
+   dasar: cukup timpa variabel warna pada wrapper halaman ujian. Semua utility
+   Tailwind (bg-accent, bg-primary, text-ring, ...) otomatis ikut berubah
+   karena nilainya dibaca dari variabel ini, bukan ditulis di komponen.
+
+   Warnanya biru langit lembut — satu keluarga dengan aksen tema web, tapi
+   dipakai lebih dominan di sini (tombol utama, badge, fokus). */
+
+.exam-theme {
+  --color-accent: oklch(0.588 0.158 241.966);
+  --color-accent-hover: oklch(0.5 0.134 242.749);
+  --color-accent-fg: oklch(1 0 0);
+  --color-accent-surface: oklch(0.97 0.013 236.62);
+  --color-accent-border: oklch(0.901 0.058 230.902);
+  --color-ring: oklch(0.588 0.158 241.966);
+
+  --color-primary: oklch(0.48 0.14 244.5);
+  --color-primary-hover: oklch(0.42 0.14 245);
+  --color-primary-fg: oklch(1 0 0);
+
+  --color-link: oklch(0.588 0.158 241.966);
+  --color-link-hover: oklch(0.5 0.134 242.749);
+}
+
+.dark .exam-theme {
+  --color-accent: oklch(0.68 0.15 241.966);
+  --color-accent-hover: oklch(0.76 0.14 242.749);
+  --color-accent-fg: oklch(0.15 0.03 264.665);
+  --color-accent-surface: oklch(0.24 0.03 236.62);
+  --color-accent-border: oklch(0.34 0.04 230.902);
+  --color-ring: oklch(0.68 0.15 241.966);
+
+  --color-primary: oklch(0.72 0.13 242);
+  --color-primary-hover: oklch(0.79 0.12 243);
+  --color-primary-fg: oklch(0.15 0.03 264.665);
+
+  --color-link: oklch(0.68 0.15 241.966);
+  --color-link-hover: oklch(0.76 0.14 242.749);
+}
+
+/* Bottom sheet navigasi soal: slide-up dengan kurva khas sheet (cepat di
+   awal, melambat halus di ujung). Animasi keluar memakai transisi inline
+   ke bawah layar, jadi tidak butuh keyframe terpisah. */
+@keyframes exam-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Kartu soal dan pilihan jawaban tidak perlu bisa diseleksi/disalin — ini
+   bagian dari membatasi jalan pintas, bukan sekadar soal tampilan. */
+.exam-theme .exam-locked {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}

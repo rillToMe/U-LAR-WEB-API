@@ -1,18 +1,18 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { createStudent } from "../services/studentApi";
-import { getApiErrorMessage } from "../services/apiError";
-import { useToast } from "../components/common/toastContext";
+import { createStudent } from "../../services/studentApi";
+import { getApiErrorMessage } from "../../services/apiError";
+import { useToast } from "../../components/common/toastContext";
 import {
   VALIDATION,
   validateStudentEmail,
   validateStudentName,
   validateStudentNim,
   validateStudentPassword,
-} from "../config/validation";
-import Button from "../components/ui/Button";
-import Input from "../components/ui/Input";
+} from "../../config/validation";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 
 export default function CreateStudentPage() {
   const navigate = useNavigate();

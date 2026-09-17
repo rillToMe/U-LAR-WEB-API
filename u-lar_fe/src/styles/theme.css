@@ -48,6 +48,18 @@
   --color-success-border: oklch(0.88 0.08 155);
   --color-success-fg: oklch(0.527 0.154 150.069);
 
+  /* Hijau solid — dipakai nomor soal terjawab di navigasi ujian. Keduanya
+     selalu punya kontras teks yang cukup, terang maupun gelap. */
+  --color-success: oklch(0.527 0.154 150.069);
+  --color-success-hover: oklch(0.45 0.14 150.069);
+
+  /* Peringatan — dipakai untuk sisa waktu ujian yang menipis */
+  --color-warning: oklch(0.62 0.14 68);
+  --color-warning-hover: oklch(0.55 0.14 68);
+  --color-warning-fg: oklch(1 0 0);
+  --color-warning-surface: oklch(0.972 0.04 88);
+  --color-warning-border: oklch(0.885 0.086 82);
+
   --color-link: oklch(0.588 0.158 241.966);
   --color-link-hover: oklch(0.5 0.134 242.749);
 }
@@ -94,6 +106,15 @@
   --color-success-surface: oklch(0.24 0.04 156.743);
   --color-success-border: oklch(0.36 0.05 155);
   --color-success-fg: oklch(0.7 0.16 150.069);
+
+  --color-success: oklch(0.7 0.16 150.069);
+  --color-success-hover: oklch(0.78 0.14 150.069);
+
+  --color-warning: oklch(0.72 0.14 72);
+  --color-warning-hover: oklch(0.79 0.13 72);
+  --color-warning-fg: oklch(0.18 0.03 68);
+  --color-warning-surface: oklch(0.26 0.045 72);
+  --color-warning-border: oklch(0.4 0.07 72);
 
   --color-link: oklch(0.68 0.15 241.966);
   --color-link-hover: oklch(0.76 0.14 242.749);

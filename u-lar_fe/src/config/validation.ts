@@ -19,6 +19,44 @@ export const VALIDATION = {
       maxLength: 100,
     },
   },
+
+  /* Harus sama dengan batas di ExamBankService supaya pesan dari server
+     benar-benar jarang muncul. */
+  exam: {
+    title: {
+      maxLength: 150,
+    },
+
+    description: {
+      maxLength: 500,
+    },
+
+    passingScore: {
+      min: 0,
+      max: 100,
+      default: 70,
+    },
+
+    durationMinutes: {
+      min: 1,
+      max: 600,
+      default: 30,
+    },
+
+    question: {
+      maxLength: 1000,
+    },
+
+    answerKey: {
+      maxLength: 2000,
+    },
+
+    option: {
+      maxLength: 500,
+      minCount: 2,
+      maxCount: 10,
+    },
+  },
 } as const;
 
 export function validateStudentNim(

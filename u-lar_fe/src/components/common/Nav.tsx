@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "./theme";
+import ConfirmModal from "../ui/ConfirmModal";
 import IconButton from "../ui/IconButton";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 const navigation = [
   {
@@ -47,6 +49,27 @@ const navigation = [
       </svg>
     ),
   },
+  {
+    label: "Bank Soal",
+    to: "/admin/exams",
+    end: false,
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="size-5"
+      >
+        <path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H17a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6.5A1.5 1.5 0 0 1 5 19.5Z" />
+        <path d="M5 16.5h14" />
+        <path d="M9 7.5h6M9 11h4" />
+      </svg>
+    ),
+  },
 ];
 
 interface NavProps {
@@ -56,7 +79,31 @@ interface NavProps {
 
 export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
   const [open, setOpen] = useState(true);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const navigate = useNavigate();
+
+  /** Sama dengan breakpoint `md` Tailwind: 767px ke bawah = tampilan HP. */
+  const [mobileViewport, setMobileViewport] = useState(() =>
+    window.matchMedia("(max-width: 767px)").matches
+  );
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 767px)");
+
+    function onChange(event: MediaQueryListEvent) {
+      setMobileViewport(event.matches);
+    }
+
+    query.addEventListener("change", onChange);
+
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
+  // Laci menu di HP menutupi halaman, jadi scroll di belakangnya ikut dikunci
+  // — tapi hanya di layar HP: di desktop sidebar tetap tampil dan halaman
+  // normal-normal saja. Syarat `mobileViewport` mencegah halaman terkunci
+  // kalau layar diperbesar ke ukuran desktop saat laci masih terbuka.
+  useBodyScrollLock(mobileOpen && mobileViewport);
 
   function handleLogout() {
     localStorage.removeItem("accessToken");
@@ -72,7 +119,7 @@ export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
           type="button"
           aria-label="Tutup menu"
           onClick={onMobileClose}
-          className="fixed inset-0 z-40 bg-fg/40 md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
         />
       )}
       <aside
@@ -222,7 +269,7 @@ export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
 
         <button
           type="button"
-          onClick={handleLogout}
+          onClick={() => setLogoutOpen(true)}
           title={open ? "Keluar" : "Keluar"}
           className={`mt-3 flex h-11 w-full items-center rounded-lg text-sm font-medium text-fg-muted transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring hover:bg-danger-surface hover:text-danger ${
             open
@@ -251,6 +298,17 @@ export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
         </button>
       </div>
       </aside>
+
+      {/* Keluar itu tindakan yang mengganggu kalau tidak sengaja tersentuh,
+          jadi selalu dikonfirmasi dulu. */}
+      <ConfirmModal
+        open={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+        onConfirm={handleLogout}
+        title="Yakin keluar dari admin?"
+        confirmLabel="Iya, Keluar"
+        cancelLabel="Tetap di Sini"
+      />
     </>
   );
 }

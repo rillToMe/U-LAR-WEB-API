@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import Button from "./Button";
 import IconButton from "./IconButton";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 let modalStack: number[] = [];
 let nextModalId = 0;
@@ -13,14 +14,35 @@ interface ModalProps {
   description?: string;
   children: ReactNode;
   footer?: ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   dirty?: boolean;
+  /**
+   * Minta konfirmasi sebelum modal ditutup dari luar (klik backdrop, tombol X,
+   * atau Escape), walau tidak ada isian yang berubah. Dipakai modal yang
+   * isinya cukup berharga sehingga salah klik di luar tidak boleh langsung
+   * menutupnya.
+   */
+  confirmOnClose?: boolean;
+  /** Teks dialog konfirmasi; kosong berarti pakai teks bawaan. */
+  confirmOnCloseText?: {
+    title: string;
+    description: string;
+    confirmLabel?: string;
+  };
+  /**
+   * Tinggi dialog dibuat tetap, isinya yang menggulir di dalam. Dipakai modal
+   * yang isinya berganti-ganti antar tahap supaya ukuran kotaknya tidak
+   * berubah-ubah.
+   */
+  fixedHeight?: boolean;
 }
 
 const sizeClasses = {
   sm: "max-w-md",
   md: "max-w-lg",
   lg: "max-w-2xl",
+  /** Untuk modal yang isinya dibaca panjang, mis. lembar jawaban uraian. */
+  xl: "max-w-3xl",
 };
 
 export default function Modal({
@@ -32,9 +54,22 @@ export default function Modal({
   footer,
   size = "md",
   dirty = false,
+  fixedHeight = false,
+  confirmOnClose = false,
+  confirmOnCloseText,
 }: ModalProps) {
   const [confirmClose, setConfirmClose] = useState(false);
   const instanceId = useRef(0);
+
+  /** `dirty` maupun `confirmOnClose` sama-sama butuh konfirmasi penutupan. */
+  const needsCloseConfirm = confirmOnClose || dirty;
+
+  /** Dialog konfirmasi singkat tidak punya isi — jangan sisakan area kosong. */
+  const hasContent = Boolean(children);
+
+  // Halaman di belakang modal tidak boleh ikut ter-scroll selama modal
+  // terbuka — termasuk saat modal ini menumpuk di atas modal lain.
+  useBodyScrollLock(open);
 
   useEffect(() => {
     if (!open) {
@@ -72,7 +107,7 @@ export default function Modal({
         return;
       }
 
-      if (dirty) {
+      if (needsCloseConfirm) {
         setConfirmClose(true);
         return;
       }
@@ -82,7 +117,7 @@ export default function Modal({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, confirmClose, dirty, onClose]);
+  }, [open, confirmClose, needsCloseConfirm, onClose]);
 
   function closeModal() {
     setConfirmClose(false);
@@ -90,7 +125,7 @@ export default function Modal({
   }
 
   function requestClose() {
-    if (dirty) {
+    if (needsCloseConfirm) {
       setConfirmClose(true);
       return;
     }
@@ -108,7 +143,7 @@ export default function Modal({
         type="button"
         aria-label="Tutup modal"
         onClick={requestClose}
-        className="absolute inset-0 bg-fg/40"
+        className="absolute inset-0 bg-black/40"
       />
 
       {/* Modal */}
@@ -116,10 +151,18 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative w-full ${sizeClasses[size]} rounded-xl bg-surface shadow-xl max-md:flex max-md:max-h-dvh max-md:flex-col max-md:rounded-b-none`}
+        className={`relative w-full ${sizeClasses[size]} rounded-xl bg-surface shadow-xl ${
+          fixedHeight
+            ? "flex h-[80vh] flex-col max-md:h-[85dvh] max-md:rounded-b-none"
+            : "max-md:flex max-md:max-h-dvh max-md:flex-col max-md:rounded-b-none"
+        }`}
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b px-6 py-4 max-md:px-4">
+        <div
+          className={`flex shrink-0 items-start justify-between px-6 py-4 max-md:px-4 ${
+            hasContent ? "border-b" : ""
+          }`}
+        >
           <div className="min-w-0">
             <h2 className="text-lg font-semibold text-fg">
               {title}
@@ -152,13 +195,27 @@ export default function Modal({
         </div>
 
         {/* Content */}
-        <div className="max-h-[70vh] overflow-y-auto px-6 py-5 max-md:min-h-0 max-md:flex-1 max-md:px-4 max-md:py-4">
-          {children}
-        </div>
+        {/* Isi modal. Kalau tidak ada isinya (mis. dialog konfirmasi yang
+            cuma judul + pesan + tombol), area ini tidak dirender sama sekali
+            supaya tidak muncul pita kosong bergaris di tengah dialog.
+
+            overscroll-contain menahan sisa gulir di dalam modal supaya tidak
+            merambat ke halaman di belakangnya (khas sentuhan di HP). */}
+        {hasContent && (
+          <div
+            className={`overflow-y-auto overscroll-contain px-6 py-5 max-md:px-4 max-md:py-4 ${
+              fixedHeight
+                ? "min-h-0 flex-1"
+                : "max-h-[70vh] max-md:min-h-0 max-md:flex-1"
+            }`}
+          >
+            {children}
+          </div>
+        )}
 
         {/* Footer */}
         {footer && (
-          <div className="flex justify-end gap-3 border-t px-6 py-4 max-md:flex-col-reverse max-md:px-4 max-md:[&>button]:w-full">
+          <div className="flex shrink-0 justify-end gap-3 border-t px-6 py-4 max-md:flex-col-reverse max-md:px-4 max-md:[&>button]:w-full">
             {footer}
           </div>
         )}
@@ -175,15 +232,15 @@ export default function Modal({
             type="button"
             aria-label="Batalkan"
             onClick={() => setConfirmClose(false)}
-            className="absolute inset-0 bg-fg/40"
+            className="absolute inset-0 bg-black/40"
           />
           <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-sm overflow-y-auto rounded-xl bg-surface p-6 shadow-xl">
             <h3 className="text-base font-semibold text-fg">
-              Keluar dari modal?
+              {confirmOnCloseText?.title ?? "Keluar dari modal?"}
             </h3>
             <p className="mt-2 text-sm text-fg-subtle">
-              Masih ada isian yang belum disimpan. Jika keluar,
-              data yang sudah diketik akan hilang.
+              {confirmOnCloseText?.description ??
+                "Masih ada isian yang belum disimpan. Jika keluar, data yang sudah diketik akan hilang."}
             </p>
             <div className="mt-6 flex justify-end gap-3 max-md:flex-col-reverse max-md:[&>button]:w-full">
               <Button
@@ -198,7 +255,7 @@ export default function Modal({
                 variant="danger"
                 onClick={closeModal}
               >
-                Keluar
+                {confirmOnCloseText?.confirmLabel ?? "Keluar"}
               </Button>
             </div>
           </div>

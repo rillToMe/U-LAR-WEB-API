@@ -2,9 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/Logo.webp" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f9fafb" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101216" />
     <title>u-lar_fe</title>
+    <script>
+      // Pasang mode gelap sebelum paint pertama supaya tidak ada kilatan
+      // putih di HP. Harus sinkron dengan theme.tsx (kunci "u-lar-theme").
+      (function () {
+        var stored = localStorage.getItem("u-lar-theme");
+        var dark =
+          stored === "dark" ||
+          (stored !== "light" &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+        var root = document.documentElement;
+        root.classList.toggle("dark", dark);
+        root.style.colorScheme = dark ? "dark" : "light";
+        root.style.backgroundColor = dark ? "#101216" : "#f9fafb";
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

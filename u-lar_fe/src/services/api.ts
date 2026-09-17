@@ -1,9 +1,12 @@
 import axios from "axios";
 
+/** Satu sumber alamat API — dipakai web admin dan web ujian. */
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ??
+  `http://${window.location.hostname}:5116/api/v1`;
+
 export const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_BASE_URL ??
-    `http://${window.location.hostname}:5116/api/v1`,
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

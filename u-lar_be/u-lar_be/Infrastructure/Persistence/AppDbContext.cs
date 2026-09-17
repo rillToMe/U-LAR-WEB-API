@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using u_lar_be.Domain.Common;
+using u_lar_be.Domain.Exams;
 using u_lar_be.Domain.Users;
 
 namespace u_lar_be.Infrastructure.Persistence;
@@ -18,6 +19,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<StudentRefreshToken> StudentRefreshTokens =>
         Set<StudentRefreshToken>();
+
+    public DbSet<Exam> Exams => Set<Exam>();
+
+    public DbSet<ExamQuestion> ExamQuestions => Set<ExamQuestion>();
+
+    public DbSet<ExamOption> ExamOptions => Set<ExamOption>();
+
+    public DbSet<ExamResult> ExamResults => Set<ExamResult>();
+
+    public DbSet<ExamAnswer> ExamAnswers => Set<ExamAnswer>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

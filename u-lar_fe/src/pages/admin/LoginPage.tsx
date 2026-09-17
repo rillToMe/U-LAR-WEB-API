@@ -1,11 +1,11 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../services/authApi";
-import { getApiErrorMessage } from "../services/apiError";
-import { useToast } from "../components/common/toastContext";
-import Button from "../components/ui/Button";
-import Input from "../components/ui/Input";
+import { login } from "../../services/authApi";
+import { getApiErrorMessage } from "../../services/apiError";
+import { useToast } from "../../components/common/toastContext";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 
 export default function LoginPage() {
   const navigate = useNavigate();

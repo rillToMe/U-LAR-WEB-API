@@ -25,6 +25,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       "dark",
       theme === "dark"
     );
+
+    // Sinkron dengan script anti-kilatan di index.html: warna dasar & UI
+    // browser (status bar) ikut berubah saat tema diganti, bukan hanya saat
+    // halaman pertama dibuka.
+    document.documentElement.style.colorScheme = theme;
+    document.documentElement.style.backgroundColor =
+      theme === "dark" ? "#101216" : "#f9fafb";
+
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 

@@ -6,11 +6,25 @@ import {
   Routes,
 } from "react-router-dom";
 
-const LoginPage = lazy(() => import("../pages/LoginPage"));
-const DashboardPage = lazy(() => import("../pages/DashboardPage"));
+const LoginPage = lazy(() => import("../pages/admin/LoginPage"));
+const DashboardPage = lazy(() => import("../pages/admin/DashboardPage"));
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
 const ProtectedRoute = lazy(() => import("./ProtectedRoute"));
-const StudentsPage = lazy(() => import("../pages/StudentsPage"));
+const StudentsPage = lazy(() => import("../pages/admin/StudentsPage"));
+const ExamsPage = lazy(() => import("../pages/admin/ExamsPage"));
+const ExamDetailPage = lazy(() => import("../pages/admin/ExamDetailPage"));
+
+// Web ujian — dipakai mahasiswa dari HP, terpisah dari web admin.
+const ExamLayout = lazy(() => import("../layouts/ExamLayout"));
+const ExamProtectedRoute = lazy(() => import("./ExamProtectedRoute"));
+const ExamLoginPage = lazy(() => import("../pages/exam/ExamLoginPage"));
+const ExamListPage = lazy(() => import("../pages/exam/ExamListPage"));
+const ExamSessionPage = lazy(
+  () => import("../pages/exam/ExamSessionPage")
+);
+const ExamResultPage = lazy(
+  () => import("../pages/exam/ExamResultPage")
+);
 
 function RouteFallback() {
   return (
@@ -37,7 +51,30 @@ export default function AppRoutes() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<DashboardPage />} />
               <Route path="students" element={<StudentsPage />} />
+              <Route path="exams" element={<ExamsPage />} />
+              <Route path="exams/:examId" element={<ExamDetailPage />} />
             </Route>
+          </Route>
+
+          {/* Web ujian: halaman sesi sengaja di luar ExamLayout karena punya
+              header dan bilah navigasi sendiri yang menempel di layar. */}
+          <Route path="/ujian" element={<ExamLayout />}>
+            <Route path="login" element={<ExamLoginPage />} />
+
+            <Route element={<ExamProtectedRoute />}>
+              <Route index element={<ExamListPage />} />
+              <Route
+                path="hasil/:resultId"
+                element={<ExamResultPage />}
+              />
+            </Route>
+          </Route>
+
+          <Route element={<ExamProtectedRoute />}>
+            <Route
+              path="/ujian/sesi/:resultId"
+              element={<ExamSessionPage />}
+            />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />

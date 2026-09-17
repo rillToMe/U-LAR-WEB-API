@@ -8,18 +8,18 @@ import {
 import {
   getStudents,
   updateStudentStatus,
-} from "../services/studentApi";
-import { getApiErrorMessage } from "../services/apiError";
-import { useDebouncedValue } from "../hooks/useDebouncedValue";
-import { useToast } from "../components/common/toastContext";
+} from "../../services/studentApi";
+import { getApiErrorMessage } from "../../services/apiError";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue";
+import { useToast } from "../../components/common/toastContext";
 import type {
   PagedResult,
   StudentListItem,
   StudentListParams,
-} from "../types/student";
-import Button from "../components/ui/Button";
-import IconButton from "../components/ui/IconButton";
-import Skeleton from "../components/ui/Skeleton";
+} from "../../types/student";
+import Button from "../../components/ui/Button";
+import IconButton from "../../components/ui/IconButton";
+import Skeleton from "../../components/ui/Skeleton";
 
 /** Satu halaman menampung 30 mahasiswa (sama dengan default backend). */
 const PAGE_SIZE = 30;
@@ -33,10 +33,10 @@ const statusFilters = [
 type StatusFilter = (typeof statusFilters)[number]["value"];
 
 const CreateStudentModal = lazy(
-  () => import("../components/students/CreateStudentModal")
+  () => import("../../components/students/CreateStudentModal")
 );
 const StudentDetailModal = lazy(
-  () => import("../components/students/StudentDetailModal")
+  () => import("../../components/students/StudentDetailModal")
 );
 
 function StudentsSkeleton() {

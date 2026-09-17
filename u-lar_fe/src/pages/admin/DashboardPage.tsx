@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { getAdminDashboard } from "../services/dasboardApi";
-import { getApiErrorMessage } from "../services/apiError";
-import { useToast } from "../components/common/toastContext";
-import Skeleton from "../components/ui/Skeleton";
-import type { AdminDashboard } from "../types/dashboard";
+import { getAdminDashboard } from "../../services/dasboardApi";
+import { getApiErrorMessage } from "../../services/apiError";
+import { useToast } from "../../components/common/toastContext";
+import Skeleton from "../../components/ui/Skeleton";
+import type { AdminDashboard } from "../../types/dashboard";
 
 const fullDateFormatter = new Intl.DateTimeFormat("id-ID", {
   weekday: "long",
