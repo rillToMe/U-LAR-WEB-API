@@ -49,7 +49,6 @@ public static class ServiceCollectionExtensions
 
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
-        services.AddHealthChecks();
 
         return services;
     }
@@ -198,6 +197,9 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<AppDbContext>(options => options
             .UseNpgsql(connectionString)
             .UseSnakeCaseNamingConvention());
+
+        services.AddHealthChecks()
+            .AddCheck<DatabaseHealthCheck>("postgres");
 
         return services;
     }
