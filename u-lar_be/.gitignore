@@ -19,3 +19,4 @@ appsettings.Development.json
 u-lar_be/wwwroot/uploads/*.png
 u-lar_be/wwwroot/uploads/*.jpg
 u-lar_be/wwwroot/uploads/*.webp
+build/
