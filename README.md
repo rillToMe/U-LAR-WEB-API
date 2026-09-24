@@ -199,6 +199,20 @@ From the `u-lar_fe` directory:
 
 ```bash
 # Start the development server
+bun run dev
+
+# Build the application
+bun run build
+
+# Run ESLint
+bun run lint
+
+# Preview a production build
+bun run preview
+```
+
+```bash
+# Start the development server
 npm run dev
 
 # Build the application
