@@ -49,6 +49,7 @@ public static class ServiceCollectionExtensions
 
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddHealthChecks();
 
         return services;
     }
@@ -135,20 +136,11 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Skalar env (.env) dibaca langsung, bukan via binder: kalau section
-        // punya children array dari JSON (Development.json), binder
-        // mengutamakan children dan nilai env "*" ikut terkubur. Env menang.
-        var raw = configuration["Cors:AllowedOrigins"];
-        string[] origins = string.IsNullOrWhiteSpace(raw)
-            ? configuration
-                  .GetSection(CorsOptions.SectionName)
-                  .Get<CorsOptions>()
-                  ?.AllowedOrigins
-              ?? throw new InvalidOperationException(
-                  "Konfigurasi CORS belum tersedia. Isi via .env (lihat .env.example).")
-            // Env var hanya bisa satu string: "*" atau daftar dipisah ";".
-            : raw.Split(';', StringSplitOptions.RemoveEmptyEntries
-                | StringSplitOptions.TrimEntries);
+        var cors = configuration
+                       .GetSection(CorsOptions.SectionName)
+                       .Get<CorsOptions>()
+                   ?? throw new InvalidOperationException(
+                       "Konfigurasi CORS belum tersedia. Isi section Cors di appsettings.json.");
 
         services.AddCors(options =>
         {
@@ -158,10 +150,10 @@ public static class ServiceCollectionExtensions
 
                 // "*" = buka semua origin (AllowAnyOrigin).
                 // WithOrigins tidak menerima wildcard, jadi bercabang di sini.
-                if (origins.Contains("*"))
+                if (cors.AllowedOrigins.Contains("*"))
                     policy.AllowAnyOrigin();
                 else
-                    policy.WithOrigins(origins);
+                    policy.WithOrigins(cors.AllowedOrigins);
             });
         });
 

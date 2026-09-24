@@ -71,4 +71,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Health check bawaan (tanpa package): GET /health -> 200 "Healthy".
+// Publik tanpa auth, untuk VPS / load balancer / uptime monitor.
+app.MapHealthChecks("/health");
+
 app.Run();
