@@ -73,7 +73,7 @@ export default function LoginPage() {
 
         <div className="relative max-w-md py-16">
           <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200/80">
-            Laboratory administration ADMIN TEST 5 66666
+            Laboratory administration ADMIN MAS AFA SUKA DI BAYAR
           </p>
           <h2 className="text-4xl font-semibold leading-[1.08] tracking-tight xl:text-5xl">
             Kelola laboratorium dengan lebih terarah.
