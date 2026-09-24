@@ -1,3 +1,4 @@
+using dotenv.net;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using u_lar_be.Configuration;
@@ -7,6 +8,11 @@ using u_lar_be.Configuration.Options;
 using u_lar_be.Domain.Users;
 using u_lar_be.Infrastructure.Persistence;
 using u_lar_be.Infrastructure.Persistence.Seed;
+
+// .env dimuat dulu supaya IConfiguration melihat secrets sebagai env vars.
+// overwriteExistingVars: false — environment asli (CI/production) tetap menang.
+// probeForEnv: true — .env ditemukan walau CWD bukan folder project (dotnet ef, IDE).
+DotEnv.Load(new DotEnvOptions(overwriteExistingVars: false, probeForEnv: true));
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,20 +49,20 @@ using (var scope = app.Services.CreateScope())
         .Value;
 
     await DbSeeder.SeedAsync(dbContext, passwordHasher, seedOptions);
+    await MaterialSeeder.SeedAsync(dbContext);
 }
 
-
-// GlobalExceptionHandler mengubah semua unhandled exception jadi ProblemDetails.
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
-    // Satu dokumen OpenAPI per versi API, ditemukan otomatis dari ApiExplorer.
     app.MapOpenApi().WithDocumentPerVersion();
     app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseCors("UlarAdminWeb");
 

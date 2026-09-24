@@ -10,5 +10,12 @@ CLAUDE.md
 .codegraph
 appsettings.json
 appsettings.*.json
-!appsettings.Example.json
+!appsettings.example.json
 appsettings.Development.json
+# Secrets lokal — template commit (.env.example), isi jangan
+.env
+!.env.example
+# Gambar diagram materi yang diunggah admin (folder wwwroot tetap disimpan)
+u-lar_be/wwwroot/uploads/*.png
+u-lar_be/wwwroot/uploads/*.jpg
+u-lar_be/wwwroot/uploads/*.webp

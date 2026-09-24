@@ -1,7 +1,10 @@
 using Asp.Versioning;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 using u_lar_be.Common.Exceptions;
 using u_lar_be.Configuration.Options;
@@ -11,20 +14,18 @@ using u_lar_be.Features.Admin;
 using u_lar_be.Features.Admin.Students;
 using u_lar_be.Features.Admin.Exams;
 using u_lar_be.Features.Admin.Students.DTOs;
+using u_lar_be.Features.Admin.Materials;
+using u_lar_be.Features.Admin.Media;
 using u_lar_be.Features.Exams;
+using u_lar_be.Features.Materials;
 using u_lar_be.Domain.Common;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 namespace u_lar_be.Configuration;
 
-/// <summary>
-/// Titik pusat registrasi Dependency Injection. Program.cs hanya memanggil
-/// extension di sini supaya pipeline startup tetap ramping dan mudah dibaca.
-/// </summary>
 public static class ServiceCollectionExtensions
 {
-    /// <summary>Controller, OpenAPI, dan penanganan error global.</summary>
     public static IServiceCollection AddApiServices(
         this IServiceCollection services)
     {
@@ -43,6 +44,8 @@ public static class ServiceCollectionExtensions
                 options.SubstituteApiVersionInUrl = true;
             })
             .AddOpenApi();
+
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -77,10 +80,6 @@ public static class ServiceCollectionExtensions
                             context.Fail("Principal tidak tersedia.");
                             return;
                         }
-
-                        // Token mahasiswa berlaku lama (persistent login di
-                        // game). Pastikan akun masih aktif setiap request —
-                        // kalau admin menonaktifkan, request langsung ditolak.
                         var role = principal.FindFirstValue(ClaimTypes.Role);
                         if (role == UserRoles.Student)
                         {
@@ -136,31 +135,39 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var cors = configuration
-                       .GetSection(CorsOptions.SectionName)
-                       .Get<CorsOptions>()
-                   ?? throw new InvalidOperationException(
-                       "Konfigurasi CORS belum tersedia.");
+        // Skalar env (.env) dibaca langsung, bukan via binder: kalau section
+        // punya children array dari JSON (Development.json), binder
+        // mengutamakan children dan nilai env "*" ikut terkubur. Env menang.
+        var raw = configuration["Cors:AllowedOrigins"];
+        string[] origins = string.IsNullOrWhiteSpace(raw)
+            ? configuration
+                  .GetSection(CorsOptions.SectionName)
+                  .Get<CorsOptions>()
+                  ?.AllowedOrigins
+              ?? throw new InvalidOperationException(
+                  "Konfigurasi CORS belum tersedia. Isi via .env (lihat .env.example).")
+            // Env var hanya bisa satu string: "*" atau daftar dipisah ";".
+            : raw.Split(';', StringSplitOptions.RemoveEmptyEntries
+                | StringSplitOptions.TrimEntries);
 
         services.AddCors(options =>
         {
             options.AddPolicy("UlarAdminWeb", policy =>
             {
-                policy
-                    .WithOrigins(cors.AllowedOrigins)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
+                policy.AllowAnyHeader().AllowAnyMethod();
+
+                // "*" = buka semua origin (AllowAnyOrigin).
+                // WithOrigins tidak menerima wildcard, jadi bercabang di sini.
+                if (origins.Contains("*"))
+                    policy.AllowAnyOrigin();
+                else
+                    policy.WithOrigins(origins);
             });
         });
 
         return services;
     }
     
-    /// <summary>
-    /// Binding seluruh konfigurasi appsettings ke strongly-typed options.
-    /// ValidateOnStart membuat konfigurasi salah/kosong gagal saat startup,
-    /// bukan saat request pertama masuk.
-    /// </summary>
     public static IServiceCollection AddOptionsConfiguration(
         this IServiceCollection services)
     {
@@ -179,6 +186,11 @@ public static class ServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        services.AddOptions<MediaStorageOptions>()
+            .BindConfiguration(MediaStorageOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 
@@ -189,7 +201,7 @@ public static class ServiceCollectionExtensions
     {
         var connectionString = configuration.GetConnectionString("Postgres")
                                ?? throw new InvalidOperationException(
-                                   "ConnectionStrings:Postgres belum diisi di appsettings.");
+                                   "ConnectionStrings:Postgres belum diisi. Isi via .env (lihat .env.example).");
 
         services.AddDbContext<AppDbContext>(options => options
             .UseNpgsql(connectionString)
@@ -213,6 +225,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<IExamService, ExamService>();
         services.AddScoped<IExamBankService, ExamBankService>();
+        services.AddScoped<IMaterialService, MaterialService>();
+        services.AddScoped<IMaterialBankService, MaterialBankService>();
+        services.AddScoped<IMediaService, MediaService>();
         
         return services;
     }

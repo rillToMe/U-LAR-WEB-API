@@ -9,13 +9,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- Menarik Asp.Versioning.Mvc + ApiExplorer secara transitif. Dipakai agar
-             OpenAPI menulis path konkret (/api/v1/...) dan satu dokumen per versi. -->
+        <PackageReference Include="dotenv.net" Version="4.2.0" />
+        <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
         <PackageReference Include="Asp.Versioning.OpenApi" Version="10.2.1" />
         <PackageReference Include="EFCore.NamingConventions" Version="10.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
-        <!-- Pin transitif: Microsoft.OpenApi 2.0.0 punya advisory GHSA-v5pm-xwqc-g5wc. -->
         <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
             <PrivateAssets>all</PrivateAssets>
