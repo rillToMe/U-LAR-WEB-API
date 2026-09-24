@@ -1,4 +1,6 @@
 using dotenv.net;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 using u_lar_be.Configuration;
@@ -71,8 +73,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// Health check bawaan (tanpa package): GET /health -> 200 "Healthy".
+// Health check bawaan (tanpa package): GET /health -> 200/503.
 // Publik tanpa auth, untuk VPS / load balancer / uptime monitor.
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = (context, report) => context.Response.WriteAsync(
+        report.Status == HealthStatus.Healthy
+            ? "Database is Healthy"
+            : "Database is Unhealthy"),
+});
 
 app.Run();
