@@ -11,3 +11,4 @@ AGENT.md
 .codegraphbuild/
 
 build/
+.env
