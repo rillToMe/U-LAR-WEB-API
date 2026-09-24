@@ -47,7 +47,7 @@ U-LAR-WEB-API/
 - PostgreSQL through Npgsql
 - JWT Bearer authentication
 - API versioning
-- OpenAPI
+- Scalar
 - Scalar API reference
 - CORS
 
@@ -75,7 +75,7 @@ Current feature areas include:
 - JWT-protected API endpoints
 - Student activation and deactivation
 - Student password reset
-- OpenAPI documentation during development
+- Scalar documentation during development
 
 The frontend contains service modules for:
 
@@ -231,12 +231,12 @@ The equivalent commands can be run with `bun` when using Bun as the package mana
 
 The API uses the `/api/v1` base path.
 
-### OpenAPI
+### Scalar
 
-During development, the OpenAPI document is available at:
+During development, the Scalar document is available at:
 
 ```text
-GET /openapi/v1.json
+GET /scalar/v1.json
 ```
 
 Scalar API documentation is also enabled in the development environment.
@@ -369,7 +369,7 @@ cd u-lar_fe
 npm run dev
 ```
 
-Open the frontend URL shown by Vite and verify that its `VITE_API_BASE_URL` points to the running backend.
+Scalar the frontend URL shown by Vite and verify that its `VITE_API_BASE_URL` points to the running backend.
 
 ## Testing API Requests
 
@@ -381,7 +381,7 @@ u-lar_be/u-lar_be/u-lar_be.http
 
 It contains example requests for:
 
-- OpenAPI retrieval
+- Scalar retrieval
 - Administrator login
 - Student login
 - Listing students
