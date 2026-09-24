@@ -3,13 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/Logo.webp" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f9fafb" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101216" />
     <title>u-lar_fe</title>
     <script>
       (function () {
+        // Web ujian (/ujian) selalu light mode.
+        if (window.location.pathname.indexOf("/ujian") === 0) {
+          var root = document.documentElement;
+          root.classList.remove("dark");
+          root.style.colorScheme = "light";
+          root.style.backgroundColor = "#f9fafb";
+          return;
+        }
         var stored = localStorage.getItem("u-lar-theme");
         var dark =
           stored === "dark" ||

@@ -57,6 +57,58 @@ export const VALIDATION = {
       maxCount: 10,
     },
   },
+
+  /* Harus sama dengan batas di MaterialBankService. */
+  material: {
+    /* Slug diisi otomatis dari judul (di server). Batasnya di sini hanya
+       dipakai untuk menampilkan pratinjau alamat di form. */
+    slug: {
+      maxLength: 80,
+      /* Sama dengan FallbackSlug di MaterialBankService: judul yang seluruhnya
+         simbol tetap butuh alamat halaman. */
+      fallback: "materi",
+    },
+
+    moduleCode: {
+      maxLength: 40,
+    },
+
+    title: {
+      maxLength: 150,
+    },
+
+    subtitle: {
+      maxLength: 300,
+    },
+
+    readMinutes: {
+      min: 1,
+      max: 120,
+      default: 5,
+    },
+
+    maxRowsPerSection: 20,
+
+    keyPoint: {
+      iconMaxLength: 40,
+      textMaxLength: 300,
+    },
+
+    callout: {
+      labelMaxLength: 60,
+      bodyMaxLength: 500,
+    },
+
+    diagram: {
+      imageUrlMaxLength: 300,
+      captionMaxLength: 200,
+    },
+
+    accordion: {
+      titleMaxLength: 150,
+      bodyMaxLength: 2000,
+    },
+  },
 } as const;
 
 export function validateStudentNim(

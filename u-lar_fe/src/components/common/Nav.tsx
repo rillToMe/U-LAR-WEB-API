@@ -70,6 +70,27 @@ const navigation = [
       </svg>
     ),
   },
+  {
+    label: "Bank Materi",
+    to: "/admin/materials",
+    end: false,
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="size-5"
+      >
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H18a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 18.5Z" />
+        <path d="M8 3v18" />
+        <path d="M12 8h5M12 12h5" />
+      </svg>
+    ),
+  },
 ];
 
 interface NavProps {

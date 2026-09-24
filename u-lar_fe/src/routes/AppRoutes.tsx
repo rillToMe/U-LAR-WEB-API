@@ -5,6 +5,7 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
+import Skeleton from "../components/ui/Skeleton";
 
 const LoginPage = lazy(() => import("../pages/admin/LoginPage"));
 const DashboardPage = lazy(() => import("../pages/admin/DashboardPage"));
@@ -13,6 +14,10 @@ const ProtectedRoute = lazy(() => import("./ProtectedRoute"));
 const StudentsPage = lazy(() => import("../pages/admin/StudentsPage"));
 const ExamsPage = lazy(() => import("../pages/admin/ExamsPage"));
 const ExamDetailPage = lazy(() => import("../pages/admin/ExamDetailPage"));
+const MaterialEditorPage = lazy(
+  () => import("../pages/admin/MaterialEditorPage")
+);
+const MaterialsPage = lazy(() => import("../pages/admin/MaterialsPage"));
 
 // Web ujian — dipakai mahasiswa dari HP, terpisah dari web admin.
 const ExamLayout = lazy(() => import("../layouts/ExamLayout"));
@@ -29,13 +34,15 @@ const ExamResultPage = lazy(
 function RouteFallback() {
   return (
     <div
-      className="flex min-h-dvh items-center justify-center bg-surface-muted"
+      className="mx-auto min-h-dvh w-full max-w-3xl space-y-4 bg-surface-muted p-6"
       role="status"
+      aria-label="Memuat halaman"
     >
-      <div className="flex items-center gap-3 text-sm text-fg-subtle">
-        <span className="size-5 animate-spin rounded-full border-2 border-border-strong border-t-accent motion-reduce:animate-none" />
-        Memuat halaman...
-      </div>
+      <Skeleton className="h-8 w-56" />
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-40 w-full rounded-2xl" />
+      <Skeleton className="h-40 w-full rounded-2xl" />
+      <span className="sr-only">Memuat halaman...</span>
     </div>
   );
 }
@@ -53,6 +60,12 @@ export default function AppRoutes() {
               <Route path="students" element={<StudentsPage />} />
               <Route path="exams" element={<ExamsPage />} />
               <Route path="exams/:examId" element={<ExamDetailPage />} />
+              <Route path="materials" element={<MaterialsPage />} />
+              <Route path="materials/new" element={<MaterialEditorPage />} />
+              <Route
+                path="materials/:materialId"
+                element={<MaterialEditorPage />}
+              />
             </Route>
           </Route>
 

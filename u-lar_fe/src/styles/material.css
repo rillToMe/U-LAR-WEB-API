@@ -1,0 +1,58 @@
+﻿/* Aturan tingkat dokumen untuk halaman materi (`materi.html`) yang dibuka
+   WebView game.
+
+   Komponennya sendiri memakai Tailwind dan token desain yang sama dengan web
+   ujian (lihat `theme.css` dan `exam.css`), jadi berkas ini hanya mengurus hal
+   yang tidak bisa diatur dari dalam komponen: dasar dokumen, perilaku sentuh
+   WebView, dan ruang aman layar berponi.
+
+   Latar dokumen sengaja tanpa gradien dan tanpa grid HUD - ini halaman baca,
+   bukan HUD game. */
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+html {
+  /* Ikut larangan zoom di viewport materi.html. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
+  /* Sama dengan script anti-kilatan di materi.html dan index.html supaya
+     tidak ada kedipan warna sebelum React memasang halaman. */
+  background-color: #f9fafb;
+}
+
+html.dark {
+  background-color: #101216;
+}
+
+body {
+  /* WebView game: tidak ada gulir kenyal keluar dokumen, tidak ada menu
+     tekan-lama, dan tidak ada jeda 300 ms saat tombol ditekan. Teks tetap
+     boleh diseleksi supaya pratinjau dari web admin terasa normal. */
+  overscroll-behavior-y: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Gambar dan diagram tidak pernah melebihi lebar layar. */
+img,
+svg {
+  max-width: 100%;
+}
+
+/* Ruang aman layar berponi; dipakai halaman lewat kelas `mr-safe-top` dan
+   `mr-safe-bottom`. */
+.mr-safe-top {
+  padding-top: calc(1.5rem + env(safe-area-inset-top));
+}
+
+.mr-safe-bottom {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+}

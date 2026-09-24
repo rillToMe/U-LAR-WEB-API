@@ -59,7 +59,7 @@ export default function ExamLoginPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100dvh-3rem)] flex-col justify-center">
+    <div className="mx-auto flex min-h-[calc(100dvh-3rem)] w-full max-w-md flex-col justify-center">
       <div className="text-center">
         <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-fg">
           <svg

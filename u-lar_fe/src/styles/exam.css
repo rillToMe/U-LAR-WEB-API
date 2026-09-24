@@ -10,6 +10,10 @@
    dipakai lebih dominan di sini (tombol utama, badge, fokus). */
 
 .exam-theme {
+  /* WebView/simulator tidak boleh mengecilkan teks otomatis. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
   --color-accent: oklch(0.588 0.158 241.966);
   --color-accent-hover: oklch(0.5 0.134 242.749);
   --color-accent-fg: oklch(1 0 0);
@@ -25,21 +29,7 @@
   --color-link-hover: oklch(0.5 0.134 242.749);
 }
 
-.dark .exam-theme {
-  --color-accent: oklch(0.68 0.15 241.966);
-  --color-accent-hover: oklch(0.76 0.14 242.749);
-  --color-accent-fg: oklch(0.15 0.03 264.665);
-  --color-accent-surface: oklch(0.24 0.03 236.62);
-  --color-accent-border: oklch(0.34 0.04 230.902);
-  --color-ring: oklch(0.68 0.15 241.966);
-
-  --color-primary: oklch(0.72 0.13 242);
-  --color-primary-hover: oklch(0.79 0.12 243);
-  --color-primary-fg: oklch(0.15 0.03 264.665);
-
-  --color-link: oklch(0.68 0.15 241.966);
-  --color-link-hover: oklch(0.76 0.14 242.749);
-}
+/* Tema web ujian selalu light mode — tidak ada varian dark. */
 
 /* Bottom sheet navigasi soal: slide-up dengan kurva khas sheet (cepat di
    awal, melambat halus di ujung). Animasi keluar memakai transisi inline

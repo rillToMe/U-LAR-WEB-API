@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { ThemeProvider } from "../../components/common/theme";
 import { useToast } from "../../components/common/toastContext";
 import ExamHeader from "../../components/exam/ExamHeader";
 import QuestionCard from "../../components/exam/QuestionCard";
@@ -195,6 +194,14 @@ export default function ExamSessionPage() {
       navigate(`/ujian/hasil/${resultId}`, { replace: true });
     }
   }, [navigate, resultId]);
+
+  // Web ujian selalu light mode: bersihkan sisa tema gelap dari web admin.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
+    root.style.backgroundColor = "#f9fafb";
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -508,8 +515,7 @@ export default function ExamSessionPage() {
   }
 
   return (
-    <ThemeProvider>
-      <div className="exam-theme flex min-h-dvh flex-col bg-surface-muted">
+    <div className="exam-theme flex min-h-dvh flex-col bg-surface-muted">
         {loading && (
           <div className="mx-auto w-full max-w-md px-4 py-6">
             <SessionSkeleton />
@@ -846,7 +852,6 @@ export default function ExamSessionPage() {
             />
           </>
         )}
-      </div>
-    </ThemeProvider>
+    </div>
   );
 }

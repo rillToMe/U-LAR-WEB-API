@@ -1,8 +1,5 @@
 import { AxiosError } from "axios";
 
-/**
- * Helper untuk mengambil pesan error API yang aman dan ramah bagi pengguna awam.
- */
 interface ProblemDetails {
   title?: string;
   detail?: string;
@@ -26,12 +23,10 @@ export function getApiErrorMessage(
     return fallback;
   }
 
-  // 1. Masalah Koneksi Internet / Server Down
   if (error.code === "ERR_NETWORK") {
     return "Gagal terhubung ke sistem. Periksa koneksi internet Anda atau coba muat ulang halaman.";
   }
 
-  // 2. Masalah Timeout (Koneksi Lemot)
   if (error.code === "ECONNABORTED") {
     return "Waktu koneksi habis sebelum server merespons. Silakan coba beberapa saat lagi.";
   }
@@ -39,7 +34,6 @@ export function getApiErrorMessage(
   const status = error.response?.status;
   const problem = error.response?.data as ProblemDetails | undefined;
 
-  // 3. Validasi Field dari Backend (Model Validation)
   const fieldErrors = problem?.errors
     ? Object.values(problem.errors).flat().filter(Boolean)
     : [];
@@ -48,19 +42,16 @@ export function getApiErrorMessage(
     return fieldErrors.join(" ");
   }
 
-  // 4. Pesan Spesifik dari Backend (Problem Details)
   const serverMessage = problem?.detail?.trim() || problem?.title?.trim();
 
   if (serverMessage) {
     return serverMessage;
   }
 
-  // 5. Pesan Berdasarkan HTTP Status Code
   if (status && STATUS_MESSAGE[status]) {
     return STATUS_MESSAGE[status];
   }
-
-  // 6. Fallback jika ada status code tak terduga
+  
   if (status) {
     return `${fallback} (Kode status: ${status})`;
   }
