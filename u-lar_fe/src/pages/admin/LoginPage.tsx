@@ -75,7 +75,7 @@ export default function LoginPage() {
         <div className="relative">
           <div className="h-24 w-52 overflow-hidden">
             <img
-              src="/Logo2.png"
+              src="/Logo.webp"
               alt="U-LAR"
               className="h-40 w-52 -translate-y-8 object-contain"
             />

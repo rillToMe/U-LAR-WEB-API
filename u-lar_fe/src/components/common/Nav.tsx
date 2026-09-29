@@ -213,7 +213,7 @@ export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
           <div className={`flex min-w-0 items-center gap-3 ${open ? "" : "md:hidden"}`}>
             <div className="size-10 shrink-0 overflow-hidden rounded-lg">
               <img
-                src="/Logo2.png"
+                src="/Logo.webp"
                 alt="U-LAR"
                 className="h-[77px] w-10 max-w-none -translate-y-[17px] object-contain"
               />
