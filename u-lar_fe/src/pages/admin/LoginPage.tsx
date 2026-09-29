@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authApi";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { useToast } from "../../components/common/toastContext";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -14,6 +14,17 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Redirect dari interceptor 401 menyimpan pesan di sessionStorage karena
+  // halaman ikut reload penuh — tampilkan sekali lalu bersihkan.
+  useEffect(() => {
+    const notice = sessionStorage.getItem("authNotice");
+
+    if (notice) {
+      sessionStorage.removeItem("authNotice");
+      toast.info(notice);
+    }
+  }, [toast]);
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
@@ -42,9 +53,9 @@ export default function LoginPage() {
       toast.success(`Berhasil masuk sebagai ${result.username}.`);
       navigate("/admin", { replace: true });
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "LoginPage",
           error,
           "Gagal masuk. Periksa ID admin dan password."
         )

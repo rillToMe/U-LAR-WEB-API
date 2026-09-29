@@ -17,4 +17,8 @@ public interface IStudentService
         int studentId,
         bool isActive,
         CancellationToken cancellationToken);
+
+    Task<bool> DeleteAsync(
+        int studentId,
+        CancellationToken cancellationToken);
 }

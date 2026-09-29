@@ -19,6 +19,12 @@ const MaterialEditorPage = lazy(
 );
 const MaterialsPage = lazy(() => import("../pages/admin/MaterialsPage"));
 
+// Halaman materi - dibuka WebView game tanpa login, jadi berada di luar
+// ProtectedRoute. Daftar di /materi, isi satu modul di /materi/{slug}.
+const MaterialReaderPage = lazy(
+  () => import("../pages/material/MaterialReaderPage")
+);
+
 // Web ujian — dipakai mahasiswa dari HP, terpisah dari web admin.
 const ExamLayout = lazy(() => import("../layouts/ExamLayout"));
 const ExamProtectedRoute = lazy(() => import("./ExamProtectedRoute"));
@@ -89,6 +95,12 @@ export default function AppRoutes() {
               element={<ExamSessionPage />}
             />
           </Route>
+
+          {/* Materi pembelajaran: daftar di /materi, isi satu modul di
+              /materi/{slug}. Tanpa login karena dibaca mahasiswa dari WebView
+              game yang tidak punya sesi web admin. */}
+          <Route path="/materi" element={<MaterialReaderPage />} />
+          <Route path="/materi/:slug" element={<MaterialReaderPage />} />
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

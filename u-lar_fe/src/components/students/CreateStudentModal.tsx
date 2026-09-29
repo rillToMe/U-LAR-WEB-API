@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { createStudent } from "../../services/studentApi";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { useToast } from "../common/toastContext";
 import {
   VALIDATION,
@@ -80,9 +80,9 @@ export default function CreateStudentModal({
       onClose();
       toast.success(`Akun mahasiswa ${name} berhasil dibuat.`);
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "CreateStudentModal",
           error,
           "Gagal membuat akun mahasiswa."
         )

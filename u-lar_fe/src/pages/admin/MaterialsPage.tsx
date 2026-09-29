@@ -5,7 +5,7 @@ import IconButton from "../../components/ui/IconButton";
 import Skeleton from "../../components/ui/Skeleton";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import { useToast } from "../../components/common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   deleteMaterial,
   getMaterials,
@@ -67,9 +67,12 @@ export default function MaterialsPage() {
           return;
         }
 
-        console.error(loadError);
         setError(
-          getApiErrorMessage(loadError, "Gagal mengambil daftar materi.")
+          describeApiError(
+            "MaterialsPage",
+            loadError,
+            "Gagal mengambil daftar materi."
+          )
         );
       })
       .finally(() => {
@@ -107,9 +110,9 @@ export default function MaterialsPage() {
 
       reload(response.message);
     } catch (statusError) {
-      console.error(statusError);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "MaterialsPage",
           statusError,
           `Gagal mengubah status ${material.title}.`
         )
@@ -132,9 +135,12 @@ export default function MaterialsPage() {
       setDeleting(null);
       reload(response.message);
     } catch (deleteError) {
-      console.error(deleteError);
       toast.error(
-        getApiErrorMessage(deleteError, "Gagal menghapus materi.")
+        describeApiError(
+          "MaterialsPage",
+          deleteError,
+          "Gagal menghapus materi."
+        )
       );
     } finally {
       setDeletingBusy(false);
@@ -315,7 +321,7 @@ export default function MaterialsPage() {
                       <td className="px-6 py-4 max-md:px-3">
                         <div className="flex items-center gap-3">
                           <a
-                            href={`/materi.html?slug=${encodeURIComponent(material.slug)}`}
+                            href={`/materi/${encodeURIComponent(material.slug)}`}
                             target="_blank"
                             rel="noreferrer"
                             className="rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-fg-muted transition-colors hover:border-border-strong hover:bg-surface-hover hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

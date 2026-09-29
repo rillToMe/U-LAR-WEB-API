@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { createStudent } from "../../services/studentApi";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { useToast } from "../../components/common/toastContext";
 import {
   VALIDATION,
@@ -54,9 +54,9 @@ export default function CreateStudentPage() {
       toast.success(`Akun mahasiswa ${name} berhasil dibuat.`);
       navigate("/admin/students");
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "CreateStudentPage",
           error,
           "Gagal membuat akun mahasiswa."
         )

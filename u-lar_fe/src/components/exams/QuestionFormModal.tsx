@@ -5,7 +5,7 @@ import IconButton from "../ui/IconButton";
 import Input from "../ui/Input";
 import Modal from "../ui/Modal";
 import { useToast } from "../common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   createQuestion,
   updateQuestion,
@@ -180,9 +180,8 @@ export default function QuestionFormModal({
       onSaved(message);
       onClose();
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(error, "Gagal menyimpan soal.")
+        describeApiError("QuestionFormModal", error, "Gagal menyimpan soal.")
       );
     } finally {
       setLoading(false);

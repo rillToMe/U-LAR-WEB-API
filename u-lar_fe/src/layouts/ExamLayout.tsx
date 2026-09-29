@@ -15,8 +15,15 @@ export default function ExamLayout() {
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove("dark");
+    // Membesarkan halaman ujian di layar lebar (preview editor / desktop) —
+    // lihat komentar di exam.css. Dilepas lagi saat keluar dari layout ini.
+    root.classList.add("exam-fit");
     root.style.colorScheme = "light";
     root.style.backgroundColor = "#f9fafb";
+
+    return () => {
+      root.classList.remove("exam-fit");
+    };
   }, []);
 
   return (

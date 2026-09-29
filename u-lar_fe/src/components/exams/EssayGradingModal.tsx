@@ -3,7 +3,7 @@ import Button from "../ui/Button";
 import Modal from "../ui/Modal";
 import Skeleton from "../ui/Skeleton";
 import { useToast } from "../common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   getEssayGrading,
   gradeEssays,
@@ -143,9 +143,9 @@ export default function EssayGradingModal({
           return;
         }
 
-        console.error(loadError);
         setError(
-          getApiErrorMessage(
+          describeApiError(
+            "EssayGradingModal",
             loadError,
             "Gagal memuat jawaban uraian."
           )
@@ -251,9 +251,12 @@ export default function EssayGradingModal({
         `Nilai ${group.studentName} tersimpan. Nilai akhir: ${result.score}.`
       );
     } catch (saveError) {
-      console.error(saveError);
       toast.error(
-        getApiErrorMessage(saveError, "Gagal menyimpan nilai uraian.")
+        describeApiError(
+          "EssayGradingModal",
+          saveError,
+          "Gagal menyimpan nilai uraian."
+        )
       );
     } finally {
       setSavingResultId(null);

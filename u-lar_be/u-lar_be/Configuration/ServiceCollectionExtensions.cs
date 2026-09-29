@@ -45,7 +45,10 @@ public static class ServiceCollectionExtensions
             })
             .AddOpenApi();
 
+        // 12 validator di folder Features aktif lewat pipeline MVC:
+        // gagal validasi → 400 ValidationProblemDetails (errors per field).
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddFluentValidationAutoValidation();
 
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -74,9 +77,15 @@ public static class ServiceCollectionExtensions
                 {
                     OnTokenValidated = async context =>
                     {
+                        var log = context.HttpContext.RequestServices
+                            .GetRequiredService<ILoggerFactory>()
+                            .CreateLogger("JwtAuth");
+
                         var principal = context.Principal;
                         if (principal is null)
                         {
+                            log.LogWarning("Token validasi gagal: principal null [{TraceId}]",
+                                context.HttpContext.TraceIdentifier);
                             context.Fail("Principal tidak tersedia.");
                             return;
                         }
@@ -88,6 +97,8 @@ public static class ServiceCollectionExtensions
                             if (idClaim is null
                                 || !int.TryParse(idClaim, out var studentId))
                             {
+                                log.LogWarning("Token validasi gagal: claim id tidak valid [{TraceId}]",
+                                    context.HttpContext.TraceIdentifier);
                                 context.Fail("Token tidak valid.");
                                 return;
                             }
@@ -103,10 +114,35 @@ public static class ServiceCollectionExtensions
 
                             if (!studentExists)
                             {
+                                log.LogWarning(
+                                    "Token ditolak: mahasiswa {StudentId} nonaktif/tidak ada [{TraceId}]",
+                                    studentId, context.HttpContext.TraceIdentifier);
                                 context.Fail(
                                     "Akun telah dinonaktifkan.");
                             }
                         }
+                    },
+
+                    // Tantangan default hanya mengirim status kosong — isi body
+                    // ProblemDetails supaya frontend punya `code` untuk
+                    // diterjemahkan (tanpa ini user hanya lihat 401 hampa).
+                    OnChallenge = async context =>
+                    {
+                        context.HandleResponse();
+                        await WriteAuthProblem(
+                            context.HttpContext,
+                            StatusCodes.Status401Unauthorized,
+                            "unauthorized",
+                            "Sesi tidak valid atau sudah berakhir.");
+                    },
+
+                    OnForbidden = async context =>
+                    {
+                        await WriteAuthProblem(
+                            context.HttpContext,
+                            StatusCodes.Status403Forbidden,
+                            "forbidden",
+                            "Anda tidak punya akses ke resource ini.");
                     }
                 };
 
@@ -129,6 +165,41 @@ public static class ServiceCollectionExtensions
         services.AddAuthorization();
 
         return services;
+    }
+
+    /// <summary>
+    /// Menulis ProblemDetails berisi `code` untuk respons 401/403 yang
+    /// datang dari pipeline JWT (bukan dari GlobalExceptionHandler).
+    /// </summary>
+    private static async Task WriteAuthProblem(
+        HttpContext httpContext,
+        int status,
+        string code,
+        string detail)
+    {
+        if (httpContext.Response.HasStarted)
+        {
+            return;
+        }
+
+        httpContext.Response.StatusCode = status;
+
+        var problem = new Microsoft.AspNetCore.Mvc.ProblemDetails
+        {
+            Status = status,
+            Title = status == StatusCodes.Status401Unauthorized
+                ? "Tidak terautentikasi."
+                : "Akses ditolak.",
+            Detail = detail,
+            Instance = httpContext.Request.Path
+        };
+        problem.Extensions["code"] = code;
+        problem.Extensions["traceId"] = httpContext.TraceIdentifier;
+
+        await httpContext.Response.WriteAsJsonAsync(
+            problem,
+            options: null,
+            contentType: "application/problem+json");
     }
 
     public static IServiceCollection AddCorsConfiguration(

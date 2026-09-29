@@ -6,10 +6,11 @@ import {
   useState,
 } from "react";
 import {
+  deleteStudent,
   getStudents,
   updateStudentStatus,
 } from "../../services/studentApi";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue";
 import { useToast } from "../../components/common/toastContext";
 import type {
@@ -18,6 +19,7 @@ import type {
   StudentListParams,
 } from "../../types/student";
 import Button from "../../components/ui/Button";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 import IconButton from "../../components/ui/IconButton";
 import Skeleton from "../../components/ui/Skeleton";
 
@@ -107,6 +109,9 @@ export default function StudentsPage() {
   const [updatingStatusId, setUpdatingStatusId] = useState<
     number | null
   >(null);
+  const [deletingStudent, setDeletingStudent] =
+    useState<StudentListItem | null>(null);
+  const [deletingBusy, setDeletingBusy] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const hasLoadedRef = useRef(false);
   const toast = useToast();
@@ -154,9 +159,8 @@ export default function StudentsPage() {
           return;
         }
 
-        console.error(error);
-
-        const message = getApiErrorMessage(
+        const message = describeApiError(
+          "StudentsPage",
           error,
           "Gagal mengambil data mahasiswa."
         );
@@ -208,15 +212,41 @@ export default function StudentsPage() {
       toast.success(result.message);
       setReloadKey((key) => key + 1);
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "StudentsPage",
           error,
           `Gagal memperbarui status ${student.name}.`
         )
       );
     } finally {
       setUpdatingStatusId(null);
+    }
+  }
+
+  async function handleDeleteStudent() {
+    if (deletingStudent === null) {
+      return;
+    }
+
+    setDeletingBusy(true);
+
+    try {
+      const result = await deleteStudent(deletingStudent.id);
+
+      toast.success(result.message);
+      setDeletingStudent(null);
+      setReloadKey((key) => key + 1);
+    } catch (error) {
+      toast.error(
+        describeApiError(
+          "StudentsPage",
+          error,
+          `Gagal menghapus ${deletingStudent.name}.`
+        )
+      );
+    } finally {
+      setDeletingBusy(false);
     }
   }
 
@@ -559,6 +589,28 @@ export default function StudentsPage() {
                               }`}
                             />
                           </button>
+
+                          <IconButton
+                            variant="danger"
+                            onClick={() =>
+                              setDeletingStudent(student)
+                            }
+                            label={`Hapus ${student.name}`}
+                            title="Hapus permanen"
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={1.8}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                              className="size-4"
+                            >
+                              <path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13" />
+                            </svg>
+                          </IconButton>
                         </div>
                       </td>
                     </tr>
@@ -632,6 +684,26 @@ export default function StudentsPage() {
           />
         )}
       </Suspense>
+
+      <ConfirmModal
+        open={deletingStudent !== null}
+        onClose={() => setDeletingStudent(null)}
+        onConfirm={handleDeleteStudent}
+        loading={deletingBusy}
+        title="Hapus mahasiswa ini?"
+        description="Data terhapus permanen dan tidak bisa dikembalikan. Untuk menonaktifkan sementara, pakai toggle status saja."
+        confirmLabel="Hapus Permanen"
+      >
+        {deletingStudent !== null && (
+          <p className="text-sm text-fg-muted">
+            Mahasiswa{" "}
+            <span className="font-semibold text-fg">
+              {deletingStudent.name} ({deletingStudent.nim})
+            </span>{" "}
+            beserta hasil ujiannya ikut terhapus.
+          </p>
+        )}
+      </ConfirmModal>
     </div>
   );
 }

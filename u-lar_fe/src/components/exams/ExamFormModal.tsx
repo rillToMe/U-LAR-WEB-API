@@ -4,7 +4,7 @@ import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Modal from "../ui/Modal";
 import { useToast } from "../common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { createExam, updateExam } from "../../services/examBankApi";
 import { VALIDATION } from "../../config/validation";
 
@@ -109,9 +109,8 @@ export default function ExamFormModal({
       onSaved(message);
       onClose();
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(error, "Gagal menyimpan ujian.")
+        describeApiError("ExamFormModal", error, "Gagal menyimpan ujian.")
       );
     } finally {
       setLoading(false);

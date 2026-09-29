@@ -5,7 +5,7 @@ import ConfirmModal from "../../components/ui/ConfirmModal";
 import Skeleton from "../../components/ui/Skeleton";
 import { useToast } from "../../components/common/toastContext";
 import { formatCountdown } from "../../hooks/useCountdownTimer";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   clearExamSession,
   getExamUser,
@@ -72,9 +72,12 @@ export default function ExamListPage() {
           return;
         }
 
-        console.error(error);
         setError(
-          getApiErrorMessage(error, "Gagal mengambil daftar ujian.")
+          describeApiError(
+            "ExamListPage",
+            error,
+            "Gagal mengambil daftar ujian."
+          )
         );
       })
       .finally(() => {
@@ -101,9 +104,8 @@ export default function ExamListPage() {
 
       navigate(`/ujian/sesi/${session.resultId}`);
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(error, "Gagal memulai ujian.")
+        describeApiError("ExamListPage", error, "Gagal memulai ujian.")
       );
     } finally {
       setActiveId(null);

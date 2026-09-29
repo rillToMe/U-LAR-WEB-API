@@ -4,7 +4,7 @@ import {
   resetStudentPassword,
   updateStudent,
 } from "../../services/studentApi";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { useToast } from "../common/toastContext";
 import {
   VALIDATION,
@@ -80,9 +80,9 @@ export default function StudentEditModal({
       );
       onSaved?.();
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "studentEditModal",
           error,
           "Gagal memperbarui data mahasiswa."
         )
@@ -127,9 +127,9 @@ export default function StudentEditModal({
           "Password mahasiswa berhasil direset."
       );
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "studentEditModal",
           error,
           "Gagal mereset password mahasiswa."
         )

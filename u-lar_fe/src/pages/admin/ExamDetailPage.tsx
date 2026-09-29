@@ -9,7 +9,7 @@ import ExamFormModal from "../../components/exams/ExamFormModal";
 import EssayGradingModal from "../../components/exams/EssayGradingModal";
 import QuestionFormModal from "../../components/exams/QuestionFormModal";
 import { useToast } from "../../components/common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   deleteExam,
   deleteQuestion,
@@ -59,9 +59,12 @@ export default function ExamDetailPage() {
           return;
         }
 
-        console.error(loadError);
         setError(
-          getApiErrorMessage(loadError, "Gagal mengambil detail ujian.")
+          describeApiError(
+            "ExamDetailPage",
+            loadError,
+            "Gagal mengambil detail ujian."
+          )
         );
       })
       .finally(() => {
@@ -92,9 +95,12 @@ export default function ExamDetailPage() {
 
       reload(response.message);
     } catch (statusError) {
-      console.error(statusError);
       toast.error(
-        getApiErrorMessage(statusError, "Gagal mengubah status ujian.")
+        describeApiError(
+          "ExamDetailPage",
+          statusError,
+          "Gagal mengubah status ujian."
+        )
       );
     } finally {
       setBusy(false);
@@ -114,9 +120,12 @@ export default function ExamDetailPage() {
       toast.success(response.message);
       navigate("/admin/exams", { replace: true });
     } catch (deleteError) {
-      console.error(deleteError);
       toast.error(
-        getApiErrorMessage(deleteError, "Gagal menghapus ujian.")
+        describeApiError(
+          "ExamDetailPage",
+          deleteError,
+          "Gagal menghapus ujian."
+        )
       );
       setBusy(false);
     } finally {
@@ -137,9 +146,12 @@ export default function ExamDetailPage() {
       setDeletingQuestion(null);
       reload(response.message);
     } catch (deleteError) {
-      console.error(deleteError);
       toast.error(
-        getApiErrorMessage(deleteError, "Gagal menghapus soal.")
+        describeApiError(
+          "ExamDetailPage",
+          deleteError,
+          "Gagal menghapus soal."
+        )
       );
     } finally {
       setBusy(false);

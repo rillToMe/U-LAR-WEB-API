@@ -31,6 +31,32 @@
 
 /* Tema web ujian selalu light mode — tidak ada varian dark. */
 
+/* Preview WebView (Unity Editor / Device Simulator) dan desktop.
+
+   Di HP asli halaman ujian sudah pas: kartu selebar layar. Tetapi WebView
+   Unity menampilkan halaman dengan lebar CSS jauh lebih besar daripada lebar
+   CSS HP — meta viewport diabaikan di editor, dan di Device Simulator lebarnya
+   ikut ukuran texture. Desain ber-lebar `max-w-md` (28rem) jadi hanya mengisi
+   sebagian layar sehingga terlihat mungil.
+
+   Seluruh ukuran halaman ujian memakai satuan rem, jadi menaikkan ukuran font
+   root memperbesar kartu, teks, dan jarak sekaligus — proporsional. Skala
+   dibuat mengikuti lebar viewport (vw) supaya kartu 28rem selalu mengisi
+   ~87% layar: 28 x 3.1vw = 0.87 x 100vw.
+
+   Batas bawah 16px membuat aturan ini mati sendiri di HP: untuk lebar di bawah
+   ~516px, 3.1vw lebih kecil dari 16px sehingga font root tetap seperti
+   biasanya dan kartu tetap selebar layar. Karena itu media query tidak
+   diperlukan — batas bawah clamp sudah jadi pemutus sendiri, dan media query
+   justru meleset di Device Simulator yang lebarnya hanya ~864px.
+
+   Class `exam-fit` dipasang React hanya selama halaman statis ujian (login,
+   daftar, hasil) tampil; sesi ujian yang sudah punya tata letak `lg:` sendiri
+   tidak disentuh. */
+html.exam-fit {
+  font-size: clamp(16px, 3.1vw, 60px);
+}
+
 /* Bottom sheet navigasi soal: slide-up dengan kurva khas sheet (cepat di
    awal, melambat halus di ujung). Animasi keluar memakai transisi inline
    ke bawah layar, jadi tidak butuh keyframe terpisah. */

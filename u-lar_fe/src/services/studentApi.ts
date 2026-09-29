@@ -75,3 +75,13 @@ export async function updateStudentStatus(
 
   return response.data;
 }
+
+export async function deleteStudent(
+  id: number
+): Promise<{ message: string }> {
+  const response = await api.delete<{ message: string }>(
+    `/Admin/students/${id}`
+  );
+
+  return response.data;
+}

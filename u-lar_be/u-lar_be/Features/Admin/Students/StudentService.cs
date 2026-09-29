@@ -94,4 +94,33 @@ public sealed class StudentService(
 
         return true;
     }
+
+    public async Task<bool> DeleteAsync(
+        int studentId,
+        CancellationToken cancellationToken)
+    {
+        var student = await dbContext.Students
+            .FirstOrDefaultAsync(
+                x => x.Id == studentId,
+                cancellationToken);
+
+
+        if (student is null)
+        {
+            return false;
+        }
+
+
+        // Hard delete. Refresh token + hasil ujian ikut terhapus via
+        // FK cascade (lihat *Configuration). Dipakai untuk data uji.
+        dbContext.Students.Remove(student);
+
+
+        await dbContext.SaveChangesAsync(
+            cancellationToken
+        );
+
+
+        return true;
+    }
 }

@@ -53,6 +53,13 @@ api.interceptors.response.use(
       localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
 
+      // Sesi habis: catat pesan di sessionStorage supaya LoginPage bisa
+      // menjelaskan penyebab redirect setelah reload penuh.
+      sessionStorage.setItem(
+        "authNotice",
+        "Sesi Anda berakhir. Silakan masuk kembali."
+      );
+
       if (window.location.pathname !== "/login") {
         window.location.href = "/login";
       }

@@ -15,7 +15,7 @@ import {
 } from "../../components/materials/materialDraft";
 import { previewMaterialSlug } from "../../components/materials/materialSlug";
 import { useToast } from "../../components/common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   createMaterial,
   getMaterialDetail,
@@ -121,8 +121,9 @@ export default function MaterialEditorPage() {
           return;
         }
 
-        console.error(error);
-        setLoadError(getApiErrorMessage(error, "Materi gagal dimuat."));
+        setLoadError(
+          describeApiError("MaterialEditorPage", error, "Materi gagal dimuat.")
+        );
       } finally {
         if (!cancelled) {
           setLoadedId(materialId);
@@ -226,8 +227,13 @@ export default function MaterialEditorPage() {
         navigate(`/admin/materials/${id}`, { replace: true });
       }
     } catch (error) {
-      console.error(error);
-      toast.error(getApiErrorMessage(error, "Gagal menyimpan materi."));
+      toast.error(
+        describeApiError(
+          "MaterialEditorPage",
+          error,
+          "Gagal menyimpan materi."
+        )
+      );
     } finally {
       setSaving(null);
     }

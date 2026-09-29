@@ -1,6 +1,7 @@
 import IconButton from "../ui/IconButton";
 import Input from "../ui/Input";
 import { useToast } from "../common/toastContext";
+import { logger } from "../../lib/logger";
 import { VALIDATION } from "../../config/validation";
 import { problemFor } from "./materialDraft";
 import type { DraftProblem, MaterialDraft } from "../../types/materialEditor";
@@ -49,7 +50,7 @@ export default function MaterialEditorSidebar({
     savedSlug === ""
       ? ""
       : new URL(
-          `/materi.html?slug=${encodeURIComponent(savedSlug)}`,
+          `/materi/${encodeURIComponent(savedSlug)}`,
           window.location.origin
         ).toString();
 
@@ -62,7 +63,11 @@ export default function MaterialEditorSidebar({
       await navigator.clipboard.writeText(previewHref);
       toast.success("Alamat halaman materi disalin.");
     } catch (error) {
-      console.error(error);
+      logger.error(
+        "MaterialEditorSidebar",
+        "Salin alamat halaman materi gagal",
+        error
+      );
       toast.error("Alamat gagal disalin. Salin manual dari kotak alamat.");
     }
   }
@@ -155,7 +160,7 @@ export default function MaterialEditorSidebar({
         <p className="text-xs font-medium text-fg-muted">Alamat halaman</p>
 
         <p className="mt-1.5 break-all font-mono text-sm text-fg">
-          {slugPreview === "" ? "-" : `/materi.html?slug=${slugPreview}`}
+          {slugPreview === "" ? "-" : `/materi/${slugPreview}`}
         </p>
 
         <p className="mt-1.5 text-xs text-fg-subtle">

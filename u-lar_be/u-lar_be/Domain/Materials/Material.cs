@@ -13,7 +13,7 @@ namespace u_lar_be.Domain.Materials;
 /// </summary>
 public class Material : BaseEntity
 {
-    /// <summary>Kunci yang dipakai alamat halaman materi: /materi.html?slug=...</summary>
+    /// <summary>Kunci yang dipakai alamat halaman materi: /materi/{slug}</summary>
     public string Slug { get; set; } = string.Empty;
 
     /// <summary>Teks badge modul di halaman materi, mis. "MODUL 01".</summary>

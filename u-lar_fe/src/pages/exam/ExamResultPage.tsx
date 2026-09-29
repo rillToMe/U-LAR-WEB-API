@@ -5,7 +5,7 @@ import Button from "../../components/ui/Button";
 import Skeleton from "../../components/ui/Skeleton";
 import { useToast } from "../../components/common/toastContext";
 import { formatDuration } from "../../hooks/useCountdownTimer";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { getExamSummary } from "../../services/examApi";
 import type { ExamSummary, SubmitExamItem } from "../../types/exam";
 
@@ -102,9 +102,8 @@ export default function ExamResultPage() {
           return;
         }
 
-        console.error(loadError);
-
-        const message = getApiErrorMessage(
+        const message = describeApiError(
+          "ExamResultPage",
           loadError,
           "Gagal memuat hasil ujian."
         );

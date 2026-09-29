@@ -50,8 +50,13 @@ using (var scope = app.Services.CreateScope())
         .GetRequiredService<IOptions<AdminSeedOptions>>()
         .Value;
 
+    var seedLogger = scope.ServiceProvider
+        .GetRequiredService<ILoggerFactory>()
+        .CreateLogger("DbSeed");
+
     await DbSeeder.SeedAsync(dbContext, passwordHasher, seedOptions);
     await MaterialSeeder.SeedAsync(dbContext);
+    seedLogger.LogInformation("Seed database selesai dijalankan.");
 }
 
 app.UseExceptionHandler();

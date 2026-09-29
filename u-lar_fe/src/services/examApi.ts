@@ -89,6 +89,11 @@ examApi.interceptors.response.use(
     if (error.response?.status === 401 && getExamToken()) {
       clearExamSession();
 
+      sessionStorage.setItem(
+        "examAuthNotice",
+        "Akun Anda tidak aktif atau sesi telah berakhir. Silakan masuk kembali."
+      );
+
       if (window.location.pathname !== EXAM_LOGIN_PATH) {
         window.location.href = EXAM_LOGIN_PATH;
       }

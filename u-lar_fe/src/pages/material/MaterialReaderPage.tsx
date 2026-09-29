@@ -1,9 +1,11 @@
 import { useEffect, useId, useState } from "react";
 import type { ReactNode } from "react";
+import { Link, useParams } from "react-router-dom";
 import { ThemeProvider } from "../../components/common/theme";
 import { RichText } from "../../components/materials/richText";
 import Button from "../../components/ui/Button";
 import Skeleton from "../../components/ui/Skeleton";
+import { logger } from "../../lib/logger";
 import { getMaterial, getMaterials } from "../../services/materialApi";
 import { resolveApiFileUrl } from "../../services/api";
 import type {
@@ -325,8 +327,8 @@ function MaterialList({ items }: { items: MaterialListItem[] }) {
         <ul className="space-y-3">
           {items.map((item) => (
             <li key={item.slug}>
-              <a
-                href={`?slug=${encodeURIComponent(item.slug)}`}
+              <Link
+                to={`/materi/${encodeURIComponent(item.slug)}`}
                 className={`${cardClass} block p-5 transition-colors duration-150 hover:border-border-strong hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -362,7 +364,7 @@ function MaterialList({ items }: { items: MaterialListItem[] }) {
                     <path d="m9 18 6-6-6-6" />
                   </LineIcon>
                 </span>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -376,15 +378,15 @@ function MaterialList({ items }: { items: MaterialListItem[] }) {
 function MaterialDocument({ material }: { material: Material }) {
   return (
     <div className="space-y-7">
-      <a
-        href="?"
+      <Link
+        to="/materi"
         className="inline-flex items-center gap-1 text-sm font-medium text-link transition-colors duration-150 hover:text-link-hover hover:underline"
       >
         <LineIcon className="size-4">
           <path d="m15 18-6-6 6-6" />
         </LineIcon>
         Daftar materi
-      </a>
+      </Link>
 
       <header className="border-b border-border pb-5">
         <div className="flex items-start justify-between gap-3">
@@ -522,18 +524,27 @@ function describeError(error: unknown): string {
  * sempit, kartu berbingkai tipis, dan aksen hanya untuk hal yang memang perlu
  * ditandai. Tanpa gradien dan tanpa efek cahaya.
  *
- * `slug` dibaca dari query string karena halaman ini dibuka langsung oleh
- * WebView tanpa router. Tanpa `slug`, halaman menampilkan daftar materi.
+ * `slug` dibaca dari alamat `/materi/{slug}`. Tanpa slug (`/materi`), halaman
+ * menampilkan daftar modul.
  */
 export default function MaterialReaderPage() {
-  const [slug] = useState(
-    () =>
-      new URLSearchParams(window.location.search).get("slug")?.trim() ?? ""
-  );
+  const { slug: routeSlug } = useParams<{ slug: string }>();
+  const slug = routeSlug?.trim() ?? "";
 
   const [view, setView] = useState<MaterialView>({ status: "loading" });
   const [finished, setFinished] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+
+  // Penanda di <html> supaya `material.css` (perilaku sentuh WebView, ruang
+  // aman layar) hanya berlaku selama halaman materi tampil. Dilepas lagi saat
+  // pengguna berpindah ke halaman lain, mis. web admin di browser yang sama.
+  useEffect(() => {
+    document.documentElement.classList.add("material-reader");
+
+    return () => {
+      document.documentElement.classList.remove("material-reader");
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -553,7 +564,7 @@ export default function MaterialReaderPage() {
             return;
           }
 
-          console.error(loadError);
+          logger.error("MaterialReaderPage", "Gagal memuat daftar materi", loadError);
           setView({ status: "error", message: describeError(loadError) });
         });
 
@@ -573,7 +584,7 @@ export default function MaterialReaderPage() {
           return;
         }
 
-        console.error(loadError);
+        logger.error("MaterialReaderPage", `Gagal memuat materi ${slug}`, loadError);
         setView({ status: "error", message: describeError(loadError) });
       });
 

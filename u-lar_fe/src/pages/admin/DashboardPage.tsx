@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { getAdminDashboard } from "../../services/dasboardApi";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { useToast } from "../../components/common/toastContext";
 import Skeleton from "../../components/ui/Skeleton";
 import type { AdminDashboard } from "../../types/dashboard";
@@ -213,9 +213,8 @@ export default function DashboardPage() {
         setError("");
       })
       .catch((error) => {
-        console.error(error);
-
-        const message = getApiErrorMessage(
+        const message = describeApiError(
+          "DashboardPage",
           error,
           "Gagal mengambil data dashboard."
         );

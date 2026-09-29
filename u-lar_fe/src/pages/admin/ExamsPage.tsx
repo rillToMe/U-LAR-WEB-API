@@ -7,7 +7,7 @@ import ConfirmModal from "../../components/ui/ConfirmModal";
 import ExamFormModal from "../../components/exams/ExamFormModal";
 import type { ExamFormInitial } from "../../components/exams/ExamFormModal";
 import { useToast } from "../../components/common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   deleteExam,
   getExams,
@@ -72,9 +72,12 @@ export default function ExamsPage() {
           return;
         }
 
-        console.error(loadError);
         setError(
-          getApiErrorMessage(loadError, "Gagal mengambil daftar ujian.")
+          describeApiError(
+            "ExamsPage",
+            loadError,
+            "Gagal mengambil daftar ujian."
+          )
         );
       })
       .finally(() => {
@@ -117,9 +120,9 @@ export default function ExamsPage() {
 
       reload(response.message);
     } catch (statusError) {
-      console.error(statusError);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "ExamsPage",
           statusError,
           `Gagal mengubah status ${exam.title}.`
         )
@@ -142,9 +145,12 @@ export default function ExamsPage() {
       setDeleting(null);
       reload(response.message);
     } catch (deleteError) {
-      console.error(deleteError);
       toast.error(
-        getApiErrorMessage(deleteError, "Gagal menghapus ujian.")
+        describeApiError(
+          "ExamsPage",
+          deleteError,
+          "Gagal menghapus ujian."
+        )
       );
     } finally {
       setDeletingBusy(false);

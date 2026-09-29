@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import IconButton from "../ui/IconButton";
 import Select from "../ui/Select";
 import { useToast } from "../common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import { resolveApiFileUrl } from "../../services/api";
 import { uploadMaterialImage } from "../../services/materialBankApi";
 import { VALIDATION } from "../../config/validation";
@@ -432,8 +432,13 @@ function DiagramRow({
       onChange({ imageUrl: uploaded.url });
       toast.success("Gambar diagram terunggah.");
     } catch (error) {
-      console.error(error);
-      toast.error(getApiErrorMessage(error, "Gagal mengunggah gambar."));
+      toast.error(
+        describeApiError(
+          "MaterialEditorCanvas",
+          error,
+          "Gagal mengunggah gambar."
+        )
+      );
     } finally {
       setUploading(false);
     }

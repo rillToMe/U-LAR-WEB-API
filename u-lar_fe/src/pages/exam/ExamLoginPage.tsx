@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import { useToast } from "../../components/common/toastContext";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   getExamToken,
   loginStudent,
@@ -18,6 +18,17 @@ export default function ExamLoginPage() {
   const [nim, setNim] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Diringkas dari interceptor 401 examApi — jelaskan kenapa user kembali
+  // ke halaman login, lalu bersihkan pesannya.
+  useEffect(() => {
+    const notice = sessionStorage.getItem("examAuthNotice");
+
+    if (notice) {
+      sessionStorage.removeItem("examAuthNotice");
+      toast.info(notice);
+    }
+  }, [toast]);
 
   // Sudah punya sesi? Langsung ke daftar ujian, tidak perlu login dua kali.
   if (getExamToken()) {
@@ -46,9 +57,9 @@ export default function ExamLoginPage() {
       toast.success(`Selamat mengerjakan, ${result.name}.`);
       navigate("/ujian", { replace: true });
     } catch (error) {
-      console.error(error);
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "ExamLoginPage",
           error,
           "Gagal masuk. Periksa NIM dan password Anda."
         )

@@ -15,7 +15,7 @@ import IconButton from "../../components/ui/IconButton";
 import Skeleton from "../../components/ui/Skeleton";
 import { useCountdownTimer } from "../../hooks/useCountdownTimer";
 import { useExamSecurity, useFullscreen } from "../../hooks/useExamSecurity";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
 import {
   getExamSession,
   saveExamAnswer,
@@ -232,9 +232,12 @@ export default function ExamSessionPage() {
           return;
         }
 
-        console.error(error);
         setLoadError(
-          getApiErrorMessage(error, "Gagal memuat soal ujian.")
+          describeApiError(
+            "ExamSessionPage",
+            error,
+            "Gagal memuat soal ujian."
+          )
         );
       })
       .finally(() => {
@@ -276,10 +279,10 @@ export default function ExamSessionPage() {
           return;
         }
 
-        console.error(error);
         setSaveStates((prev) => ({ ...prev, [questionId]: "error" }));
         toast.error(
-          getApiErrorMessage(
+          describeApiError(
+            "ExamSessionPage",
             error,
             "Jawaban gagal disimpan ke server. Periksa koneksi lalu pilih ulang jawabannya."
           )
@@ -365,13 +368,13 @@ export default function ExamSessionPage() {
 
       navigate(`/ujian/hasil/${summary.resultId}`, { replace: true });
     } catch (error) {
-      console.error(error);
       submitGuardRef.current = false;
       setSubmitting(false);
       setConfirmOpen(false);
 
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "ExamSessionPage",
           error,
           "Gagal mengumpulkan ujian. Periksa koneksi lalu coba lagi."
         )
@@ -437,7 +440,6 @@ export default function ExamSessionPage() {
     } catch (error) {
       // Layar tidak boleh menampilkan tanda yang tidak tersimpan.
       setFlags((prev) => ({ ...prev, [questionId]: !next }));
-      console.error(error);
 
       if (isAxiosError(error) && error.response?.status === 409) {
         void recoverToResult();
@@ -445,7 +447,8 @@ export default function ExamSessionPage() {
       }
 
       toast.error(
-        getApiErrorMessage(
+        describeApiError(
+          "ExamSessionPage",
           error,
           "Tanda ragu-ragu gagal disimpan. Periksa koneksi lalu coba lagi."
         )

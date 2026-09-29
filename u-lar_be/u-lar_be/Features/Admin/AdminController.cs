@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using u_lar_be.Common;
+using u_lar_be.Common.Exceptions;
 using u_lar_be.Controllers;
 using u_lar_be.Domain.Common;
 using u_lar_be.Features.Admin.Dtos;
@@ -81,7 +82,7 @@ public sealed class AdminController(
 
         if(student is null)
         {
-            return NotFound();
+            throw new NotFoundException("Mahasiswa tidak ditemukan.");
         }
 
         return Ok(student);
@@ -115,7 +116,7 @@ public sealed class AdminController(
 
         if (!result)
         {
-            return NotFound();
+            throw new NotFoundException("Mahasiswa tidak ditemukan.");
         }
 
 
@@ -127,6 +128,28 @@ public sealed class AdminController(
         });
     }
     
+    [HttpDelete("students/{id}")]
+    public async Task<IActionResult> DeleteStudent(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await studentService.DeleteAsync(
+            id,
+            cancellationToken);
+
+
+        if (!result)
+        {
+            throw new NotFoundException("Mahasiswa tidak ditemukan.");
+        }
+
+
+        return Ok(new
+        {
+            message = "Mahasiswa berhasil dihapus."
+        });
+    }
+
     [HttpPost("students/{id}/reset-password")]
     public async Task<IActionResult> ResetStudentPassword(
         int id,
@@ -143,7 +166,7 @@ public sealed class AdminController(
 
         if (!result)
         {
-            return NotFound();
+            throw new NotFoundException("Mahasiswa tidak ditemukan.");
         }
 
 

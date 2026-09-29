@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getStudentDetail } from "../../services/studentApi";
-import { getApiErrorMessage } from "../../services/apiError";
+import { describeApiError } from "../../services/apiError";
+import { logger } from "../../lib/logger";
 import { useToast } from "../common/toastContext";
 import type { StudentDetail } from "../../types/student";
 import Modal from "../ui/Modal";
@@ -84,10 +85,9 @@ function DetailContent({
         }
       })
       .catch((fetchError) => {
-        console.error(fetchError);
-
         if (!cancelled) {
-          const message = getApiErrorMessage(
+          const message = describeApiError(
+            "StudentDetailModal",
             fetchError,
             "Gagal mengambil detail mahasiswa."
           );
@@ -108,7 +108,13 @@ function DetailContent({
 
     getStudentDetail(studentId)
       .then(setDetail)
-      .catch((fetchError) => console.error(fetchError));
+      .catch((fetchError) => {
+        logger.error(
+          "StudentDetailModal",
+          "Muat ulang detail mahasiswa gagal",
+          fetchError
+        );
+      });
   }
 
   return (

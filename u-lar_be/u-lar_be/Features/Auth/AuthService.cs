@@ -24,7 +24,8 @@ public sealed class AuthService(
     AppDbContext dbContext,
     IPasswordHasher<Student> studentPasswordHasher,
     IPasswordHasher<AdminUser> adminPasswordHasher,
-    IOptions<JwtOptions> jwtOptions
+    IOptions<JwtOptions> jwtOptions,
+    ILogger<AuthService> logger
 ) : IAuthService
 {
     private readonly JwtOptions _jwt = jwtOptions.Value;
@@ -40,8 +41,11 @@ public sealed class AuthService(
 
         if (student is null || !student.IsActive)
         {
+            logger.LogWarning(
+                "Login mahasiswa gagal: NIM {Nim} tidak ditemukan atau nonaktif.",
+                request.Nim);
             throw new UnauthorizedException(
-                "NIM atau password salah.");
+                "NIM atau password salah.", "invalid_credentials");
         }
 
         var passwordResult =
@@ -52,9 +56,16 @@ public sealed class AuthService(
 
         if (passwordResult == PasswordVerificationResult.Failed)
         {
+            logger.LogWarning(
+                "Login mahasiswa gagal: password salah untuk NIM {Nim}.",
+                request.Nim);
             throw new UnauthorizedException(
-                "NIM atau password salah.");
+                "NIM atau password salah.", "invalid_credentials");
         }
+
+        logger.LogInformation(
+            "Login mahasiswa berhasil: {Nim} (id {StudentId}).",
+            request.Nim, student.Id);
 
         student.LastLoginAt = DateTime.UtcNow;
 
@@ -89,6 +100,8 @@ public sealed class AuthService(
             || storedToken.ExpiresAt <= DateTime.UtcNow
             || !storedToken.Student.IsActive)
         {
+            logger.LogWarning(
+                "Refresh token ditolak: tidak valid, kedaluwarsa, dicabut, atau akun nonaktif.");
             throw new UnauthorizedException("Refresh token tidak valid.");
         }
 
@@ -139,8 +152,11 @@ public sealed class AuthService(
 
         if (admin is null)
         {
+            logger.LogWarning(
+                "Login admin gagal: username {Username} tidak ditemukan.",
+                request.Username);
             throw new UnauthorizedException(
-                "Username atau password salah.");
+                "Username atau password salah.", "invalid_credentials");
         }
 
         var passwordResult =
@@ -151,9 +167,16 @@ public sealed class AuthService(
 
         if (passwordResult == PasswordVerificationResult.Failed)
         {
+            logger.LogWarning(
+                "Login admin gagal: password salah untuk username {Username}.",
+                request.Username);
             throw new UnauthorizedException(
-                "Username atau password salah.");
+                "Username atau password salah.", "invalid_credentials");
         }
+
+        logger.LogInformation(
+            "Login admin berhasil: {Username} (id {AdminId}).",
+            admin.Username, admin.Id);
 
         var accessToken = WriteToken(
             _jwt.AdminAccessTokenMinutes,

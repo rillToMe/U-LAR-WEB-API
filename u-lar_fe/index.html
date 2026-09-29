@@ -10,20 +10,40 @@
     <title>u-lar_fe</title>
     <script>
       (function () {
-        // Web ujian (/ujian) selalu light mode.
-        if (window.location.pathname.indexOf("/ujian") === 0) {
-          var root = document.documentElement;
+        var path = window.location.pathname;
+        var root = document.documentElement;
+
+        // WebView game (Android) memakai setUseWideViewPort +
+        // setLoadWithOverviewMode, sehingga tanpa viewport "tanpa zoom"
+        // seluruh halaman bisa diperkecil agar muat. Kunci ke lebar perangkat
+        // untuk halaman yang dirender di WebView: ujian dan materi.
+        var inWebViewPage =
+          path.indexOf("/ujian") === 0 || path.indexOf("/materi") === 0;
+
+        if (inWebViewPage) {
+          var viewport = document.querySelector('meta[name="viewport"]');
+          if (viewport) {
+            viewport.setAttribute(
+              "content",
+              "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+            );
+          }
+        }
+
+        // Web ujian (/ujian) selalu light mode - tidak ada varian dark.
+        if (path.indexOf("/ujian") === 0) {
           root.classList.remove("dark");
           root.style.colorScheme = "light";
           root.style.backgroundColor = "#f9fafb";
+
           return;
         }
+
         var stored = localStorage.getItem("u-lar-theme");
         var dark =
           stored === "dark" ||
           (stored !== "light" &&
             window.matchMedia("(prefers-color-scheme: dark)").matches);
-        var root = document.documentElement;
         root.classList.toggle("dark", dark);
         root.style.colorScheme = dark ? "dark" : "light";
         root.style.backgroundColor = dark ? "#101216" : "#f9fafb";
