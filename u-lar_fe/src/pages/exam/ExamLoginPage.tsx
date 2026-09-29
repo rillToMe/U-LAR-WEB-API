@@ -90,7 +90,7 @@ export default function ExamLoginPage() {
         </div>
 
         <h1 className="mt-4 text-2xl font-bold text-fg">
-          Web Ujian U-LAR
+          Halaman Ujian U-LAR
         </h1>
 
         <p className="mt-2 text-sm leading-6 text-fg-subtle">

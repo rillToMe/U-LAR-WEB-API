@@ -58,6 +58,20 @@ export const VALIDATION = {
     },
   },
 
+  /* Harus sama dengan batas di CreateAdminRequestValidator supaya pesan dari
+     server benar-benar jarang muncul. */
+  admin: {
+    username: {
+      minLength: 3,
+      maxLength: 50,
+    },
+
+    password: {
+      minLength: 8,
+      maxLength: 100,
+    },
+  },
+
   /* Harus sama dengan batas di MaterialBankService. */
   material: {
     /* Slug diisi otomatis dari judul (di server). Batasnya di sini hanya

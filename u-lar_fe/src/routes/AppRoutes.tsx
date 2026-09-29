@@ -11,6 +11,7 @@ const LoginPage = lazy(() => import("../pages/admin/LoginPage"));
 const DashboardPage = lazy(() => import("../pages/admin/DashboardPage"));
 const AdminLayout = lazy(() => import("../layouts/AdminLayout"));
 const ProtectedRoute = lazy(() => import("./ProtectedRoute"));
+const SuperAdminRoute = lazy(() => import("./SuperAdminRoute"));
 const StudentsPage = lazy(() => import("../pages/admin/StudentsPage"));
 const ExamsPage = lazy(() => import("../pages/admin/ExamsPage"));
 const ExamDetailPage = lazy(() => import("../pages/admin/ExamDetailPage"));
@@ -18,6 +19,8 @@ const MaterialEditorPage = lazy(
   () => import("../pages/admin/MaterialEditorPage")
 );
 const MaterialsPage = lazy(() => import("../pages/admin/MaterialsPage"));
+const DocsPage = lazy(() => import("../pages/admin/DocsPage"));
+const AdminsPage = lazy(() => import("../pages/admin/AdminsPage"));
 
 // Halaman materi - dibuka WebView game tanpa login, jadi berada di luar
 // ProtectedRoute. Daftar di /materi, isi satu modul di /materi/{slug}.
@@ -68,11 +71,15 @@ export default function AppRoutes() {
               <Route path="exams/:examId" element={<ExamDetailPage />} />
               <Route path="materials" element={<MaterialsPage />} />
               <Route path="materials/new" element={<MaterialEditorPage />} />
-              <Route
-                path="materials/:materialId"
-                element={<MaterialEditorPage />}
-              />
+            <Route
+              path="materials/:materialId"
+              element={<MaterialEditorPage />}
+            />
+            <Route path="docs" element={<DocsPage />} />
+            <Route element={<SuperAdminRoute />}>
+              <Route path="admins" element={<AdminsPage />} />
             </Route>
+          </Route>
           </Route>
 
           {/* Web ujian: halaman sesi sengaja di luar ExamLayout karena punya

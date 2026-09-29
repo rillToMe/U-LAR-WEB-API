@@ -377,15 +377,26 @@ function MaterialList({ items }: { items: MaterialListItem[] }) {
 function MaterialDocument({ material }: { material: Material }) {
   return (
     <div className="space-y-7">
-      <Link
-        to="/materi"
-        className="inline-flex items-center gap-1 text-sm font-medium text-link transition-colors duration-150 hover:text-link-hover hover:underline"
-      >
-        <LineIcon className="size-4">
-          <path d="m15 18-6-6 6-6" />
-        </LineIcon>
-        Daftar materi
-      </Link>
+      {/* Kembali ke daftar.
+
+          Di HP tautan teks biasa terlalu sempit untuk jari (tinggi ~20px,
+          jauh di bawah ambang 44px yang disarankan Apple HIG dan Material
+          Design), dan ikut hilang saat materi yang panjang digulir ke bawah.
+          Karena itu dilekatkan ke atas, tinggi sentuhnya Dinaikkan ke 44px,
+          dan umpan balik memakai `active:` — `hover:` tidak pernah terpicu
+          di layar sentuh. Padding atas aman untuk layar berponi; di WebView
+          Unity `env(safe-area-inset-*)` bernilai 0 jadi tidak berpengaruh. */}
+      <div className="sticky top-0 z-30 -mx-4 bg-surface-muted/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur">
+        <Link
+          to="/materi"
+          className="inline-flex min-h-11 items-center gap-2 text-base font-medium text-link transition-colors duration-150 hover:text-link-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:text-link-hover"
+        >
+          <LineIcon className="size-5 shrink-0">
+            <path d="m15 18-6-6 6-6" />
+          </LineIcon>
+          Daftar materi
+        </Link>
+      </div>
 
       <header className="border-b border-border pb-5">
         <div className="flex items-start justify-between gap-3">

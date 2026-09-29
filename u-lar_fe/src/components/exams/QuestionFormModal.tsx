@@ -387,7 +387,7 @@ export default function QuestionFormModal({
             />
 
             <p className="text-xs text-fg-subtle">
-              Hanya dilihat admin sebagai pengingat saat menilai —
+              Hanya dilihat admin sebagai pengingat saat menilai -
               tidak tampil di web ujian mahasiswa. Jawaban uraian tetap
               dinilai manual. {answerKey.length}/
               {rules.answerKey.maxLength} karakter

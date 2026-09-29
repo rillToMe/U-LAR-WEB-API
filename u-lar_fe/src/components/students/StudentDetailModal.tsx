@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import { getStudentDetail } from "../../services/studentApi";
 import { describeApiError } from "../../services/apiError";
-import { logger } from "../../lib/logger";
 import { useToast } from "../common/toastContext";
 import type { StudentDetail } from "../../types/student";
 import Modal from "../ui/Modal";
-import Button from "../ui/Button";
-import StudentEditModal from "./studentEditModal";
 
 interface StudentDetailModalProps {
   open: boolean;
   onClose: () => void;
-  onUpdated?: () => void;
   studentId: number | null;
 }
 
@@ -35,7 +31,6 @@ function DetailRow({
 export default function StudentDetailModal({
   open,
   onClose,
-  onUpdated,
   studentId,
 }: StudentDetailModalProps) {
   if (!open || studentId === null) {
@@ -50,7 +45,6 @@ export default function StudentDetailModal({
       key={studentId}
       studentId={studentId}
       onClose={onClose}
-      onUpdated={onUpdated}
     />
   );
 }
@@ -58,17 +52,11 @@ export default function StudentDetailModal({
 interface DetailContentProps {
   studentId: number;
   onClose: () => void;
-  onUpdated?: () => void;
 }
 
-function DetailContent({
-  studentId,
-  onClose,
-  onUpdated,
-}: DetailContentProps) {
+function DetailContent({ studentId, onClose }: DetailContentProps) {
   const [detail, setDetail] = useState<StudentDetail | null>(null);
   const [error, setError] = useState("");
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const toast = useToast();
 
   // "Loading" diturunkan dari data: fetch sedang berjalan selama belum ada
@@ -102,21 +90,6 @@ function DetailContent({
     };
   }, [studentId, toast]);
 
-  function handleSaved() {
-    setIsEditOpen(false);
-    onUpdated?.();
-
-    getStudentDetail(studentId)
-      .then(setDetail)
-      .catch((fetchError) => {
-        logger.error(
-          "StudentDetailModal",
-          "Muat ulang detail mahasiswa gagal",
-          fetchError
-        );
-      });
-  }
-
   return (
     <>
       <Modal
@@ -124,16 +97,6 @@ function DetailContent({
         onClose={onClose}
         title="Detail Mahasiswa"
         description={detail ? detail.nim : undefined}
-        footer={
-          detail && (
-            <Button
-              type="button"
-              onClick={() => setIsEditOpen(true)}
-            >
-              Edit
-            </Button>
-          )
-        }
       >
         {loading && (
           <p className="py-6 text-center text-sm text-fg-subtle">
@@ -180,16 +143,6 @@ function DetailContent({
           </>
         )}
       </Modal>
-
-      {isEditOpen && detail !== null && (
-        <StudentEditModal
-          key={detail.id}
-          open
-          onClose={() => setIsEditOpen(false)}
-          onSaved={handleSaved}
-          student={detail}
-        />
-      )}
     </>
   );
 }

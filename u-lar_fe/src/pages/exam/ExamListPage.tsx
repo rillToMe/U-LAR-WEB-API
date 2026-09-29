@@ -117,7 +117,7 @@ export default function ExamListPage() {
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-            Web Ujian
+            Halaman Ujian
           </p>
 
           <h1 className="mt-1 truncate text-xl font-bold text-fg">

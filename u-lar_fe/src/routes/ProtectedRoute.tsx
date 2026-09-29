@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { ADMIN_ROLE } from "../lib/session";
 
 export default function ProtectedRoute() {
   const token = localStorage.getItem("accessToken");
@@ -8,9 +9,12 @@ export default function ProtectedRoute() {
     return <Navigate to="/login" replace />;
   }
 
-  const user = JSON.parse(userRaw);
+  const user = JSON.parse(userRaw) as { role?: string };
 
-  if (user.role !== "admin") {
+  // Superadmin juga admin: role SUPER_ADMIN harus tetap lolos ke panel,
+  // kalau tidak dia terkunci dari seluruh halaman padahal endpoint-nya
+  // mengizinkan. Role admin biasa tetap "ADMIN".
+  if (user.role !== ADMIN_ROLE.admin && user.role !== ADMIN_ROLE.superAdmin) {
     return <Navigate to="/login" replace />;
   }
 

@@ -4,6 +4,7 @@ import { ThemeToggle } from "./theme";
 import ConfirmModal from "../ui/ConfirmModal";
 import IconButton from "../ui/IconButton";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
+import { isSuperAdminSession } from "../../lib/session";
 
 const navigation = [
   {
@@ -91,8 +92,55 @@ const navigation = [
       </svg>
     ),
   },
+  {
+    label: "Cara Pakai",
+    to: "/admin/docs",
+    end: false,
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="size-5"
+      >
+        <circle cx="12" cy="12" r="9" />
+        <path d="M9.6 9.2a2.5 2.5 0 1 1 3.2 2.4c-.5.2-.8.7-.8 1.2v.7" />
+        <path d="M12 17h.01" />
+      </svg>
+    ),
+  },
+  {
+    label: "Kelola Admin",
+    to: "/admin/admins",
+    end: false,
+    /* Hanya superadmin. Disembunyikan, bukan dikunci: halaman "/admin/admins"
+       juga dijaga SuperAdminRoute, dan API-nya menolak dengan 403. */
+    superAdminOnly: true,
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+        className="size-5"
+      >
+        <circle cx="9" cy="8" r="3.5" />
+        <path d="M3 20a6 6 0 0 1 12 0" />
+        <path d="M18 5.5a3 3 0 0 1 0 5.9" />
+        <path d="M17.5 14.5A5.5 5.5 0 0 1 21 20" />
+      </svg>
+    ),
+  },
 ];
 
+/** Item ber-role superadmin disembunyikan dari sidebar untuk admin biasa. */
 interface NavProps {
   mobileOpen: boolean;
   onMobileClose: () => void;
@@ -125,6 +173,10 @@ export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
   // normal-normal saja. Syarat `mobileViewport` mencegah halaman terkunci
   // kalau layar diperbesar ke ukuran desktop saat laci masih terbuka.
   useBodyScrollLock(mobileOpen && mobileViewport);
+
+  const visibleNavigation = navigation.filter(
+    (item) => !item.superAdminOnly || isSuperAdminSession()
+  );
 
   function handleLogout() {
     localStorage.removeItem("accessToken");
@@ -229,7 +281,7 @@ export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
         )}
 
         <div className="space-y-1.5">
-          {navigation.map((item) => (
+          {visibleNavigation.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

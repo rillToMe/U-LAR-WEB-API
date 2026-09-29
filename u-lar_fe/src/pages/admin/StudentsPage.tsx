@@ -19,7 +19,7 @@ import type {
   StudentListParams,
 } from "../../types/student";
 import Button from "../../components/ui/Button";
-import ConfirmModal from "../../components/ui/ConfirmModal";
+import DangerConfirmModal from "../../components/ui/DangerConfirmModal";
 import IconButton from "../../components/ui/IconButton";
 import Skeleton from "../../components/ui/Skeleton";
 
@@ -39,6 +39,9 @@ const CreateStudentModal = lazy(
 );
 const StudentDetailModal = lazy(
   () => import("../../components/students/StudentDetailModal")
+);
+const StudentEditModal = lazy(
+  () => import("../../components/students/studentEditModal")
 );
 
 function StudentsSkeleton() {
@@ -109,6 +112,8 @@ export default function StudentsPage() {
   const [updatingStatusId, setUpdatingStatusId] = useState<
     number | null
   >(null);
+  const [editingStudent, setEditingStudent] =
+    useState<StudentListItem | null>(null);
   const [deletingStudent, setDeletingStudent] =
     useState<StudentListItem | null>(null);
   const [deletingBusy, setDeletingBusy] = useState(false);
@@ -547,6 +552,30 @@ export default function StudentsPage() {
                             </svg>
                           </IconButton>
 
+                          <IconButton
+                            variant="secondary"
+                            onClick={() => {
+                              setDetailUserId(null);
+                              setEditingStudent(student);
+                            }}
+                            label={`Ubah data ${student.name}`}
+                            title="Ubah data"
+                          >
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.8"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                              className="size-4.5"
+                            >
+                              <path d="M12 20h9" />
+                              <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                            </svg>
+                          </IconButton>
+
                           <button
                             type="button"
                             role="switch"
@@ -679,31 +708,59 @@ export default function StudentsPage() {
           <StudentDetailModal
             open
             onClose={() => setDetailUserId(null)}
-            onUpdated={() => setReloadKey((key) => key + 1)}
             studentId={detailUserId}
+          />
+        )}
+
+        {editingStudent !== null && (
+          <StudentEditModal
+            key={editingStudent.id}
+            open
+            student={editingStudent}
+            onClose={() => setEditingStudent(null)}
+            onSaved={() => {
+              setReloadKey((key) => key + 1);
+            }}
           />
         )}
       </Suspense>
 
-      <ConfirmModal
+      <DangerConfirmModal
         open={deletingStudent !== null}
         onClose={() => setDeletingStudent(null)}
         onConfirm={handleDeleteStudent}
         loading={deletingBusy}
-        title="Hapus mahasiswa ini?"
-        description="Data terhapus permanen dan tidak bisa dikembalikan. Untuk menonaktifkan sementara, pakai toggle status saja."
-        confirmLabel="Hapus Permanen"
-      >
-        {deletingStudent !== null && (
-          <p className="text-sm text-fg-muted">
-            Mahasiswa{" "}
-            <span className="font-semibold text-fg">
-              {deletingStudent.name} ({deletingStudent.nim})
-            </span>{" "}
-            beserta hasil ujiannya ikut terhapus.
+        title="Hapus mahasiswa"
+        confirmPhrase={deletingStudent?.nim ?? ""}
+        summary={
+          <p className="text-sm leading-6 text-fg-muted">
+            Data mahasiswa{" "}
+            <strong className="text-fg">{deletingStudent?.name}</strong> (
+            {deletingStudent?.nim}) akan dihapus permanen.
           </p>
-        )}
-      </ConfirmModal>
+        }
+        effects={
+          <ul className="list-disc space-y-1.5 pl-5">
+            <li>
+              Akun mahasiswa beserta{" "}
+              <strong>seluruh hasil ujiannya</strong> ikut terhapus dan
+              tidak bisa dipulihkan.
+            </li>
+            <li>
+              NIM <strong>{deletingStudent?.nim}</strong> menjadi bebas dan
+              bisa dipakai mahasiswa lain.
+            </li>
+            <li>
+              Materi dan soal milik U-LAR tidak terpengaruh.
+            </li>
+            <li>
+              Kalau hanya ingin menonaktifkan sementara, lebih aman pakai{" "}
+              <strong>toggle status</strong> daripada menghapus.
+            </li>
+          </ul>
+        }
+        confirmLabel="Hapus permanen"
+      />
     </div>
   );
 }

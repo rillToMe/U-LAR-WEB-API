@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using u_lar_be.Domain.Common;
 using u_lar_be.Domain.Users;
 
 namespace u_lar_be.Infrastructure.Persistence.Configurations;
@@ -18,6 +19,11 @@ public sealed class AdminUserConfiguration : IEntityTypeConfiguration<AdminUser>
 
         builder.Property(x => x.PasswordHash)
             .IsRequired();
+
+        builder.Property(x => x.Role)
+            .HasMaxLength(32)
+            .IsRequired()
+            .HasDefaultValue(UserRoles.Admin);
 
         builder.HasIndex(x => x.Username)
             .IsUnique();

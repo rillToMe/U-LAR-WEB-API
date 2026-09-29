@@ -13,4 +13,13 @@ public class AdminUser : BaseEntity
     public string Username { get; set; } = string.Empty;
 
     public string PasswordHash { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Role admin ini: <see cref="UserRoles.Admin"/> atau
+    /// <see cref="UserRoles.SuperAdmin"/>. Disimpan sebagai string, bukan
+    /// boolean, supaya role baru bisa ditambahkan tanpa mengubah nilai yang
+    /// sudah tersimpan atau menambah kolom baru. Role ikut diklaim ke JWT
+    /// saat login, jadi [Authorize(Roles = ...)] bisa membedakannya.
+    /// </summary>
+    public string Role { get; set; } = UserRoles.Admin;
 }

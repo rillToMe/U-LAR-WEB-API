@@ -84,7 +84,7 @@ export default function LoginPage() {
 
         <div className="relative max-w-md py-16">
           <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200/80">
-            Laboratory administration ADMIN MAS AFA SUKA DI BAYAR
+            Laboratory administration ADMIN
           </p>
           <h2 className="text-4xl font-semibold leading-[1.08] tracking-tight xl:text-5xl">
             Kelola laboratorium dengan lebih terarah.
@@ -103,7 +103,7 @@ export default function LoginPage() {
       <main className="flex min-h-dvh flex-col px-6 py-8 md:px-16 lg:px-20 xl:px-28">
         <div className="flex items-center gap-2.5 lg:hidden">
           <img
-            src="/Logo.png"
+            src="/Logo.webp"
             alt="U-LAR"
             className="h-12 w-36 object-contain object-left"
           />

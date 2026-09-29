@@ -174,23 +174,52 @@ public sealed class AuthService(
                 "Username atau password salah.", "invalid_credentials");
         }
 
+        // Role dibaca dari kolom admins.role, bukan dari tipe token, supaya
+        // [Authorize(Roles = ...)] bisa membedakan admin biasa dari superadmin.
+        // Nilai tak dikenal (atau kosong, mis. baris lama sebelum kolom role
+        // ada) diperlakukan sebagai admin biasa supaya akses tidak hilang.
+        var isSuperAdmin = admin.Role == UserRoles.SuperAdmin;
+        var role = isSuperAdmin ? UserRoles.SuperAdmin : UserRoles.Admin;
+
+        if (admin.Role != role)
+        {
+            logger.LogWarning(
+                "Role admin {Username} tidak dikenal ('{Role}'), diperlakukan sebagai {Fallback}.",
+                admin.Username, admin.Role, role);
+        }
+
         logger.LogInformation(
-            "Login admin berhasil: {Username} (id {AdminId}).",
-            admin.Username, admin.Id);
+            "Login admin berhasil: {Username} (id {AdminId}), role {Role}.",
+            admin.Username, admin.Id, role);
+
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, admin.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, admin.Id.ToString()),
+            new(ClaimTypes.Name, admin.Username),
+
+            // Setiap admin selalu boleh masuk endpoint yang dijaga
+            // [Authorize(Roles = UserRoles.Admin)].
+            new(ClaimTypes.Role, UserRoles.Admin)
+        };
+
+        // Superadmin adalah admin yang juga punya hak tambahan, jadi tokennya
+        // membawa dua role claim. Dengan begitu [Authorize(Roles = "ADMIN")]
+        // tetap berlaku untuknya, dan hanya dia yang lolos
+        // [Authorize(Roles = "SUPER_ADMIN")] di endpoint Kelola Admin.
+        if (isSuperAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, UserRoles.SuperAdmin));
+        }
 
         var accessToken = WriteToken(
             _jwt.AdminAccessTokenMinutes,
-        [
-            new Claim(JwtRegisteredClaimNames.Sub, admin.Id.ToString()),
-            new Claim(ClaimTypes.NameIdentifier, admin.Id.ToString()),
-            new Claim(ClaimTypes.Name, admin.Username),
-            new Claim(ClaimTypes.Role, UserRoles.Admin)
-        ]);
+            claims);
 
         return new AdminLoginResponse(
             admin.Id,
             admin.Username,
-            UserRoles.Admin,
+            role,
             accessToken);
     }
 

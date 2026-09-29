@@ -11,6 +11,7 @@ using u_lar_be.Configuration.Options;
 using u_lar_be.Infrastructure.Persistence;
 using u_lar_be.Features.Auth;
 using u_lar_be.Features.Admin;
+using u_lar_be.Features.Admin.Admins;
 using u_lar_be.Features.Admin.Students;
 using u_lar_be.Features.Admin.Exams;
 using u_lar_be.Features.Admin.Students.DTOs;
@@ -287,6 +288,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped(typeof(IPasswordHasher<>), typeof(PasswordHasher<>));
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IAdminService, AdminService>();
+    services.AddScoped<IAdminUserService, AdminUserService>();
         services.AddScoped<IStudentService, StudentService>();
         services.AddScoped<IExamService, ExamService>();
         services.AddScoped<IExamBankService, ExamBankService>();

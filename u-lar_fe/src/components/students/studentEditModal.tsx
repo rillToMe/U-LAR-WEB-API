@@ -22,8 +22,18 @@ interface StudentEditModalProps {
   open: boolean;
   onClose: () => void;
   onSaved?: () => void;
-  student: StudentDetail | null;
+  /**
+   * Hanya field yang memang dipakai form. Sengaja tidak `StudentDetail`:
+   * modal ini juga dibuka langsung dari baris tabel, yang datanya
+   * `StudentListItem` dan tidak punya progress maupun skor.
+   */
+  student: EditableStudent | null;
 }
+
+type EditableStudent = Pick<
+  StudentDetail,
+  "id" | "nim" | "name" | "email"
+>;
 
 export default function StudentEditModal({
   open,
