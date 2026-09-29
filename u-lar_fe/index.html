@@ -30,8 +30,9 @@
           }
         }
 
-        // Web ujian (/ujian) selalu light mode - tidak ada varian dark.
-        if (path.indexOf("/ujian") === 0) {
+        // Web ujian (/ujian) dan halaman materi (/materi) selalu light mode -
+        // tidak ada varian dark. Web admin tetap mengikuti tema tersimpan.
+        if (path.indexOf("/ujian") === 0 || path.indexOf("/materi") === 0) {
           root.classList.remove("dark");
           root.style.colorScheme = "light";
           root.style.backgroundColor = "#f9fafb";

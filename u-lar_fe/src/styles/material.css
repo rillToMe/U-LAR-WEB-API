@@ -9,6 +9,37 @@
    Latar dokumen sengaja tanpa gradien dan tanpa grid HUD - ini halaman baca,
    bukan HUD game. */
 
+/* Lebar layar WebView game (Unity Editor / Device Simulator).
+
+   Seperti halaman ujian, WebView Unity menampilkan halaman dengan lebar CSS
+   jauh lebih besar daripada lebar CSS HP — meta viewport diabaikan di editor
+   dan lebarnya ikut ukuran texture. Konten materi ber-lebar `max-w-md` (28rem)
+   jadi hanya mengisi sebagian layar dan terlihat mungil.
+
+   Semua ukuran halaman ini berbasis rem, jadi menaikkan font root memperbesar
+   kartu, teks, dan jarak sekaligus — proporsional. Skala mengikuti lebar
+   viewport supaya 28rem selalu mengisi ~87% layar: 28 x 3.1vw = 0.87 x 100vw.
+
+   Batas bawah 16px mematikan aturan ini sendiri di HP: untuk lebar di bawah
+   ~516px, 3.1vw lebih kecil dari 16px sehingga font root tetap seperti
+   biasanya. Karena itu media query tidak perlu — batas bawah clamp sudah
+   cukup, dan media query justru meleset di Device Simulator yang CSS
+   viewport-nya hanya ~864px (di bawah breakpoint 1024px).
+
+   Ini juga alasan teks non-Latin (Thai) sempat terbaca buram: bukan font rusak,
+   cuma dirender terlalu kecil sehingga tanda baca Thailand bertumpuk. */
+html.material-reader {
+  font-size: clamp(16px, 3.1vw, 60px);
+
+  /* Isi materi berasal dari editor admin dan bisa memuat satu token sangat
+     panjang tanpa spasi — URL, potongan kode, atau teks non-Latin. Tanpa
+     pemengalan, token itu didorong keluar kartu, memotong teks di tepi dan
+     memunculkan gulir horizontal untuk seluruh halaman. `anywhere` (bukan
+     `break-word`) karena konten ini juga jadi flex/grid item, yang
+     menghormati `min-content`. Properti ini diwarisi, jadi cukup di root. */
+  overflow-wrap: anywhere;
+}
+
 html.material-reader body {
   /* WebView game: tidak ada gulir kenyal keluar dokumen, tidak ada menu
      tekan-lama, dan tidak ada jeda 300 ms saat tombol ditekan. Teks tetap

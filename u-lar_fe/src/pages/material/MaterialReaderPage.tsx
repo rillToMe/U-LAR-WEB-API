@@ -1,7 +1,6 @@
 import { useEffect, useId, useState } from "react";
 import type { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ThemeProvider } from "../../components/common/theme";
 import { RichText } from "../../components/materials/richText";
 import Button from "../../components/ui/Button";
 import Skeleton from "../../components/ui/Skeleton";
@@ -538,11 +537,19 @@ export default function MaterialReaderPage() {
   // Penanda di <html> supaya `material.css` (perilaku sentuh WebView, ruang
   // aman layar) hanya berlaku selama halaman materi tampil. Dilepas lagi saat
   // pengguna berpindah ke halaman lain, mis. web admin di browser yang sama.
+  //
+  // Halaman materi selalu light mode seperti web ujian: paksa hapus kelas
+  // "dark" (mis. sisa dari web admin di browser yang sama) supaya token warna
+  // terang selalu dipakai.
   useEffect(() => {
-    document.documentElement.classList.add("material-reader");
+    const root = document.documentElement;
+    root.classList.add("material-reader");
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
+    root.style.backgroundColor = "#f9fafb";
 
     return () => {
-      document.documentElement.classList.remove("material-reader");
+      root.classList.remove("material-reader");
     };
   }, []);
 
@@ -610,26 +617,24 @@ export default function MaterialReaderPage() {
   }
 
   return (
-    <ThemeProvider>
-      <div className="exam-theme min-h-dvh bg-surface-muted">
-        <div className="mr-safe-top mx-auto w-full max-w-md px-4 pb-6 lg:max-w-3xl">
-          {view.status === "loading" && <ReaderSkeleton />}
+    <div className="exam-theme min-h-dvh bg-surface-muted">
+      <div className="mr-safe-top mx-auto w-full max-w-md px-4 pb-6 lg:max-w-3xl">
+        {view.status === "loading" && <ReaderSkeleton />}
 
-          {view.status === "error" && (
-            <ErrorState message={view.message} onRetry={handleRetry} />
-          )}
+        {view.status === "error" && (
+          <ErrorState message={view.message} onRetry={handleRetry} />
+        )}
 
-          {view.status === "list" && <MaterialList items={view.materials} />}
-
-          {view.status === "material" && (
-            <MaterialDocument material={view.material} />
-          )}
-        </div>
+        {view.status === "list" && <MaterialList items={view.materials} />}
 
         {view.status === "material" && (
-          <DoneBar finished={finished} onDone={handleDone} />
+          <MaterialDocument material={view.material} />
         )}
       </div>
-    </ThemeProvider>
+
+      {view.status === "material" && (
+        <DoneBar finished={finished} onDone={handleDone} />
+      )}
+    </div>
   );
 }
