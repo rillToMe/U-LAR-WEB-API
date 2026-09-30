@@ -47,7 +47,7 @@ const StudentEditModal = lazy(
 function StudentsSkeleton() {
   return (
     <div
-      className="overflow-hidden rounded-xl border bg-surface"
+      className="overflow-hidden rounded-xl border bg-surface shadow-card"
       role="status"
       aria-label="Memuat daftar mahasiswa"
     >
@@ -273,7 +273,7 @@ export default function StudentsPage() {
 
       {/* Table */}
       {!loading && (
-        <div className="overflow-hidden rounded-xl border bg-surface">
+        <div className="overflow-hidden rounded-xl border bg-surface shadow-card">
           {/* Table Header */}
           <div className="flex items-center justify-between border-b px-6 py-4 max-md:flex-col max-md:items-stretch max-md:gap-3 max-md:px-4">
             <div>

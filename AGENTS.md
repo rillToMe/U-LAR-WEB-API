@@ -22,12 +22,20 @@ There is **no test project**. Adding one is future work.
 
 ## Backend wiring
 
-- `Program.cs` calls five extension methods in `ServiceCollectionExtensions.cs`: `AddApiServices`, `AddOptionsConfiguration`, `AddPersistence`, `AddFeatureServices`, `AddJwtAuthentication` (+ `AddCorsConfiguration`).
+- `Program.cs` calls six extension methods in `ServiceCollectionExtensions.cs`: `AddApiServices`, `AddOptionsConfiguration`, `AddPersistence`, `AddFeatureServices`, `AddJwtAuthentication`, `AddCorsConfiguration`, `AddRateLimitConfiguration`.
 - `AddApiServices` registers controllers, API versioning (URL segment → `/api/v1/...`), OpenAPI + Scalar (Development-only), and the global `GlobalExceptionHandler`.
 - `AddPersistence` wires a single `AppDbContext` via Npgsql + EF Core snake_case naming. **No raw SQL anywhere.**
 - `AddFeatureServices` is the only DI site — one line per feature slice.
 - Passwords: `Microsoft.AspNetCore.Identity.PasswordHasher<T>` registered open-generic for both `Student` and `AdminUser`.
-- Auth: admin creates student accounts (students cannot self-register). JWT bearer auth; student tokens are validated against DB `IsActive` on every request.
+- Auth: admin creates student accounts (students cannot self-register). JWT bearer auth.
+
+## Admin session
+
+Access token JWT pendek (15 m, `Jwt:AdminAccessTokenMinutes`) + refresh token yang bisa dicabut (`admin_refresh_tokens`, hash SHA256, `RevokedAt`). Setiap kali refresh dipanggil, token lama dicabut dan diganti (rotasi). Idle 1 hari, plafon total 8 hari dihitung dari `created_at`. Endpoint: `POST /Auth/admin/{login,refresh,logout}`.
+
+- `OnTokenValidated` mengecek **admin dan mahasiswa** ke DB tiap request: `IsActive` dan kecocokan role. Admin yang dinonaktifkan atau di-downgrade kehilangan akses dalam ≤15 menit, bukan menunggu token kedaluwarsa.
+- `/Auth/admin/login` dibatasi 5 percobaan/menit/IP lewat `AddRateLimitConfiguration` + `[EnableRateLimiting(RateLimitPolicy.AdminLogin)]`; 429 dikembalikan sebagai `ProblemDetails` dengan `code=too_many_requests`.
+- Semua config dari `Jwt:*` / `Cors:AllowedOrigins` — `appsettings.json` production hanya mengizinkan `http://localhost:5173`; origin LAN ditambahkan di `appsettings.Development.json`. Jangan kembalikan `"*"`.
 
 ## Backend constraints (hard)
 

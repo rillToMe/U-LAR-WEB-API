@@ -6,7 +6,7 @@ import Button from "../../components/ui/Button";
 import Skeleton from "../../components/ui/Skeleton";
 import { logger } from "../../lib/logger";
 import { getMaterial, getMaterials } from "../../services/materialApi";
-import { resolveApiFileUrl } from "../../services/api";
+import { resolveApiFileUrl } from "../../services/apiUrl";
 import type {
   Material,
   MaterialAccordionItem,

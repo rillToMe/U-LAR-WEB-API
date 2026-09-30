@@ -9,8 +9,9 @@ public sealed class UpdateAdminRequestValidator : AbstractValidator<UpdateAdminR
     {
         RuleFor(x => x)
             .Must(x => !string.IsNullOrWhiteSpace(x.Username)
-                || !string.IsNullOrEmpty(x.Password))
-            .WithMessage("Isi username atau password, atau keduanya.");
+                || !string.IsNullOrEmpty(x.Password)
+                || x.IsActive is not null)
+            .WithMessage("Isi username, password, atau status aktif — atau beberapa sekaligus.");
 
         RuleFor(x => x.Username)
             .MinimumLength(3)

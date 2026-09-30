@@ -84,6 +84,101 @@ public sealed class AuthService(
             refreshToken);
     }
 
+    /// <summary>
+    /// Memperpanjang sesi admin: refresh token lama dicabut dan diganti
+    /// yang baru (rotasi), supaya token yang bocor hanya berlaku sekali
+    /// pakai. Sesi yang aktif tetap diperpanjang setiap kali dipanggil,
+    /// tapi ada plafon total supaya token curian tidak bisa dihidupkan
+    /// terus dari komputer bersama.
+    /// </summary>
+    public async Task<RefreshTokenResponse> RefreshAdminTokenAsync(
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var tokenHash = HashToken(request.RefreshToken);
+        var storedToken = await dbContext.AdminRefreshTokens
+            .Include(x => x.Admin)
+            .SingleOrDefaultAsync(
+                x => x.TokenHash == tokenHash,
+                cancellationToken);
+
+        var now = DateTime.UtcNow;
+
+        if (storedToken is null
+            || storedToken.RevokedAt is not null
+            || storedToken.ExpiresAt <= now
+            || !storedToken.Admin.IsActive)
+        {
+            logger.LogWarning(
+                "Refresh token admin ditolak: tidak valid, kedaluwarsa, dicabut, atau akun nonaktif.");
+            throw new UnauthorizedException("Refresh token tidak valid.");
+        }
+
+        // CreatedAt tidak pernah diubah, jadi ini batas mutlak satu sesi
+        // walau tokennya terus diperpanjang.
+        var sessionDeadline = storedToken.CreatedAt
+            .AddDays(_jwt.AdminRefreshTokenAbsoluteDays);
+
+        if (sessionDeadline <= now)
+        {
+            storedToken.RevokedAt = now;
+
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            logger.LogWarning(
+                "Refresh token admin ditolak: plafon sesi habis untuk admin {AdminId}.",
+                storedToken.AdminId);
+            throw new UnauthorizedException(
+                "Sesi berakhir. Silakan masuk kembali.");
+        }
+
+        var accessToken = WriteAdminToken(
+            storedToken.Admin,
+            storedToken.Admin.Role == UserRoles.SuperAdmin);
+        var refreshToken = CreateAdminRefreshToken(storedToken.AdminId);
+
+        storedToken.RevokedAt = now;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        logger.LogInformation(
+            "Sesi admin {Username} (id {AdminId}) diperpanjang, berlaku sampai {Deadline:u}.",
+            storedToken.Admin.Username, storedToken.AdminId, sessionDeadline);
+
+        return new RefreshTokenResponse(
+            accessToken,
+            refreshToken,
+            _jwt.AdminAccessTokenMinutes * 60);
+    }
+
+    /// <summary>
+    /// Logout admin: refresh token yang dikirim dicabut supaya sesi tidak
+    /// bisa diperpanjang lagi. Access token yang sudah di tangan client
+    /// tetap berlaku sampai kedaluwarsa — batasnya 15 menit itu sebabnya.
+    /// </summary>
+    public async Task LogoutAdminAsync(
+        LogoutRequest request,
+        CancellationToken cancellationToken)
+    {
+        var tokenHash = HashToken(request.RefreshToken);
+        var storedToken = await dbContext.AdminRefreshTokens
+            .SingleOrDefaultAsync(
+                x => x.TokenHash == tokenHash,
+                cancellationToken);
+
+        if (storedToken is null || storedToken.RevokedAt is not null)
+        {
+            return;
+        }
+
+        storedToken.RevokedAt = DateTime.UtcNow;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        logger.LogInformation(
+            "Sesi admin {AdminId} dicabut lewat logout.", storedToken.AdminId);
+    }
+
     public async Task<RefreshTokenResponse> RefreshStudentTokenAsync(
         RefreshTokenRequest request,
         CancellationToken cancellationToken)
@@ -112,7 +207,10 @@ public sealed class AuthService(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new RefreshTokenResponse(accessToken, refreshToken);
+        return new RefreshTokenResponse(
+            accessToken,
+            refreshToken,
+            _jwt.StudentAccessTokenMinutes * 60);
     }
 
     /// <summary>
@@ -150,10 +248,13 @@ public sealed class AuthService(
                 x => x.Username == request.Username,
                 cancellationToken);
 
-        if (admin is null)
+        // Akun nonaktif diperlakukan sama seperti tidak ada: pesan ke client
+        // sengaja sama dengan "password salah" supaya tidak bisa dipakai
+        // menebak username mana yang terdaftar (akun ada tapi mati).
+        if (admin is null || !admin.IsActive)
         {
             logger.LogWarning(
-                "Login admin gagal: username {Username} tidak ditemukan.",
+                "Login admin gagal: username {Username} tidak ditemukan atau nonaktif.",
                 request.Username);
             throw new UnauthorizedException(
                 "Username atau password salah.", "invalid_credentials");
@@ -192,35 +293,22 @@ public sealed class AuthService(
             "Login admin berhasil: {Username} (id {AdminId}), role {Role}.",
             admin.Username, admin.Id, role);
 
-        var claims = new List<Claim>
-        {
-            new(JwtRegisteredClaimNames.Sub, admin.Id.ToString()),
-            new(ClaimTypes.NameIdentifier, admin.Id.ToString()),
-            new(ClaimTypes.Name, admin.Username),
+        var accessToken = WriteAdminToken(admin, isSuperAdmin);
+        var refreshToken = CreateAdminRefreshToken(admin.Id);
 
-            // Setiap admin selalu boleh masuk endpoint yang dijaga
-            // [Authorize(Roles = UserRoles.Admin)].
-            new(ClaimTypes.Role, UserRoles.Admin)
-        };
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-        // Superadmin adalah admin yang juga punya hak tambahan, jadi tokennya
-        // membawa dua role claim. Dengan begitu [Authorize(Roles = "ADMIN")]
-        // tetap berlaku untuknya, dan hanya dia yang lolos
-        // [Authorize(Roles = "SUPER_ADMIN")] di endpoint Kelola Admin.
-        if (isSuperAdmin)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, UserRoles.SuperAdmin));
-        }
-
-        var accessToken = WriteToken(
-            _jwt.AdminAccessTokenMinutes,
-            claims);
+        logger.LogInformation(
+            "Sesi admin {Username} (id {AdminId}) dibuka, refresh token berlaku sampai {ExpiresAt:u}.",
+            admin.Username, admin.Id, DateTime.UtcNow.AddDays(_jwt.AdminRefreshTokenIdleDays));
 
         return new AdminLoginResponse(
             admin.Id,
             admin.Username,
             role,
-            accessToken);
+            accessToken,
+            refreshToken,
+            _jwt.AdminAccessTokenMinutes * 60);
     }
 
     private string WriteToken(
@@ -242,6 +330,47 @@ public sealed class AuthService(
 
         return new JwtSecurityTokenHandler()
             .WriteToken(token);
+    }
+
+    /// <summary>
+    /// Superadmin adalah admin yang juga punya hak tambahan, jadi tokennya
+    /// membawa dua role claim. Dengan begitu [Authorize(Roles = "ADMIN")]
+    /// tetap berlaku untuknya, dan hanya dia yang lolos
+    /// [Authorize(Roles = "SUPER_ADMIN")] di endpoint Kelola Admin.
+    /// </summary>
+    private string WriteAdminToken(AdminUser admin, bool isSuperAdmin)
+    {
+        var claims = new List<Claim>
+        {
+            new(JwtRegisteredClaimNames.Sub, admin.Id.ToString()),
+            new(ClaimTypes.NameIdentifier, admin.Id.ToString()),
+            new(ClaimTypes.Name, admin.Username),
+
+            // Setiap admin selalu boleh masuk endpoint yang dijaga
+            // [Authorize(Roles = UserRoles.Admin)].
+            new(ClaimTypes.Role, UserRoles.Admin)
+        };
+
+        if (isSuperAdmin)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, UserRoles.SuperAdmin));
+        }
+
+        return WriteToken(_jwt.AdminAccessTokenMinutes, claims);
+    }
+
+    private string CreateAdminRefreshToken(int adminId)
+    {
+        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+        dbContext.AdminRefreshTokens.Add(new AdminRefreshToken
+        {
+            AdminId = adminId,
+            TokenHash = HashToken(token),
+            ExpiresAt = DateTime.UtcNow.AddDays(_jwt.AdminRefreshTokenIdleDays)
+        });
+
+        return token;
     }
 
     private string WriteStudentToken(Student student)

@@ -25,6 +25,9 @@ public sealed class AdminUserConfiguration : IEntityTypeConfiguration<AdminUser>
             .IsRequired()
             .HasDefaultValue(UserRoles.Admin);
 
+        builder.Property(x => x.IsActive)
+            .HasDefaultValue(true);
+
         builder.HasIndex(x => x.Username)
             .IsUnique();
     }

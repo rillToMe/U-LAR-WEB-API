@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../services/authApi";
 import { describeApiError } from "../../services/apiError";
+import { writeAdminSession } from "../../lib/session";
 import { useToast } from "../../components/common/toastContext";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -36,18 +37,15 @@ export default function LoginPage() {
 
       const result = await login({ username, password });
 
-      localStorage.setItem(
-        "accessToken",
-        result.accessToken
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
+      writeAdminSession(
+        {
           adminId: result.adminId,
           username: result.username,
           role: result.role,
-        })
+        },
+        result.accessToken,
+        result.refreshToken,
+        result.expiresInSeconds
       );
 
       toast.success(`Berhasil masuk sebagai ${result.username}.`);

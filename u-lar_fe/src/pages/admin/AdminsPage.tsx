@@ -16,7 +16,7 @@ function AdminsSkeleton() {
     <div
       role="status"
       aria-label="Memuat daftar admin"
-      className="space-y-3 rounded-xl border border-border bg-surface p-6"
+      className="space-y-3 rounded-xl border border-border bg-surface p-6 shadow-card"
     >
       <Skeleton className="h-5 w-40" />
       <Skeleton className="h-12 w-full" />
@@ -116,7 +116,7 @@ export default function AdminsPage() {
       {loading && <AdminsSkeleton />}
 
       {!loading && (
-        <div className="overflow-hidden rounded-xl border border-border bg-surface">
+        <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
           <div className="flex items-center justify-between border-b px-6 py-4 max-md:flex-col max-md:items-stretch max-md:gap-3 max-md:px-4">
             <div>
               <h2 className="font-semibold text-fg">Daftar Admin</h2>
@@ -185,12 +185,20 @@ export default function AdminsPage() {
                             Akun Anda
                           </span>
                         )}
+
+                        {!admin.isActive && (
+                          <span className="rounded-full bg-danger-surface px-2 py-0.5 text-xs font-semibold text-danger">
+                            Nonaktif
+                          </span>
+                        )}
                       </div>
 
                       <p className="mt-0.5 text-sm text-fg-subtle">
-                        {isSuperAdmin
-                          ? "Bisa menambah dan menghapus admin."
-                          : "Hanya bisa mengelola materi, soal, dan mahasiswa."}
+                        {!admin.isActive
+                          ? "Tidak bisa login sampai diaktifkan kembali."
+                          : isSuperAdmin
+                            ? "Bisa menambah dan menghapus admin."
+                            : "Hanya bisa mengelola materi, soal, dan mahasiswa."}
                       </p>
                     </div>
 
@@ -251,9 +259,11 @@ export default function AdminsPage() {
         admin={editing}
         isSelf={editing !== null && editing.id === selfId}
         onClose={() => setEditing(null)}
-        onSaved={(username) => {
+        onSaved={(username, isActive) => {
           toast.success(
-            `Akun ${username} berhasil diperbarui.`
+            isActive
+              ? `Akun ${username} berhasil diperbarui.`
+              : `Akun ${username} dinonaktifkan.`
           );
           reload();
         }}

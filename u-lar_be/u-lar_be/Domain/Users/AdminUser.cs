@@ -22,4 +22,11 @@ public class AdminUser : BaseEntity
     /// saat login, jadi [Authorize(Roles = ...)] bisa membedakannya.
     /// </summary>
     public string Role { get; set; } = UserRoles.Admin;
+
+    /// <summary>
+    /// Admin nonaktif ditolak di <c>OnTokenValidated</c> walau tokennya
+    /// masih punya masa berlaku, jadi menonaktifkan admin berlaku dalam
+    /// batas umur access token dan tidak perlu mencabut baris datanya.
+    /// </summary>
+    public bool IsActive { get; set; } = true;
 }

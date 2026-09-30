@@ -14,6 +14,7 @@ public interface IAdminUserService
     Task<AdminListItemResponse> UpdateAsync(
         int adminId,
         UpdateAdminRequest request,
+        int requestingAdminId,
         CancellationToken cancellationToken);
 
     Task DeleteAsync(

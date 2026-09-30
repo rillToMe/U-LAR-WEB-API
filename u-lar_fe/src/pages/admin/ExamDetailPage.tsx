@@ -285,7 +285,7 @@ export default function ExamDetailPage() {
         ].map((item) => (
           <div
             key={item.label}
-            className="rounded-xl border bg-surface px-4 py-3"
+            className="rounded-xl border bg-surface px-4 py-3 shadow-card"
           >
             <p className="text-xs text-fg-subtle">{item.label}</p>
 
@@ -304,7 +304,7 @@ export default function ExamDetailPage() {
       )}
 
       {/* Daftar soal */}
-      <div className="overflow-hidden rounded-xl border bg-surface">
+      <div className="overflow-hidden rounded-xl border bg-surface shadow-card">
         <div className="flex items-center justify-between border-b px-6 py-4 max-md:flex-col max-md:items-stretch max-md:gap-3 max-md:px-4">
           <div>
             <h2 className="font-semibold text-fg">Daftar Soal</h2>

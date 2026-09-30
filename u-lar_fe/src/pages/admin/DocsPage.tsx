@@ -52,7 +52,7 @@ const categories: Category[] = [
 
 function Card({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-5">
+    <div className="rounded-xl border border-border bg-surface p-5 shadow-card">
       {children}
     </div>
   );
@@ -522,7 +522,7 @@ export default function DocsPage() {
                 key={item.id}
                 type="button"
                 onClick={() => setView(item.id)}
-                className="group flex flex-col rounded-xl border border-border bg-surface p-6 text-left transition-colors duration-150 hover:border-accent-border hover:bg-accent-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="group flex flex-col rounded-xl border border-border bg-surface p-6 text-left shadow-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-accent-border hover:bg-accent-surface hover:shadow-card-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transform-none motion-reduce:transition-none"
               >
                 <span className="text-base font-semibold text-fg">
                   {item.title}
@@ -561,7 +561,7 @@ export default function DocsPage() {
                 key={item.id}
                 type="button"
                 onClick={() => setView(item.id)}
-                className="flex flex-col rounded-xl border border-border bg-surface p-5 text-left transition-colors duration-150 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="flex flex-col rounded-xl border border-border bg-surface p-5 text-left shadow-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:bg-surface-hover hover:shadow-card-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transform-none motion-reduce:transition-none"
               >
                 <span className="text-sm font-semibold text-fg">
                   {item.title}

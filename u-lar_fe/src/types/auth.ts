@@ -8,4 +8,14 @@ export interface LoginResponse {
   username: string;
   role: string;
   accessToken: string;
+  refreshToken: string;
+  /** Umur access token dalam detik, dipakai client untuk menjadwalkan
+   *  refresh senyap sendiri. */
+  expiresInSeconds: number;
 }
+
+/** Bagian sesi yang diganti setiap kali token diperpanjang. */
+export type SessionTokens = Pick<
+  LoginResponse,
+  "accessToken" | "refreshToken" | "expiresInSeconds"
+>;

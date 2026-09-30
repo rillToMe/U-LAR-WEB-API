@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using System.Threading.RateLimiting;
 using u_lar_be.Common.Exceptions;
 using u_lar_be.Configuration.Options;
 using u_lar_be.Infrastructure.Persistence;
@@ -91,10 +92,20 @@ public static class ServiceCollectionExtensions
                             return;
                         }
                         var role = principal.FindFirstValue(ClaimTypes.Role);
+                        var idClaim = principal.FindFirstValue(
+                            ClaimTypes.NameIdentifier);
+                        var dbContext = context.HttpContext
+                            .RequestServices
+                            .GetRequiredService<AppDbContext>();
+
+                        // Role dibaca dari token, tapi token bisa berumur 15
+                        // menit dan harus tetap mencerminkan perubahan role
+                        // di database. Karena itu baik mahasiswa maupun admin
+                        // dicek ulang ke sini: akun yang dinonaktifkan atau
+                        // role-nya diturunkan langsung kehilangan akses, bukan
+                        // menunggu tokennya kedaluwarsa.
                         if (role == UserRoles.Student)
                         {
-                            var idClaim = principal.FindFirstValue(
-                                ClaimTypes.NameIdentifier);
                             if (idClaim is null
                                 || !int.TryParse(idClaim, out var studentId))
                             {
@@ -103,10 +114,6 @@ public static class ServiceCollectionExtensions
                                 context.Fail("Token tidak valid.");
                                 return;
                             }
-
-                            var dbContext = context.HttpContext
-                                .RequestServices
-                                .GetRequiredService<AppDbContext>();
 
                             var studentExists = await dbContext.Students
                                 .AnyAsync(
@@ -121,6 +128,61 @@ public static class ServiceCollectionExtensions
                                 context.Fail(
                                     "Akun telah dinonaktifkan.");
                             }
+
+                            return;
+                        }
+
+                        if (role is not (UserRoles.Admin or UserRoles.SuperAdmin))
+                        {
+                            log.LogWarning(
+                                "Token ditolak: role '{Role}' tidak dikenal [{TraceId}]",
+                                role, context.HttpContext.TraceIdentifier);
+                            context.Fail("Token tidak valid.");
+                            return;
+                        }
+
+                        if (idClaim is null
+                            || !int.TryParse(idClaim, out var adminId))
+                        {
+                            log.LogWarning("Token validasi gagal: claim id admin tidak valid [{TraceId}]",
+                                context.HttpContext.TraceIdentifier);
+                            context.Fail("Token tidak valid.");
+                            return;
+                        }
+
+                        var admin = await dbContext.Admins
+                            .Where(x => x.Id == adminId)
+                            .Select(x => new { x.IsActive, x.Role })
+                            .SingleOrDefaultAsync(
+                                context.HttpContext.RequestAborted);
+
+                        if (admin is null || !admin.IsActive)
+                        {
+                            log.LogWarning(
+                                "Token ditolak: admin {AdminId} nonaktif/tidak ada [{TraceId}]",
+                                adminId, context.HttpContext.TraceIdentifier);
+                            context.Fail("Akun telah dinonaktifkan.");
+                            return;
+                        }
+
+                        // Superadmin di-downgrade ke admin biasa harus kehilangan
+                        // claim SUPER_ADMIN yang sudah tercetak di tokennya.
+                        // Arahnya satu: role yang hilang di DBDicabut, role
+                        // yang baru di DB baru berlaku setelah login ulang.
+                        var allowedRoles = admin.Role == UserRoles.SuperAdmin
+                            ? new[] { UserRoles.Admin, UserRoles.SuperAdmin }
+                            : new[] { UserRoles.Admin };
+
+                        var hasStaleRole = principal
+                            .FindAll(ClaimTypes.Role)
+                            .Any(x => !allowedRoles.Contains(x.Value));
+
+                        if (hasStaleRole)
+                        {
+                            log.LogWarning(
+                                "Token ditolak: role admin {AdminId} berubah di database [{TraceId}]",
+                                adminId, context.HttpContext.TraceIdentifier);
+                            context.Fail("Hak akses Anda berubah. Silakan masuk kembali.");
                         }
                     },
 
@@ -168,9 +230,44 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddRateLimitConfiguration(
+        this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode =
+                StatusCodes.Status429TooManyRequests;
+
+            // Default-nya 429 tanpa body. Frontend ini sudah terbiasa membaca
+            // ProblemDetails, jadi ditulis dengan bentuk yang sama.
+            options.OnRejected = async (context, cancellationToken) =>
+            {
+                await WriteAuthProblem(
+                    context.HttpContext,
+                    StatusCodes.Status429TooManyRequests,
+                    "too_many_requests",
+                    "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.");
+            };
+
+            options.AddPolicy(RateLimitPolicy.AdminLogin, httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    httpContext.Connection.RemoteIpAddress?.ToString()
+                    ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 5,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0
+                    }));
+        });
+
+        return services;
+    }
+
     /// <summary>
-    /// Menulis ProblemDetails berisi `code` untuk respons 401/403 yang
-    /// datang dari pipeline JWT (bukan dari GlobalExceptionHandler).
+    /// Menulis ProblemDetails berisi `code` untuk respons 401/403/429 yang
+    /// datang dari pipeline JWT dan rate limiter (bukan dari
+    /// GlobalExceptionHandler).
     /// </summary>
     private static async Task WriteAuthProblem(
         HttpContext httpContext,
@@ -188,9 +285,12 @@ public static class ServiceCollectionExtensions
         var problem = new Microsoft.AspNetCore.Mvc.ProblemDetails
         {
             Status = status,
-            Title = status == StatusCodes.Status401Unauthorized
-                ? "Tidak terautentikasi."
-                : "Akses ditolak.",
+            Title = status switch
+            {
+                StatusCodes.Status401Unauthorized => "Tidak terautentikasi.",
+                StatusCodes.Status429TooManyRequests => "Terlalu banyak permintaan.",
+                _ => "Akses ditolak."
+            },
             Detail = detail,
             Instance = httpContext.Request.Path
         };

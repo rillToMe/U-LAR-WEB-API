@@ -8,4 +8,5 @@ public sealed record AdminListItemResponse(
     int Id,
     string Username,
     string Role,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    bool IsActive);

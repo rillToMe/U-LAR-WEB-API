@@ -32,7 +32,8 @@ public sealed class AdminUserService(
                 x.Id,
                 x.Username,
                 x.Role,
-                x.CreatedAt))
+                x.CreatedAt,
+                x.IsActive))
             .ToListAsync(cancellationToken);
     }
 
@@ -76,12 +77,14 @@ public sealed class AdminUserService(
             admin.Id,
             admin.Username,
             admin.Role,
-            admin.CreatedAt);
+            admin.CreatedAt,
+            admin.IsActive);
     }
 
     public async Task<AdminListItemResponse> UpdateAsync(
         int adminId,
         UpdateAdminRequest request,
+        int requestingAdminId,
         CancellationToken cancellationToken)
     {
         var admin = await dbContext.Admins
@@ -122,13 +125,30 @@ public sealed class AdminUserService(
                 request.Password);
         }
 
+        // Menonaktifkan lebih aman daripada menghapus: akun berhenti bisa
+        // masuk dan sesi lamanya ditolak di OnTokenValidated, tapi riwayatnya
+        // tetap ada. Menonaktifkan akun sendiri ditolak supaya superadmin
+        // tidak bisa mengunci dirinya sendiri dari panel.
+        if (request.IsActive is { } isActive && isActive != admin.IsActive)
+        {
+            if (!isActive && adminId == requestingAdminId)
+            {
+                throw new ConflictException(
+                    "Admin tidak bisa menonaktifkan akunnya sendiri.",
+                    "cannot_deactivate_self");
+            }
+
+            admin.IsActive = isActive;
+        }
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return new AdminListItemResponse(
             admin.Id,
             admin.Username,
             admin.Role,
-            admin.CreatedAt);
+            admin.CreatedAt,
+            admin.IsActive);
     }
 
     public async Task DeleteAsync(

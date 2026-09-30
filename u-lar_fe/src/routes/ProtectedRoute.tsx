@@ -1,20 +1,22 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { ADMIN_ROLE } from "../lib/session";
+import { isAdminRole, isAdminSessionActive, readAdminSession } from "../lib/session";
 
+/**
+ * Guard halaman admin. Syaratnya dibaca dari lib/session (satu sumber
+ * kebenaran), bukan parses localStorage sendiri — sudah termasuk cek token
+ * dan masa berlakunya, jadi halaman tidak sempat tampil dengan sesi yang
+ * sudah mati lalu langsung tendang balik ke login.
+ *
+ * Superadmin juga admin: role SUPER_ADMIN harus tetap lolos ke panel,
+ * kalau tidak dia terkunci dari seluruh halaman padahal endpoint-nya
+ * mengizinkan.
+ */
 export default function ProtectedRoute() {
-  const token = localStorage.getItem("accessToken");
-  const userRaw = localStorage.getItem("user");
-
-  if (!token || !userRaw) {
+  if (!isAdminSessionActive()) {
     return <Navigate to="/login" replace />;
   }
 
-  const user = JSON.parse(userRaw) as { role?: string };
-
-  // Superadmin juga admin: role SUPER_ADMIN harus tetap lolos ke panel,
-  // kalau tidak dia terkunci dari seluruh halaman padahal endpoint-nya
-  // mengizinkan. Role admin biasa tetap "ADMIN".
-  if (user.role !== ADMIN_ROLE.admin && user.role !== ADMIN_ROLE.superAdmin) {
+  if (!isAdminRole(readAdminSession()?.role)) {
     return <Navigate to="/login" replace />;
   }
 

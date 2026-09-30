@@ -4,7 +4,7 @@ import IconButton from "../ui/IconButton";
 import Select from "../ui/Select";
 import { useToast } from "../common/toastContext";
 import { describeApiError } from "../../services/apiError";
-import { resolveApiFileUrl } from "../../services/api";
+import { resolveApiFileUrl } from "../../services/apiUrl";
 import { uploadMaterialImage } from "../../services/materialBankApi";
 import { VALIDATION } from "../../config/validation";
 import type { MaterialCalloutTone } from "../../types/material";
@@ -606,7 +606,7 @@ function AccordionRow({
 
   return (
     <div
-      className={`group rounded-xl border bg-surface ${
+      className={`group rounded-xl border bg-surface shadow-card ${
         problem !== "" ? "border-danger-border" : "border-border"
       }`}
     >

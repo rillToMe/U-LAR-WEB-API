@@ -119,7 +119,7 @@ export default function MaterialEditorSidebar({
         </p>
       </div>
 
-      <div className="space-y-4 rounded-xl border border-border bg-surface p-3.5">
+      <div className="space-y-4 rounded-xl border border-border bg-surface p-3.5 shadow-card">
         <Input
           id="material-module-code"
           label="Kode Modul"
@@ -156,7 +156,7 @@ export default function MaterialEditorSidebar({
         />
       </div>
 
-      <div className="rounded-xl border border-border bg-surface p-3.5">
+      <div className="rounded-xl border border-border bg-surface p-3.5 shadow-card">
         <p className="text-xs font-medium text-fg-muted">Alamat halaman</p>
 
         <p className="mt-1.5 break-all font-mono text-sm text-fg">
@@ -205,7 +205,7 @@ export default function MaterialEditorSidebar({
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-surface p-3.5">
+      <div className="rounded-xl border border-border bg-surface p-3.5 shadow-card">
         <p className="text-xs font-medium text-fg-muted">Isi materi</p>
 
         <ul className="mt-2 space-y-1 text-xs text-fg-subtle">

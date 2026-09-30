@@ -24,7 +24,8 @@ builder.Services
     .AddPersistence(builder.Configuration)
     .AddFeatureServices()
     .AddJwtAuthentication(builder.Configuration)
-    .AddCorsConfiguration(builder.Configuration);
+    .AddCorsConfiguration(builder.Configuration)
+    .AddRateLimitConfiguration();
 
 builder.Services.AddScoped<
     IPasswordHasher<Student>,
@@ -72,6 +73,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseCors("UlarAdminWeb");
+
+// Rate limiter per endpoint harus setelah UseRouting supaya endpoint-nya
+// sudah terpilih, dan sebelum auth supaya endpoint publik ikut dibatasi.
+app.UseRouting();
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using u_lar_be.Configuration;
 using u_lar_be.Controllers;
 using u_lar_be.Features.Auth.Dtos;
 
@@ -21,6 +23,7 @@ public sealed class AuthController(
     }
 
     [HttpPost("admin/login")]
+    [EnableRateLimiting(RateLimitPolicy.AdminLogin)]
     public async Task<ActionResult<AdminLoginResponse>> LoginAdmin(
         AdminLoginRequest request,
         CancellationToken cancellationToken)
@@ -30,6 +33,28 @@ public sealed class AuthController(
             cancellationToken);
 
         return Ok(response);
+    }
+
+    [HttpPost("admin/refresh")]
+    public async Task<ActionResult<RefreshTokenResponse>> RefreshAdmin(
+        RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        var response = await authService.RefreshAdminTokenAsync(
+            request,
+            cancellationToken);
+
+        return Ok(response);
+    }
+
+    [HttpPost("admin/logout")]
+    public async Task<IActionResult> LogoutAdmin(
+        LogoutRequest request,
+        CancellationToken cancellationToken)
+    {
+        await authService.LogoutAdminAsync(request, cancellationToken);
+
+        return NoContent();
     }
 
     [HttpPost("refresh")]

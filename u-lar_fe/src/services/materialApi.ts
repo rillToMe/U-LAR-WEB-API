@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "./api";
+import { API_BASE_URL } from "./apiUrl";
 import type { Material, MaterialListItem } from "../types/material";
 
 /**

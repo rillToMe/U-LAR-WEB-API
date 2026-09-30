@@ -16,6 +16,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<AdminUser> Admins => Set<AdminUser>();
 
+    public DbSet<AdminRefreshToken> AdminRefreshTokens =>
+        Set<AdminRefreshToken>();
+
     public DbSet<Student> Students => Set<Student>();
 
     public DbSet<StudentRefreshToken> StudentRefreshTokens =>

@@ -18,7 +18,7 @@ function MaterialsSkeleton() {
     <div
       role="status"
       aria-label="Memuat daftar materi"
-      className="overflow-hidden rounded-xl border bg-surface"
+      className="overflow-hidden rounded-xl border bg-surface shadow-card"
     >
       <div className="border-b px-6 py-4">
         <Skeleton className="h-5 w-32" />
@@ -161,7 +161,7 @@ export default function MaterialsPage() {
       {loading && <MaterialsSkeleton />}
 
       {!loading && (
-        <div className="overflow-hidden rounded-xl border bg-surface">
+        <div className="overflow-hidden rounded-xl border bg-surface shadow-card">
           <div className="flex items-center justify-between border-b px-6 py-4 max-md:flex-col max-md:items-stretch max-md:gap-3 max-md:px-4">
             <div>
               <h2 className="font-semibold text-fg">Daftar Materi</h2>

@@ -7,14 +7,12 @@ import { isSuperAdminSession } from "../lib/session";
  * Ini murni pembatas tampilan di sisi web - guard sesungguhnya ada di API
  * (AdminUserController memakai [Authorize(Roles = SuperAdmin)]). Kalau guard
  * ini dihapus, halamannya masih menolak dibuka karena server tetap 403.
+ *
+ * Sesi tidak dicek ulang di sini: `ProtectedRoute` sudah menjaganya di
+ * outlet induk, jadi cukup `isSuperAdminSession()` yang membaca role dari
+ * localStorage — tanpa logika parsing sendiri.
  */
 export default function SuperAdminRoute() {
-  const hasSession = localStorage.getItem("user") !== null;
-
-  if (!hasSession) {
-    return <Navigate to="/login" replace />;
-  }
-
   if (!isSuperAdminSession()) {
     return <Navigate to="/admin" replace />;
   }

@@ -39,9 +39,10 @@ public sealed class AdminUserController(
     }
 
     /// <summary>
-    /// Ganti username dan/atau password satu admin. Berlaku juga untuk akun
-    /// superadmin yang sedang login, jadi superadmin bisa mengganti
-    /// kredensialnya sendiri. Password yang dikosongkan tidak diubah.
+    /// Ganti username, password, dan/atau status aktif satu admin. Berlaku
+    /// juga untuk akun superadmin yang sedang login, jadi superadmin bisa
+    /// mengganti kredensialnya sendiri. Password yang dikosongkan tidak
+    /// diubah.
     /// </summary>
     [HttpPatch("{id:int}")]
     public async Task<ActionResult<AdminListItemResponse>> UpdateAdmin(
@@ -52,6 +53,7 @@ public sealed class AdminUserController(
         var admin = await adminUserService.UpdateAsync(
             id,
             request,
+            CurrentUserId,
             cancellationToken);
 
         return Ok(admin);

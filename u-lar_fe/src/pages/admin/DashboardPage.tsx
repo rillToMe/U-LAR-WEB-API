@@ -51,7 +51,7 @@ function DashboardSkeleton() {
         {Array.from({ length: 3 }, (_, index) => (
           <div
             key={index}
-            className="rounded-2xl border border-border bg-surface p-5"
+            className="rounded-2xl border border-border bg-surface p-5 shadow-card"
           >
             <div className="flex items-start justify-between">
               <div>
@@ -66,7 +66,7 @@ function DashboardSkeleton() {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface">
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
         <div className="flex items-center justify-between border-b border-border px-6 py-5 max-md:px-4">
           <div className="flex items-center gap-3">
             <Skeleton className="size-10 rounded-xl" />
@@ -158,7 +158,7 @@ function StatCard({
   const normalizedProgress = Math.min(100, Math.max(0, progress));
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-border-strong hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none">
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-surface p-5 shadow-card transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-border-strong hover:shadow-card-hover motion-reduce:transform-none motion-reduce:transition-none">
       <div
         className={`pointer-events-none absolute -right-8 -top-8 size-24 rounded-full opacity-70 blur-2xl transition-transform duration-300 group-hover:scale-125 motion-reduce:transform-none ${styles.glow}`}
       />
@@ -230,7 +230,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-2xl border border-accent-border bg-gradient-to-br from-accent-surface via-surface to-surface p-6 shadow-sm max-md:p-5">
+      <div className="relative overflow-hidden rounded-2xl border border-accent-border bg-gradient-to-br from-accent-surface via-surface to-surface p-6 shadow-card max-md:p-5">
         <div className="pointer-events-none absolute -right-16 -top-24 size-56 rounded-full border border-accent-border/70" />
         <div className="pointer-events-none absolute -right-6 -top-12 size-36 rounded-full bg-accent-surface/80" />
 
@@ -389,7 +389,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Recent Students */}
-          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
             <div className="flex items-center justify-between gap-4 border-b border-border px-6 py-5 max-md:px-4">
               <div className="flex min-w-0 items-center gap-3">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-surface text-accent">

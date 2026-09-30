@@ -64,6 +64,25 @@
   --color-link-hover: oklch(0.5 0.134 242.749);
 }
 
+/* Bayangan kartu/panel admin. Sengaja TIDAK ditulis di `@theme`: Tailwind
+   meng-inline nilai `--shadow-*` ke utility-nya, sehingga override di `.dark`
+   tidak akan terpakai. Dengan variabel biasa + `@utility` di bawah, nilainya
+   dibaca saat runtime dan ikut berubah di mode gelap. */
+:root {
+  --shadow-card: 0 1px 2px oklch(0.21 0.034 264.665 / 0.05),
+    0 2px 8px -2px oklch(0.21 0.034 264.665 / 0.09);
+  --shadow-card-hover: 0 2px 4px oklch(0.21 0.034 264.665 / 0.06),
+    0 10px 24px -6px oklch(0.21 0.034 264.665 / 0.14);
+}
+
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+@utility shadow-card-hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
 /* Mode gelap — timpa token di bawah selector .dark. Semua utility
    (bg-surface, text-fg, ...) otomatis menyesuaikan. */
 .dark {
@@ -118,4 +137,11 @@
 
   --color-link: oklch(0.68 0.15 241.966);
   --color-link-hover: oklch(0.76 0.14 242.749);
+
+  /* Bayangan lebih pekat di mode gelap supaya panel tetap terpisah dari latar
+     yang juga gelap (bayangan terang tidak terbaca di atas permukaan gelap). */
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.4),
+    0 2px 8px -2px oklch(0 0 0 / 0.5);
+  --shadow-card-hover: 0 2px 4px oklch(0 0 0 / 0.45),
+    0 10px 24px -6px oklch(0 0 0 / 0.6);
 }

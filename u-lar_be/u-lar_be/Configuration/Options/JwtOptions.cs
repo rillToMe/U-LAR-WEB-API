@@ -20,15 +20,31 @@ public sealed class JwtOptions
     [Required]
     public string Audience { get; init; } = string.Empty;
 
-    [Range(1, 1440)]
-    public int AccessTokenMinutes { get; init; }
-
     /// <summary>
-    /// Masa berlaku token admin. Dibatasi 60 menit untuk menjaga keamanan
-    /// sesi aktif admin.
+    /// Masa berlaku token admin. Sengaja pendek (15 menit) karena tiap
+    /// request divalidasi ulang ke database — role yang berubah atau akun
+    /// yang dinonaktifkan baru berlaku maksimal segitu. Perpanjangan
+    /// dilakukan lewat refresh token, bukan dengan access token yang lebih
+    /// panjang.
     /// </summary>
     [Range(1, 60)]
-    public int AdminAccessTokenMinutes { get; init; } = 60;
+    public int AdminAccessTokenMinutes { get; init; } = 15;
+
+    /// <summary>
+    /// Masa berlaku refresh token admin kalau tidak dipakai (idle). Diperpanjang
+    /// setiap kali token dipakai, jadi sesi yang aktif terus berjalan.
+    /// </summary>
+    [Range(1, 90)]
+    public int AdminRefreshTokenIdleDays { get; init; } = 1;
+
+    /// <summary>
+    /// Plafon total satu sesi admin, dihitung dari saat refresh token
+    /// pertama dibuat. Setelah lewat, admin wajib login ulang. Ini yang
+    /// menghentikan refresh token curian yang terus "dihidupkan" dari
+    /// komputer bersama.
+    /// </summary>
+    [Range(1, 365)]
+    public int AdminRefreshTokenAbsoluteDays { get; init; } = 8;
 
     /// <summary>
     /// Masa berlaku token mahasiswa. Mahasiswa login dari game dan tidak

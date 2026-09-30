@@ -23,6 +23,8 @@ const CODE_MESSAGE: Record<string, string> = {
   conflict: "Data sudah ada di dalam sistem dan tidak bisa diduplikasi.",
   validation_failed:
     "Data yang dikirim tidak valid. Mohon periksa kembali isian Anda.",
+  too_many_requests:
+    "Terlalu banyak percobaan. Tunggu satu menit lalu coba lagi.",
   internal_error:
     "Terjadi kendala pada server kami. Silakan coba beberapa saat lagi.",
 };
@@ -34,6 +36,7 @@ const STATUS_MESSAGE: Record<number, string> = {
   403: "Anda tidak memiliki akses untuk melakukan tindakan ini.",
   404: "Data yang dituju tidak ditemukan.",
   409: "Data sudah ada di dalam sistem dan tidak bisa diduplikasi.",
+  429: "Terlalu banyak percobaan. Tunggu satu menit lalu coba lagi.",
   500: "Terjadi kendala pada server kami. Silakan coba beberapa saat lagi.",
 };
 

@@ -16,7 +16,7 @@ interface EditAdminModalProps {
   /** True kalau admin yang diedit adalah akun yang sedang login. */
   isSelf: boolean;
   onClose: () => void;
-  onSaved: (username: string) => void;
+  onSaved: (username: string, isActive: boolean) => void;
 }
 
 export default function EditAdminModal({
@@ -29,6 +29,7 @@ export default function EditAdminModal({
   // modal dengan key={id}, jadi state ikut ter-reset tiap kali target berubah.
   const [username, setUsername] = useState(() => admin?.username ?? "");
   const [password, setPassword] = useState("");
+  const [isActive, setIsActive] = useState(() => admin?.isActive ?? true);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
@@ -51,8 +52,9 @@ export default function EditAdminModal({
 
     const trimmedUsername = username.trim();
     const wantsPassword = password !== "";
+    const wantsActive = isActive !== target.isActive;
 
-    if (!wantsPassword && trimmedUsername === target.username) {
+    if (!wantsPassword && !wantsActive && trimmedUsername === target.username) {
       toast.error("Tidak ada yang diubah.");
       return;
     }
@@ -68,9 +70,10 @@ export default function EditAdminModal({
       const updated = await updateAdmin(target.id, {
         username: trimmedUsername,
         password: wantsPassword ? password : undefined,
+        isActive: wantsActive ? isActive : undefined,
       });
 
-      onSaved(updated.username);
+      onSaved(updated.username, updated.isActive);
       onClose();
     } catch (error) {
       toast.error(
@@ -143,6 +146,32 @@ export default function EditAdminModal({
           minLength={rules.password.minLength}
           maxLength={rules.password.maxLength}
         />
+
+        {!isSelf && (
+          <label
+            htmlFor="edit-admin-active"
+            className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-surface-muted p-3"
+          >
+            <input
+              id="edit-admin-active"
+              type="checkbox"
+              checked={isActive}
+              onChange={(event) => setIsActive(event.target.checked)}
+              className="mt-0.5 size-4 accent-[var(--color-accent)]"
+            />
+
+            <span className="text-sm">
+              <span className="block font-medium text-fg">
+                Akun aktif
+              </span>
+
+              <span className="block text-xs text-fg-subtle">
+                Akun nonaktif tidak bisa login, dan sesi yang sedang
+                jalannya langsung ditolak.
+              </span>
+            </span>
+          </label>
+        )}
       </form>
     </Modal>
   );

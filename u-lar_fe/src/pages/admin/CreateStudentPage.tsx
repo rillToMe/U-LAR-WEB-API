@@ -90,7 +90,7 @@ export default function CreateStudentPage() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-5 rounded-xl border bg-surface p-6 max-md:p-4"
+        className="space-y-5 rounded-xl border bg-surface p-6 shadow-card max-md:p-4"
       >
         <Input
           id="nim"

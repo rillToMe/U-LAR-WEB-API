@@ -4,7 +4,8 @@ import { ThemeToggle } from "./theme";
 import ConfirmModal from "../ui/ConfirmModal";
 import IconButton from "../ui/IconButton";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
-import { isSuperAdminSession } from "../../lib/session";
+import { isSuperAdminSession, readRefreshToken, clearAdminSession, sessionTimeLeft } from "../../lib/session";
+import { logout } from "../../services/authApi";
 
 const navigation = [
   {
@@ -178,11 +179,40 @@ export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
     (item) => !item.superAdminOnly || isSuperAdminSession()
   );
 
-  function handleLogout() {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
+  // Hitung mundur akses token, dihitung ulang tiap 30 detik — cukup untuk
+  // angka "menit tersisa" dan tidak membebani layar. Sesi sendiri
+  // diperpanjang diam-diam oleh interceptor, jadi angka ini hanya
+  // penanda, bukan sesuatu yang perlu dipantau administrator.
+  const [timeLeft, setTimeLeft] = useState(() => sessionTimeLeft());
+
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setTimeLeft(sessionTimeLeft()),
+      30_000
+    );
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const minutesLeft = Math.ceil(timeLeft / 60_000);
+
+  /**
+   * Keluar dicatat di server dulu (refresh token dicabut) sebelum storage
+   * lokal dibersihkan, supaya sesi ini benar-benar mati dan tidak bisa
+   * diperpanjang dari perangkat ini. Kalau server tidak terjangkau,
+   * pengguna tetap keluar — token yang tertinggal di localStorage sudah
+   * tidak ada di peramban dan tidak akan terkirim lagi.
+   */
+  async function handleLogout() {
+    const refreshToken = readRefreshToken();
+
+    clearAdminSession();
     onMobileClose();
     navigate("/login", { replace: true });
+
+    if (refreshToken) {
+      await logout(refreshToken).catch(() => undefined);
+    }
   }
 
   return (
@@ -339,6 +369,15 @@ export default function Nav({ mobileOpen, onMobileClose }: NavProps) {
           )}
           <ThemeToggle />
         </div>
+
+        {open && minutesLeft > 0 && (
+          <p
+            className="mt-3 px-3 text-[11px] text-fg-subtle"
+            title="Akses otomatis diperpanjang selama Anda aktif"
+          >
+            Sesi aktif &middot; {minutesLeft} menit tersisa
+          </p>
+        )}
 
         <button
           type="button"
