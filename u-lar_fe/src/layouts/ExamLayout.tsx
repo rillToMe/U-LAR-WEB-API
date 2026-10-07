@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import ExamFooter from "../components/exam/ExamFooter";
+import BackToMenuButton from "../components/common/BackToMenuButton";
 
 /**
  * Kerangka web ujian: tanpa sidebar, satu kolom sempit di tengah layar,
@@ -8,24 +8,12 @@ import ExamFooter from "../components/exam/ExamFooter";
  * layout ini karena punya header dan bilah bawah sendiri yang menempel di
  * layar — dan di tengah ujian footer hanya menggoda keluar.
  *
- * Web ujian selalu light mode: paksa hapus kelas "dark" (mis. sisa dari
- * web admin di browser yang sama) supaya token warna terang selalu dipakai.
+ * Light mode dan skala font root tidak diatur di sini, tapi di `index.html`.
+ * Alasannya perpindahan antar halaman ujian terjadi di sisi SPA: kelas
+ * `exam-fit` harus sudah ada sejak halaman dimuat dan tidak boleh ikut
+ * dilepas ketika layout ini dilepas untuk masuk ke halaman sesi.
  */
 export default function ExamLayout() {
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.remove("dark");
-    // Membesarkan halaman ujian di layar lebar (preview editor / desktop) —
-    // lihat komentar di exam.css. Dilepas lagi saat keluar dari layout ini.
-    root.classList.add("exam-fit");
-    root.style.colorScheme = "light";
-    root.style.backgroundColor = "#f9fafb";
-
-    return () => {
-      root.classList.remove("exam-fit");
-    };
-  }, []);
-
   return (
     <div className="exam-theme flex min-h-dvh flex-col bg-surface-muted">
       <div className="mx-auto w-full max-w-md flex-1 px-4 py-6 lg:max-w-5xl">
@@ -33,6 +21,14 @@ export default function ExamLayout() {
       </div>
 
       <ExamFooter />
+
+      {/* Jalan keluar dari game. Tombolnya hilang sendiri di browser biasa,
+          karena di sana tidak ada MainMenu untuk kembali. */}
+      <div className="mx-auto w-full max-w-md px-4 pb-8 lg:max-w-5xl">
+        <div className="flex justify-end border-t border-border pt-4">
+          <BackToMenuButton />
+        </div>
+      </div>
     </div>
   );
 }

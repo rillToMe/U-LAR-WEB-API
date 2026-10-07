@@ -57,6 +57,34 @@ export function saveExamSession(response: StudentLoginResponse) {
   );
 }
 
+/**
+ * Menyimpan sesi mahasiswa yang datang dari WebView game, bukan dari form
+ * login. Field yang tidak dibawa game (userId, email) dikosongkan karena
+ * tidak dipakai halaman ujian.
+ *
+ * Refresh token sengaja tidak ditulis: ia ada di secure storage game,
+ * bukan di localStorage web. Kalau access token web kedaluwarsa, guard
+ * halaman akan meminta sesi baru ke game lagi.
+ */
+export function saveExamSessionFromGame(session: {
+  token: string;
+  nim: string;
+  name: string;
+  role: string;
+}) {
+  localStorage.setItem(TOKEN_KEY, session.token);
+  localStorage.setItem(
+    USER_KEY,
+    JSON.stringify({
+      userId: 0,
+      nim: session.nim,
+      name: session.name,
+      email: "",
+      role: session.role,
+    } satisfies StudentUser)
+  );
+}
+
 export function clearExamSession() {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);

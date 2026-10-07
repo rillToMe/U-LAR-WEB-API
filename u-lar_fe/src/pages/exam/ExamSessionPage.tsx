@@ -3,6 +3,7 @@ import { isAxiosError } from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../../components/common/toastContext";
 import ExamHeader from "../../components/exam/ExamHeader";
+import BackToMenuButton from "../../components/common/BackToMenuButton";
 import QuestionCard from "../../components/exam/QuestionCard";
 import type { SaveState } from "../../components/exam/QuestionCard";
 import QuestionNavigator, {
@@ -519,6 +520,19 @@ export default function ExamSessionPage() {
 
   return (
     <div className="exam-theme flex min-h-dvh flex-col bg-surface-muted">
+      {/* Jalan keluar dari game. Selalu ada, termasuk saat ujian sedang
+          berjalan - Student tidak boleh terjebak di halaman ini. Konfirmasi
+          muncul karena sisa waktu di server tetap berjalan setelah keluar. */}
+      <div className="mx-auto flex w-full max-w-md justify-end px-4 pt-4">
+        <BackToMenuButton
+          confirm={{
+            title: "Kembali ke menu?",
+            description:
+              "Jawaban yang sudah tersimpan tetap aman, dan kamu bisa membuka lagi ujian ini selama waktu masih tersisa. Kalau waktu habis, ujiannya otomatis ditutup.",
+          }}
+        />
+      </div>
+
         {loading && (
           <div className="mx-auto w-full max-w-md px-4 py-6">
             <SessionSkeleton />

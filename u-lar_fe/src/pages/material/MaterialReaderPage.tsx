@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import { RichText } from "../../components/materials/richText";
 import Button from "../../components/ui/Button";
+import BackToMenuButton from "../../components/common/BackToMenuButton";
 import Skeleton from "../../components/ui/Skeleton";
 import { logger } from "../../lib/logger";
 import { getMaterial, getMaterials } from "../../services/materialApi";
@@ -302,16 +303,20 @@ function ErrorState({
 function MaterialList({ items }: { items: MaterialListItem[] }) {
   return (
     <div className="space-y-5">
-      <header>
-        <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-          Materi Pembelajaran
-        </p>
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+            Materi Pembelajaran
+          </p>
 
-        <h1 className="mt-1 text-xl font-bold text-fg">Daftar Modul</h1>
+          <h1 className="mt-1 text-xl font-bold text-fg">Daftar Modul</h1>
 
-        <p className="mt-1 text-sm leading-6 text-fg-subtle">
-          Pilih modul untuk membaca isinya.
-        </p>
+          <p className="mt-1 text-sm leading-6 text-fg-subtle">
+            Pilih modul untuk membaca isinya.
+          </p>
+        </div>
+
+        <BackToMenuButton className="shrink-0" />
       </header>
 
       {items.length === 0 ? (
@@ -386,7 +391,7 @@ function MaterialDocument({ material }: { material: Material }) {
           dan umpan balik memakai `active:` — `hover:` tidak pernah terpicu
           di layar sentuh. Padding atas aman untuk layar berponi; di WebView
           Unity `env(safe-area-inset-*)` bernilai 0 jadi tidak berpengaruh. */}
-      <div className="sticky top-0 z-30 -mx-4 bg-surface-muted/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur">
+      <div className="sticky top-0 z-30 -mx-4 flex items-center justify-between gap-3 bg-surface-muted/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur">
         <Link
           to="/materi"
           className="inline-flex min-h-11 items-center gap-2 text-base font-medium text-link transition-colors duration-150 hover:text-link-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:text-link-hover"
@@ -396,6 +401,8 @@ function MaterialDocument({ material }: { material: Material }) {
           </LineIcon>
           Daftar materi
         </Link>
+
+        <BackToMenuButton />
       </div>
 
       <header className="border-b border-border pb-5">

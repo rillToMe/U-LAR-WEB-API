@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
-import ConfirmModal from "../../components/ui/ConfirmModal";
 import Skeleton from "../../components/ui/Skeleton";
 import { useToast } from "../../components/common/toastContext";
 import { formatCountdown } from "../../hooks/useCountdownTimer";
 import { describeApiError } from "../../services/apiError";
 import {
-  clearExamSession,
   getExamUser,
   getExams,
   startExam,
@@ -49,7 +47,6 @@ export default function ExamListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeId, setActiveId] = useState<number | null>(null);
-  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const user = getExamUser();
 
@@ -91,11 +88,6 @@ export default function ExamListPage() {
     };
   }, []);
 
-  function handleLogout() {
-    clearExamSession();
-    navigate("/ujian/login", { replace: true });
-  }
-
   async function handleStart(exam: ExamListItem) {
     setActiveId(exam.id);
 
@@ -130,15 +122,6 @@ export default function ExamListPage() {
             </p>
           )}
         </div>
-
-        <Button
-          type="button"
-          variant="secondary"
-          size="sm"
-          onClick={() => setLogoutOpen(true)}
-        >
-          Keluar
-        </Button>
       </header>
 
       {loading && <ExamListSkeleton />}
@@ -324,16 +307,6 @@ export default function ExamListPage() {
           );
         })}
       </div>
-
-      <ConfirmModal
-        open={logoutOpen}
-        onClose={() => setLogoutOpen(false)}
-        onConfirm={handleLogout}
-        title="Yakin keluar dari ujian?"
-        description="Jawaban yang sudah tersimpan tetap aman."
-        confirmLabel="Iya, Keluar"
-        cancelLabel="Tetap di Sini"
-      />
     </div>
   );
 }

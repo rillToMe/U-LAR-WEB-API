@@ -13,13 +13,6 @@
         var path = window.location.pathname;
         var root = document.documentElement;
 
-        // WebView game (Android) memakai setUseWideViewPort +
-        // setLoadWithOverviewMode, sehingga tanpa viewport "tanpa zoom"
-        // seluruh halaman bisa diperkecil agar muat. Kunci ke lebar perangkat
-        // untuk halaman yang dirender di WebView: ujian dan materi.
-        //
-        // "/materi" dicek persis, sisanya memakai batas "/", supaya path
-        // seperti "/materialnya" tidak ikut tertangkap.
         var inWebViewPage =
           path.indexOf("/ujian") === 0 ||
           path === "/materi" ||
@@ -34,22 +27,19 @@
             );
           }
 
-          // Menutup menu konteks browser supaya halaman tidak bisa diambil
-          // lewat "View Source" atau "Save as" dari sana. Desktop memicunya
-          // dengan klik kanan, HP dengan tekan-tahan - keduanya menghasilkan
-          // event contextmenu yang sama, jadi satu blokir menutup dua-duanya.
-          // Sengaja dibiarkan senyap tanpa pesan apa pun.
           document.addEventListener("contextmenu", function (event) {
             event.preventDefault();
           });
         }
 
-        // Web ujian (/ujian) dan halaman materi (/materi) selalu light mode -
-        // tidak ada varian dark. Web admin tetap mengikuti tema tersimpan.
         if (inWebViewPage) {
           root.classList.remove("dark");
           root.style.colorScheme = "light";
           root.style.backgroundColor = "#f9fafb";
+        }
+
+        if (path.indexOf("/ujian") === 0) {
+          root.classList.add("exam-fit");
 
           return;
         }
