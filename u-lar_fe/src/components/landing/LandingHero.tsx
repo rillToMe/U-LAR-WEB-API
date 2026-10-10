@@ -7,19 +7,19 @@ export default function LandingHero() {
     <section id="beranda" aria-label="Pengantar U-LAR" className="ld-section overflow-hidden">
       <div className="ld-container grid items-center gap-10 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-6">
-          <p className="inline-flex items-center gap-2 rounded-full bg-landing-surface-high px-3.5 py-1.5 shadow-landing-card">
+          <p className="inline-flex max-w-full items-center gap-2 rounded-2xl bg-landing-surface-high px-3.5 py-2 shadow-landing-card sm:rounded-full">
             <span
               aria-hidden="true"
-              className="ld-pulse-dot size-2 rounded-full bg-landing-sage"
+              className="ld-pulse-dot size-2 shrink-0 rounded-full bg-landing-brand"
             />
             <span className="ld-eyebrow text-landing-ink">
-              Augmented Reality · Networking Education
+              Ubiquitous Learning Assisted by Augmented Reality
             </span>
           </p>
 
           <h1 className="ld-display mt-5 text-landing-ink">
             Belajar jaringan, lebih nyata dengan{" "}
-            <span className="text-landing-sage-deep">U-LAR.</span>
+            <span className="text-landing-brand-deep">U-LAR.</span>
           </h1>
 
           <p className="ld-lead mt-5 max-w-xl text-landing-ink-soft">
@@ -39,11 +39,11 @@ export default function LandingHero() {
 
           <div className="mt-7 flex flex-wrap items-center gap-2.5">
             <span className="inline-flex items-center gap-2 rounded-lg bg-landing-surface px-3 py-2 text-landing-ink-soft shadow-landing-card">
-              <LandingIcon name="cable" className="size-[18px] text-landing-sage" />
+              <LandingIcon name="cable" className="size-[18px] text-landing-brand" />
               <span className="ld-tag">Kabel UTP & konektor RJ45</span>
             </span>
             <span className="inline-flex items-center gap-2 rounded-lg bg-landing-surface px-3 py-2 text-landing-ink-soft shadow-landing-card">
-              <LandingIcon name="tune" className="size-[18px] text-landing-rose" />
+              <LandingIcon name="tune" className="size-[18px] text-landing-brand" />
               <span className="ld-tag">Standar T568A / T568B</span>
             </span>
           </div>

@@ -2,9 +2,11 @@
  *
  * Halaman depan BERDIRI SENDIRI: ia tidak memakai token desain lama di
  * `theme.css` (milik panel admin / web ujian / halaman materi) dan tidak
- * punya mode gelap. Semua nilai di bawah mengikuti
- * `rules/stitch/ubiquitous_augmented_learning/DESIGN.md` dan `rules/PRD.md`:
- * sage green, dusty rose, warm beige, Manrope + Plus Jakarta Sans.
+ * punya mode gelap. Warnanya mengikuti sistem Sky/Slate yang sama dengan
+ * panel admin: primer biru `#0284C7`, latar slate `#F8FAFC`, teks slate
+ * gelap, penutup slate-900. Satu warna primer untuk semua elemen
+ * interaktif, label, dan indikator tahap; semua ubin ikon memakai latar
+ * biru pucat dengan ikon biru.
  *
  * Caranya: token Tailwind didaftarkan lewat `@theme inline` dengan nama
  * berawalan `landing-`, dan nilainya diambil dari variabel `--ld-*` yang
@@ -35,22 +37,14 @@
   --color-landing-line: var(--ld-line);
   --color-landing-line-strong: var(--ld-line-strong);
 
-  /* Sage green: aksen utama */
-  --color-landing-sage: var(--ld-sage);
-  --color-landing-sage-soft: var(--ld-sage-soft);
-  --color-landing-sage-pale: var(--ld-sage-pale);
-  --color-landing-sage-deep: var(--ld-sage-deep);
-  --color-landing-sage-ink: var(--ld-sage-ink);
-
-  /* Dusty rose: aksen kedua, dipakai hemat */
-  --color-landing-rose: var(--ld-rose);
-  --color-landing-rose-soft: var(--ld-rose-soft);
-  --color-landing-rose-pale: var(--ld-rose-pale);
-  --color-landing-rose-ink: var(--ld-rose-ink);
+  /* Biru primer: satu-satunya warna aksen */
+  --color-landing-brand: var(--ld-brand);
+  --color-landing-brand-pale: var(--ld-brand-pale);
+  --color-landing-brand-deep: var(--ld-brand-deep);
+  --color-landing-brand-ink: var(--ld-brand-ink);
 
   /* Zona gelap: penutup dan panel kontras */
   --color-landing-dark: var(--ld-dark);
-  --color-landing-dark-soft: var(--ld-dark-soft);
   --color-landing-dark-line: var(--ld-dark-line);
   --color-landing-dark-ink: var(--ld-dark-ink);
   --color-landing-dark-ink-soft: var(--ld-dark-ink-soft);
@@ -66,7 +60,7 @@
   --radius-landing-lg: 20px;
   --radius-landing-xl: 28px;
 
-  /* Bayangan ambient yang tersebar, bukan bayangan panel admin */
+  /* Bayangan lembut ala kartu admin */
   --shadow-landing-card: var(--ld-shadow-card);
   --shadow-landing-card-hover: var(--ld-shadow-card-hover);
   --shadow-landing-panel: var(--ld-shadow-panel);
@@ -74,35 +68,28 @@
 
 /* ---- Nilai token, hanya hidup di dalam .landing ---- */
 .landing {
-  --ld-page: #f7f6f1;
+  --ld-page: #f8fafc;
   --ld-surface: #ffffff;
-  --ld-surface-low: #f2f4ed;
-  --ld-surface-container: #ecefe8;
-  --ld-surface-high: #e7e9e2;
-  --ld-beige: #eae7dc;
+  --ld-surface-low: #ffffff;
+  --ld-surface-container: #f1f5f9;
+  --ld-surface-high: #f1f5f9;
+  --ld-beige: #f1f5f9;
 
-  --ld-ink: #242721;
-  --ld-ink-soft: #686c65;
-  --ld-ink-mute: #8e918b;
-  --ld-line: #dadcd4;
-  --ld-line-strong: #c5c8be;
+  --ld-ink: #0f172a;
+  --ld-ink-soft: #334155;
+  --ld-ink-mute: #94a3b8;
+  --ld-line: #e2e8f0;
+  --ld-line-strong: #cbd5e1;
 
-  --ld-sage: #55624d;
-  --ld-sage-soft: #98a68e;
-  --ld-sage-pale: #d9e7cd;
-  --ld-sage-deep: #3d4837;
-  --ld-sage-ink: #2f3c29;
+  --ld-brand: #0284c7;
+  --ld-brand-pale: #e0f2fe;
+  --ld-brand-deep: #0369a1;
+  --ld-brand-ink: #0369a1;
 
-  --ld-rose: #755754;
-  --ld-rose-soft: #d9b4b0;
-  --ld-rose-pale: #fed7d2;
-  --ld-rose-ink: #795b58;
-
-  --ld-dark: #353a33;
-  --ld-dark-soft: #2e312d;
-  --ld-dark-line: #4a5048;
-  --ld-dark-ink: #f7f6f1;
-  --ld-dark-ink-soft: #b9bdb3;
+  --ld-dark: #0f172a;
+  --ld-dark-line: #1e293b;
+  --ld-dark-ink: #f8fafc;
+  --ld-dark-ink-soft: #94a3b8;
 
   /* Manrope dan Plus Jakarta Sans dipakai kalau terpasang (atau dimuat
      halaman depan), selebihnya jatuh ke system stack seperti konvensi
@@ -112,12 +99,12 @@
   --ld-font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui,
     -apple-system, "Segoe UI", sans-serif;
 
-  --ld-shadow-card: 0 4px 20px -2px rgb(36 39 33 / 0.04),
-    0 2px 6px -1px rgb(36 39 33 / 0.02);
-  --ld-shadow-card-hover: 0 12px 32px -4px rgb(36 39 33 / 0.07),
-    0 4px 12px -2px rgb(36 39 33 / 0.03);
-  --ld-shadow-panel: 0 24px 60px -20px rgb(36 39 33 / 0.12),
-    0 8px 20px -8px rgb(36 39 33 / 0.06);
+  --ld-shadow-card: 0 1px 2px rgb(15 23 42 / 0.05),
+    0 1px 3px rgb(15 23 42 / 0.06);
+  --ld-shadow-card-hover: 0 8px 24px -6px rgb(15 23 42 / 0.1),
+    0 2px 8px -2px rgb(15 23 42 / 0.06);
+  --ld-shadow-panel: 0 24px 60px -20px rgb(15 23 42 / 0.14),
+    0 8px 20px -8px rgb(15 23 42 / 0.08);
 
   background-color: var(--ld-page);
   color: var(--ld-ink);
@@ -129,25 +116,27 @@
 /* ---- Aturan tingkat dokumen, aktif saat halaman depan tampil ----
    `PublicLayout` memasang kelas `landing-page` di <html> seperti pola
    `material-reader` / `exam-fit`: gulir halus ke jangkar dengan offset
-   menu, dan latar dokumen ikut warna kertas supaya tidak terlihat belang
-   saat overscroll. */
+   menu, dan latar dokumen ikut warna latar supaya tidak terlihat belang
+   saat overscroll.
+   Nilai di sini ditulis literal (bukan var(--ld-*)) karena aturan ini
+   hidup di luar pembungkus `.landing`. */
 html.landing-page {
   scroll-behavior: smooth;
   scroll-padding-top: 5.5rem;
-  background-color: #f7f6f1;
+  background-color: #f8fafc;
 }
 
 html.landing-page body {
-  background-color: #f7f6f1;
+  background-color: #f8fafc;
 }
 
 html.landing-page ::selection {
-  background-color: #d9e7cd;
-  color: #242721;
+  background-color: #e0f2fe;
+  color: #0369a1;
 }
 
 html.landing-page :focus-visible {
-  outline: 2px solid var(--ld-sage-deep, #3d4837);
+  outline: 2px solid #0284c7;
   outline-offset: 2px;
 }
 
@@ -272,7 +261,8 @@ html.landing-page :focus-visible {
     letter-spacing: 0.02em;
   }
 
-  /* Tombol: tinggi 48px, radius 12px, angkat 1px saat disentuh kursor. */
+  /* Tombol: tinggi 48px, radius 12px, angkat 1px saat disentuh kursor.
+     Tombol utama biru dengan teks putih seperti panel admin. */
   .ld-btn {
     display: inline-flex;
     align-items: center;
@@ -302,12 +292,12 @@ html.landing-page :focus-visible {
   }
 
   .ld-btn-primary {
-    background-color: var(--ld-sage-soft);
-    color: var(--ld-ink);
+    background-color: var(--ld-brand);
+    color: #ffffff;
   }
 
   .ld-btn-primary:hover {
-    background-color: var(--ld-sage);
+    background-color: var(--ld-brand-deep);
     color: #ffffff;
   }
 
@@ -322,7 +312,7 @@ html.landing-page :focus-visible {
     border-color: var(--ld-ink-mute);
   }
 
-  /* Kartu: permukaan putih, garis rambut, bayangan ambient. */
+  /* Kartu: permukaan putih, garis halus, bayangan lembut. */
   .ld-card {
     background-color: var(--ld-surface);
     border: 1px solid var(--ld-line);
@@ -339,11 +329,12 @@ html.landing-page :focus-visible {
 
   .ld-card-hover:hover {
     box-shadow: var(--ld-shadow-card-hover);
-    border-color: rgb(142 145 139 / 0.4);
+    border-color: rgb(100 116 139 / 0.35);
     transform: translateY(-2px);
   }
 
-  /* Kotak ikon 48px di kepala kartu. */
+  /* Kotak ikon 48px di kepala kartu: selalu latar biru pucat
+     dengan ikon biru primer. */
   .ld-icon-tile {
     display: grid;
     place-items: center;
@@ -357,10 +348,10 @@ html.landing-page :focus-visible {
      selalu dipudarkan dengan mask supaya tidak berisik. */
   .ld-blueprint {
     background-image:
-      linear-gradient(to right, rgb(218 220 212 / 0.55) 1px, transparent 1px),
+      linear-gradient(to right, rgb(203 213 225 / 0.6) 1px, transparent 1px),
       linear-gradient(
         to bottom,
-        rgb(218 220 212 / 0.55) 1px,
+        rgb(203 213 225 / 0.6) 1px,
         transparent 1px
       );
     background-size: 1.75rem 1.75rem;

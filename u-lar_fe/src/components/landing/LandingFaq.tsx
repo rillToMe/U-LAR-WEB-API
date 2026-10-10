@@ -15,7 +15,7 @@ export default function LandingFaq() {
         <div className="lg:col-span-7">
           <SectionHeading
             eyebrow="Tanya jawab"
-            eyebrowClassName="text-landing-sage-deep"
+            eyebrowClassName="text-landing-brand-deep"
             title="Masih ingin mengenal U-LAR lebih jauh?"
             lead="Jawaban seputar konsep, cara belajar, dan batasan media ini."
           />
@@ -73,7 +73,7 @@ export default function LandingFaq() {
 
         <div id="kontak" className="scroll-mt-28 lg:col-span-5">
           <div className="ld-card flex h-full flex-col p-7 shadow-landing-card-hover md:p-8">
-            <span className="ld-icon-tile bg-landing-sage-pale text-landing-sage-ink">
+            <span className="ld-icon-tile bg-landing-brand-pale text-landing-brand">
               <LandingIcon name="school" className="size-6" />
             </span>
 
@@ -88,7 +88,7 @@ export default function LandingFaq() {
               <li className="flex items-start gap-3">
                 <LandingIcon
                   name="pin"
-                  className="mt-0.5 size-5 shrink-0 text-landing-sage"
+                  className="mt-0.5 size-5 shrink-0 text-landing-brand"
                 />
                 {CONTACT.address}
               </li>
@@ -99,7 +99,7 @@ export default function LandingFaq() {
                 >
                   <LandingIcon
                     name="mail"
-                    className="size-5 shrink-0 text-landing-sage"
+                    className="size-5 shrink-0 text-landing-brand"
                   />
                   {CONTACT.email}
                 </a>
@@ -107,7 +107,7 @@ export default function LandingFaq() {
               <li className="flex items-center gap-3">
                 <LandingIcon
                   name="flask"
-                  className="size-5 shrink-0 text-landing-sage"
+                  className="size-5 shrink-0 text-landing-brand"
                 />
                 {CONTACT.research}
               </li>

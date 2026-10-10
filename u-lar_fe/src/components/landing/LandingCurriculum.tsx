@@ -36,7 +36,7 @@ export default function LandingCurriculum() {
       <div className="ld-container">
         <SectionHeading
           eyebrow="Cakupan materi"
-          eyebrowClassName="text-landing-sage"
+          eyebrowClassName="text-landing-brand-deep"
           title="Fondasi instalasi kabel jaringan."
           lead="Enam modul yang disusun dari konsep sampai pengujian, mengikuti dokumen aplikasi."
         />
@@ -48,9 +48,7 @@ export default function LandingCurriculum() {
               className="ld-card ld-card-hover flex flex-col p-7"
             >
               <div>
-                <p
-                  className={`flex items-center gap-2 ${index === 0 ? "text-landing-sage" : index === 1 ? "text-landing-rose" : "text-landing-ink"}`}
-                >
+                <p className="flex items-center gap-2 text-landing-brand-deep">
                   <LandingIcon name={module.icon} className="size-6" />
                   <span className="ld-tag uppercase">{module.kicker}</span>
                 </p>
@@ -69,13 +67,7 @@ export default function LandingCurriculum() {
                     <li key={point} className="flex items-start gap-2.5">
                       <span
                         aria-hidden="true"
-                        className={`mt-[7px] size-1.5 shrink-0 rounded-full ${
-                          index === 0
-                            ? "bg-landing-sage"
-                            : index === 1
-                              ? "bg-landing-rose"
-                              : "bg-landing-ink"
-                        }`}
+                        className="mt-[7px] size-1.5 shrink-0 rounded-full bg-landing-brand"
                       />
                       {point}
                     </li>

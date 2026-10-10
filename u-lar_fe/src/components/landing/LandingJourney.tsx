@@ -1,16 +1,17 @@
 import { JOURNEY } from "./landingData";
 import SectionHeading from "./SectionHeading";
 
-/* Alur pembelajaran: empat tahap berurutan. Desktop memakai garis hubung
-   putus-putus di belakang lingkaran nomor; seluler memakai tangga
-   vertikal dengan rel di kiri. Satu markup untuk keduanya. */
+/* Alur pembelajaran: empat tahap berurutan dengan indikator bernomor
+   biru yang seragam. Desktop memakai garis hubung putus-putus di
+   belakang lingkaran nomor; seluler memakai tangga vertikal dengan rel
+   di kiri. Satu markup untuk keduanya. */
 export default function LandingJourney() {
   return (
     <section aria-label="Alur pembelajaran" className="ld-section">
       <div className="ld-container">
         <SectionHeading
           eyebrow="Alur pembelajaran"
-          eyebrowClassName="text-landing-sage-deep"
+          eyebrowClassName="text-landing-brand-deep"
           title="Dari mengenal alat hingga menguji kabel."
           lead="Urutan belajar yang runut, sesuai tahapan simulasi di aplikasi."
         />
@@ -28,13 +29,7 @@ export default function LandingJourney() {
                 <div className="flex flex-col items-center">
                   <span
                     aria-hidden="true"
-                    className={`grid size-14 shrink-0 place-items-center rounded-full font-landing-display text-lg font-bold shadow-landing-card ${
-                      index === 0
-                        ? "bg-landing-sage text-white"
-                        : index === JOURNEY.length - 1
-                          ? "bg-landing-rose text-white"
-                          : "bg-landing-surface-container text-landing-ink"
-                    }`}
+                    className="grid size-14 shrink-0 place-items-center rounded-full bg-landing-brand font-landing-display text-lg font-bold text-white shadow-landing-card"
                   >
                     {step.no}
                   </span>
@@ -48,7 +43,7 @@ export default function LandingJourney() {
                 </div>
 
                 <div className="ld-card flex-1 p-6">
-                  <p className="ld-tag uppercase text-landing-sage">
+                  <p className="ld-tag uppercase text-landing-brand-deep">
                     {step.phase}
                   </p>
                   <h3 className="ld-h4 mt-1 text-landing-ink">

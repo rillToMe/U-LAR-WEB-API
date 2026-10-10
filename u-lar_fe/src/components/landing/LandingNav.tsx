@@ -37,10 +37,12 @@ function useActiveSection(ids: readonly string[]): string {
   return active;
 }
 
+/* Tautan aktif memakai latar biru pucat + teks biru tua seperti menu
+   aktif di panel admin. */
 const linkClass = (isActive: boolean) =>
   `rounded-lg px-3 py-2 text-[15px] font-semibold transition-colors duration-150 ${
     isActive
-      ? "bg-landing-surface-high text-landing-ink"
+      ? "bg-landing-brand-pale text-landing-brand-deep"
       : "text-landing-ink-soft hover:text-landing-ink"
   }`;
 
@@ -48,8 +50,8 @@ const linkClass = (isActive: boolean) =>
  * Menu halaman depan: menempel di atas, menaut ke jangkar tiap bagian.
  *
  * Satu-satunya pintu operasional yang dipertahankan di sini adalah panel
- * admin (lingkaran ikon orang, seperti rancangan stitch): halaman materi
- * dan web ujian tetap tidak ditautkan karena dibuka dari dalam game.
+ * admin (lingkaran ikon orang): halaman materi dan web ujian tetap tidak
+ * ditautkan karena dibuka dari dalam game.
  */
 export default function LandingNav() {
   const [open, setOpen] = useState(false);
@@ -108,7 +110,7 @@ export default function LandingNav() {
               to="/login"
               title="Masuk panel admin"
               aria-label="Masuk panel admin"
-              className="grid size-11 shrink-0 place-items-center rounded-full bg-landing-sage text-white transition-colors duration-150 hover:bg-landing-sage-deep"
+              className="grid size-11 shrink-0 place-items-center rounded-full bg-landing-brand text-white transition-colors duration-150 hover:bg-landing-brand-deep"
             >
               <LandingIcon name="person" className="size-5" />
             </Link>
@@ -144,7 +146,7 @@ export default function LandingNav() {
                 aria-current={active === item.id ? "page" : undefined}
                 className={`block rounded-landing px-4 py-4 font-landing-display text-xl font-semibold transition-colors ${
                   active === item.id
-                    ? "bg-landing-surface-high text-landing-ink"
+                    ? "bg-landing-brand-pale text-landing-brand-deep"
                     : "text-landing-ink-soft hover:bg-landing-surface-low hover:text-landing-ink"
                 }`}
               >

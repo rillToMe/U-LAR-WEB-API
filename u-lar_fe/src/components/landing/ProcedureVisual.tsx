@@ -1,7 +1,7 @@
 /* Visual prosedur: jalur panduan AR dengan empat titik pemeriksaan dari
    alur simulasi — kupas jaket, susun warna, crimping, uji tester. Bukan
    foto atau tangkapan layar; ini diagram teknis yang jujur soal isi
-   aplikasi. */
+   aplikasi. Rute dan titiknya memakai biru primer. */
 
 const NODES = [
   { x: 90, y: 350, no: "01", label: "Kupas jaket", anchor: "below" },
@@ -30,7 +30,7 @@ export default function ProcedureVisual() {
             <path
               d="M 90 350 L 265 175 L 455 175 L 630 350"
               fill="none"
-              stroke="#55624d"
+              stroke="#0284c7"
               strokeWidth="3.5"
               strokeLinecap="round"
               strokeDasharray="0.1 14"
@@ -49,7 +49,7 @@ export default function ProcedureVisual() {
                       cy={node.y}
                       r="38"
                       fill="none"
-                      stroke="#98a68e"
+                      stroke="#7dd3fc"
                       strokeWidth="2"
                       strokeDasharray="6 6"
                       opacity="0.9"
@@ -60,14 +60,14 @@ export default function ProcedureVisual() {
                     cy={node.y}
                     r="30"
                     fill="#ffffff"
-                    stroke={active ? "#3d4837" : "#dadcd4"}
+                    stroke={active ? "#0369a1" : "#e2e8f0"}
                     strokeWidth="2"
                   />
                   <circle
                     cx={node.x}
                     cy={node.y}
                     r="21"
-                    fill={active ? "#3d4837" : "#d9e7cd"}
+                    fill={active ? "#0369a1" : "#e0f2fe"}
                   />
                   <text
                     x={node.x}
@@ -75,7 +75,7 @@ export default function ProcedureVisual() {
                     textAnchor="middle"
                     fontSize="16"
                     fontWeight="700"
-                    fill={active ? "#ffffff" : "#2f3c29"}
+                    fill={active ? "#ffffff" : "#0369a1"}
                     fontFamily="Manrope, 'Plus Jakarta Sans', system-ui, sans-serif"
                   >
                     {node.no}
@@ -86,7 +86,7 @@ export default function ProcedureVisual() {
                     textAnchor="middle"
                     fontSize="16"
                     fontWeight="600"
-                    fill="#242721"
+                    fill="#0f172a"
                     fontFamily="'Plus Jakarta Sans', system-ui, sans-serif"
                   >
                     {node.label}
@@ -106,7 +106,7 @@ export default function ProcedureVisual() {
                 key={i}
                 d={d}
                 fill="none"
-                stroke="#755754"
+                stroke="#0284c7"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 opacity="0.55"
@@ -119,9 +119,9 @@ export default function ProcedureVisual() {
             <div className="flex items-center gap-2">
               <span
                 aria-hidden="true"
-                className="ld-pulse-dot size-2.5 rounded-full bg-landing-sage-pale"
+                className="ld-pulse-dot size-2.5 rounded-full bg-landing-brand-pale"
               />
-              <span className="ld-tag uppercase text-landing-sage-pale">
+              <span className="ld-tag uppercase text-landing-brand-pale">
                 Pemandu AR · Langkah 7 dari 12
               </span>
             </div>

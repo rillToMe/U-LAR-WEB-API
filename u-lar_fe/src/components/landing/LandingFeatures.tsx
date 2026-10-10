@@ -14,7 +14,7 @@ export default function LandingFeatures() {
         <SectionHeading
           align="center"
           eyebrow="Modul pembelajaran"
-          eyebrowClassName="text-landing-sage-deep"
+          eyebrowClassName="text-landing-brand-deep"
           title="Belajar lebih dari sekadar melihat."
           lead="Empat tahap yang membimbing dari pengenalan komponen sampai menemukan penyebab kabel gagal diuji."
         />
@@ -26,11 +26,11 @@ export default function LandingFeatures() {
               className="ld-card ld-card-hover flex flex-col p-7 md:p-8"
             >
               <div>
-                <span className={`ld-icon-tile ${feature.tone}`}>
+                <span className="ld-icon-tile bg-landing-brand-pale text-landing-brand">
                   <LandingIcon name={feature.icon} className="size-6" />
                 </span>
 
-                <p className="ld-tag mt-5 uppercase text-landing-sage">
+                <p className="ld-tag mt-5 uppercase text-landing-brand-deep">
                   {feature.module}
                 </p>
                 <h3 className="ld-h3 mt-1 text-landing-ink">
@@ -47,7 +47,7 @@ export default function LandingFeatures() {
                 </span>
                 <LandingIcon
                   name="arrow-right"
-                  className="size-5 text-landing-sage"
+                  className="size-5 text-landing-brand"
                 />
               </p>
             </article>

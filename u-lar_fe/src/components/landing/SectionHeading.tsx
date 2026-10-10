@@ -12,7 +12,7 @@ interface SectionHeadingProps {
    dan kalimat pembuka. */
 export default function SectionHeading({
   eyebrow,
-  eyebrowClassName = "text-landing-rose",
+  eyebrowClassName = "text-landing-brand-deep",
   title,
   lead,
   align = "left",

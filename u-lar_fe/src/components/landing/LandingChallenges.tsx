@@ -9,7 +9,7 @@ export default function LandingChallenges() {
       <div className="ld-container">
         <SectionHeading
           eyebrow="Tantangan laboratorium"
-          eyebrowClassName="text-landing-rose"
+          eyebrowClassName="text-landing-brand-deep"
           title="Praktikum jaringan seharusnya lebih mudah diakses."
           lead="Keterbatasan alat, tempat, dan waktu membuat latihan instalasi kabel sulit diulang sebanyak yang dibutuhkan."
         />
@@ -21,7 +21,7 @@ export default function LandingChallenges() {
               className="ld-card ld-card-hover flex flex-col p-7"
             >
               <div>
-                <span className={`ld-icon-tile ${challenge.tone}`}>
+                <span className="ld-icon-tile bg-landing-brand-pale text-landing-brand">
                   <LandingIcon name={challenge.icon} className="size-6" />
                 </span>
 
@@ -34,7 +34,7 @@ export default function LandingChallenges() {
               </div>
 
               <p className="mt-auto flex items-center gap-2 pt-6 text-landing-ink-soft">
-                <LandingIcon name="check" className="size-[18px] text-landing-rose" />
+                <LandingIcon name="check" className="size-[18px] text-landing-brand" />
                 <span className="ld-tag">{challenge.tag}</span>
               </p>
             </article>

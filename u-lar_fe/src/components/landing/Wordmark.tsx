@@ -6,12 +6,16 @@ interface WordmarkProps {
 }
 
 /**
- * Penanda U-LAR untuk halaman depan.
+ * Penanda teks U-LAR untuk halaman depan.
  *
- * Logo bidik sudut (corner reticle) mengikuti arahan PRD: "U-LAR wordmark
- * + minimalist AR corner reticle logo". Berkas `Logo.webp` sengaja tidak
- * dipakai — isinya persegi dengan tagline putih yang hilang di latar
- * terang.
+ * Berkas logo `public/Logo.webp` sengaja tidak dipakai: isinya hanya
+ * одну pita di tengah gambar persegi, hurufnya hitam (hilang di ubin
+ * gelap), dan bagian putih sapuannya hilang di latar terang. Tulisan
+ * biasa selalu tajam, ikut warna tema, dan tidak bergantung pada ukuran
+ * tampilan.
+ *
+ * Ikon reticle-nya adalah cidik sudut ala penanda AR sesuai arahan PRD:
+ * "U-LAR wordmark + minimalist AR corner reticle logo".
  */
 export default function Wordmark({
   tone = "ink",
@@ -30,7 +34,7 @@ export default function Wordmark({
         aria-hidden="true"
         className={`ld-icon-tile size-9 ${
           tone === "ink"
-            ? "bg-landing-sage-pale text-landing-sage-ink"
+            ? "bg-landing-brand-pale text-landing-brand"
             : "bg-white/10 text-landing-dark-ink"
         }`}
       >

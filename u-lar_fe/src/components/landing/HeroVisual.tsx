@@ -6,7 +6,8 @@ import LandingIcon from "./LandingIcon";
  *
  * Digambar sebagai ilustrasi teknis SVG (bukan foto atau render), jadi
  * tajam di semua ukuran, tidak butuh aset eksternal, dan warnanya persis
- * mengikuti data pin T568B dari dokumen aplikasi. */
+ * mengikuti data pin T568B dari dokumen aplikasi. Bingkai pemandu memakai
+ * biru primer; jaket kabel abu slate netral. */
 
 const WIRE_START_X = 258;
 const WIRE_END_X = 604;
@@ -38,13 +39,13 @@ export default function HeroVisual() {
         >
           <defs>
             <radialGradient id="hv-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#98a68e" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#98a68e" stopOpacity="0" />
+              <stop offset="0%" stopColor="#7dd3fc" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#7dd3fc" stopOpacity="0" />
             </radialGradient>
             <linearGradient id="hv-jacket" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#5a6452" />
-              <stop offset="55%" stopColor="#4a5344" />
-              <stop offset="100%" stopColor="#3d453a" />
+              <stop offset="0%" stopColor="#475569" />
+              <stop offset="55%" stopColor="#334155" />
+              <stop offset="100%" stopColor="#1e293b" />
             </linearGradient>
             <linearGradient id="hv-sheen" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.22" />
@@ -56,7 +57,7 @@ export default function HeroVisual() {
           <ellipse cx="565" cy="270" rx="190" ry="170" fill="url(#hv-glow)" />
 
           {/* Bayangan lembut di bawah kipas konduktor */}
-          <ellipse cx="360" cy="392" rx="180" ry="22" fill="#242721" opacity="0.06" />
+          <ellipse cx="360" cy="392" rx="180" ry="22" fill="#0f172a" opacity="0.06" />
 
           {/* Jaket kabel */}
           <rect x="24" y="243" width="212" height="54" rx="27" fill="url(#hv-jacket)" />
@@ -68,7 +69,7 @@ export default function HeroVisual() {
               y1="249"
               x2={x}
               y2="291"
-              stroke="#2f362d"
+              stroke="#0f172a"
               strokeWidth="2"
               opacity="0.5"
             />
@@ -80,16 +81,16 @@ export default function HeroVisual() {
             fontSize="15"
             fontWeight="600"
             letterSpacing="0.06em"
-            fill="#f7f6f1"
+            fill="#f8fafc"
             fontFamily="'Plus Jakarta Sans', system-ui, sans-serif"
           >
             Cat6 UTP
           </text>
 
           {/* Boot pelindung */}
-          <rect x="234" y="249" width="26" height="42" rx="7" fill="#3d4837" />
-          <line x1="241" y1="253" x2="241" y2="287" stroke="#55624d" strokeWidth="2" />
-          <line x1="248" y1="253" x2="248" y2="287" stroke="#55624d" strokeWidth="2" />
+          <rect x="234" y="249" width="26" height="42" rx="7" fill="#1e293b" />
+          <line x1="241" y1="253" x2="241" y2="287" stroke="#64748b" strokeWidth="2" />
+          <line x1="248" y1="253" x2="248" y2="287" stroke="#64748b" strokeWidth="2" />
 
           {/* Delapan konduktor */}
           {T568B_PINS.map((wire, i) => {
@@ -121,7 +122,7 @@ export default function HeroVisual() {
                   textAnchor="end"
                   fontSize="13"
                   fontWeight="600"
-                  fill="#686c65"
+                  fill="#64748b"
                   fontFamily="'Plus Jakarta Sans', system-ui, sans-serif"
                 >
                   {wire.pin}
@@ -139,9 +140,9 @@ export default function HeroVisual() {
             rx="18"
             fill="#ffffff"
             fillOpacity="0.55"
-            stroke="#8e918b"
+            stroke="#94a3b8"
             strokeWidth="1.5"
-            strokeOpacity="0.7"
+            strokeOpacity="0.8"
           />
           <rect
             x={PLUG_X + 12}
@@ -174,7 +175,7 @@ export default function HeroVisual() {
           })}
 
           {/* Klip pengunci di punggung konektor */}
-          <polygon points="548,180 602,180 594,162 556,162" fill="#3d4837" opacity="0.9" />
+          <polygon points="548,180 602,180 594,162 556,162" fill="#1e293b" opacity="0.9" />
 
           {/* Bingkai pemandu AR di sekeliling konektor */}
           <rect
@@ -184,7 +185,7 @@ export default function HeroVisual() {
             height={PLUG_H + 24}
             rx="22"
             fill="none"
-            stroke="#55624d"
+            stroke="#0284c7"
             strokeWidth="1.5"
             strokeDasharray="7 6"
             opacity="0.7"
@@ -199,7 +200,7 @@ export default function HeroVisual() {
               key={i}
               d={d}
               fill="none"
-              stroke="#3d4837"
+              stroke="#075985"
               strokeWidth="2.5"
               strokeLinecap="round"
             />
@@ -208,7 +209,7 @@ export default function HeroVisual() {
 
         {/* Lencana melayang */}
         <div className="absolute right-4 top-4 flex items-center gap-2 rounded-full bg-landing-surface/90 py-1.5 pl-3 pr-4 shadow-landing-card backdrop-blur-md md:right-6 md:top-6">
-          <LandingIcon name="ar" className="size-[18px] text-landing-sage" />
+          <LandingIcon name="ar" className="size-[18px] text-landing-brand" />
           <span className="ld-tag text-landing-ink">
             Visualisasi pinout 8P8C
           </span>
@@ -220,13 +221,13 @@ export default function HeroVisual() {
             <div className="flex min-w-0 items-center gap-2">
               <LandingIcon
                 name="ar"
-                className="size-5 shrink-0 text-landing-sage"
+                className="size-5 shrink-0 text-landing-brand"
               />
               <span className="ld-tag truncate text-landing-ink">
                 Spasial pinout RJ45 (8P8C)
               </span>
             </div>
-            <span className="ld-tag shrink-0 rounded-full bg-landing-sage-pale px-2.5 py-1 text-landing-sage-deep">
+            <span className="ld-tag shrink-0 rounded-full bg-landing-brand-pale px-2.5 py-1 text-landing-brand-ink">
               Standar T568B
             </span>
           </div>

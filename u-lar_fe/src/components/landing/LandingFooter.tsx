@@ -20,7 +20,7 @@ export default function LandingFooter() {
             aria-label="Navigasi edukasi"
             className="flex flex-col gap-4 md:col-span-3"
           >
-            <p className="ld-eyebrow text-landing-sage-soft">
+            <p className="ld-eyebrow text-landing-dark-ink-soft">
               {FOOTER.navHeading}
             </p>
             <ul className="ld-small flex flex-col gap-2.5 text-landing-dark-ink-soft">
@@ -38,7 +38,7 @@ export default function LandingFooter() {
           </nav>
 
           <div className="flex flex-col gap-4 md:col-span-4">
-            <p className="ld-eyebrow text-landing-sage-soft">
+            <p className="ld-eyebrow text-landing-dark-ink-soft">
               {FOOTER.infoHeading}
             </p>
             <p className="ld-small text-landing-dark-ink-soft">

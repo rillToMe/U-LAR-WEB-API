@@ -37,17 +37,8 @@ export const T568B_PINS: PinoutWire[] = [
   { pin: 8, name: "Cokelat", base: "#8a6a4f", stripe: null },
 ];
 
-/* Kelas ubin ikon ditulis penuh di sini (bukan disusun dinamis) supaya
-   Tailwind ikut menghasilkan utilitasnya saat memindai berkas ini. */
-export type IconTone =
-  | "bg-landing-rose-pale text-landing-rose-ink"
-  | "bg-landing-surface-high text-landing-ink"
-  | "bg-landing-sage-pale text-landing-sage-ink"
-  | "bg-landing-beige text-landing-ink";
-
 export interface Challenge {
   icon: LandingIconName;
-  tone: IconTone;
   title: string;
   body: string;
   tag: string;
@@ -56,21 +47,18 @@ export interface Challenge {
 export const CHALLENGES: Challenge[] = [
   {
     icon: "inventory",
-    tone: "bg-landing-rose-pale text-landing-rose-ink",
     title: "Keterbatasan alat praktik",
     body: "Kabel UTP dan konektor RJ45 bersifat sekali pakai. Setiap percobaan menghabiskan bahan, sehingga latihan mandiri di luar jam laboratorium jarang terjadi.",
     tag: "Bahan habis pakai",
   },
   {
     icon: "eye-off",
-    tone: "bg-landing-surface-high text-landing-ink",
     title: "Ukuran yang sulit diamati",
     body: "Konduktor tembaga berdiameter sekitar 0,5 mm dan delapan urutan warnanya harus tepat. Demonstrasi klasikal menyulitkan siswa memeriksa detail sekecil itu.",
     tag: "Detail 0,5 mm",
   },
   {
     icon: "timer",
-    tone: "bg-landing-sage-pale text-landing-sage-ink",
     title: "Waktu latihan terbatas",
     body: "Jam praktikum yang singkat tidak cukup untuk mengulang prosedur sampai terbentuk ketelitian warna dan memori motorik crimping.",
     tag: "Perlu pengulangan",
@@ -91,7 +79,6 @@ export const KEYWORDS: Keyword[] = [
 
 export interface Feature {
   icon: LandingIconName;
-  tone: IconTone;
   module: string;
   title: string;
   body: string;
@@ -101,7 +88,6 @@ export interface Feature {
 export const FEATURES: Feature[] = [
   {
     icon: "ar",
-    tone: "bg-landing-sage-pale text-landing-sage-ink",
     module: "Modul 01",
     title: "Eksplorasi objek AR",
     body: "Enam marker menampilkan model tiga dimensi alat dan bahan instalasi. Putar, perbesar, dan kenali fungsinya sebelum masuk ke inventaris virtual.",
@@ -109,7 +95,6 @@ export const FEATURES: Feature[] = [
   },
   {
     icon: "drag",
-    tone: "bg-landing-rose-pale text-landing-rose-ink",
     module: "Modul 02",
     title: "Simulasi interaktif",
     body: "Susun delapan konduktor sesuai urutan warna, ratakan ujungnya, masukkan ke konektor RJ45, lalu kunci dengan crimping — langkah demi langkah.",
@@ -117,7 +102,6 @@ export const FEATURES: Feature[] = [
   },
   {
     icon: "list",
-    tone: "bg-landing-surface-high text-landing-ink",
     module: "Modul 03",
     title: "Latihan terbimbing",
     body: "Setiap langkah diperiksa saat terjadi: alat yang salah, susunan warna yang keliru, atau crimping yang kurang tepat langsung diberi umpan balik bertingkat.",
@@ -125,7 +109,6 @@ export const FEATURES: Feature[] = [
   },
   {
     icon: "chart",
-    tone: "bg-landing-beige text-landing-ink",
     module: "Modul 04",
     title: "Evaluasi hasil",
     body: "Kabel diuji dengan cable tester virtual. Penilaian melihat proses — pemilihan alat, urutan prosedur, susunan warna — bukan hanya kabel jadinya.",
@@ -169,7 +152,6 @@ export const JOURNEY: JourneyStep[] = [
 
 export interface CurriculumModule {
   icon: LandingIconName;
-  tone: IconTone;
   kicker: string;
   title: string;
   body: string;
@@ -180,7 +162,6 @@ export interface CurriculumModule {
 export const CURRICULUM: CurriculumModule[] = [
   {
     icon: "cable",
-    tone: "bg-landing-sage-pale text-landing-sage-ink",
     kicker: "Komponen & perkakas",
     title: "Kabel UTP & peralatan",
     body: "Karakteristik kabel UTP dan fungsi tiap perkakas sebelum menyentuh konektor.",
@@ -193,7 +174,6 @@ export const CURRICULUM: CurriculumModule[] = [
   },
   {
     icon: "palette",
-    tone: "bg-landing-rose-pale text-landing-rose-ink",
     kicker: "Standar internasional",
     title: "Standar pengawatan",
     body: "Susunan delapan kode warna konduktor menurut T568A dan T568B.",
@@ -206,7 +186,6 @@ export const CURRICULUM: CurriculumModule[] = [
   },
   {
     icon: "shuffle",
-    tone: "bg-landing-beige text-landing-ink",
     kicker: "Konfigurasi jaringan",
     title: "Straight-through & cross-over",
     body: "Kapan memakai susunan yang sama, dan kapan ujungnya disilangkan.",
@@ -271,7 +250,7 @@ export const CONTACT = {
 
 export const FOOTER = {
   description:
-    "Ubiquitous Learning Assisted by Augmented Reality — media pembelajaran instalasi media transmisi jaringan.",
+    "Ubiquitous Learning Assisted by Augmented Reality - media pembelajaran instalasi media transmisi jaringan.",
   navHeading: "Navigasi edukasi",
   navLinks: [
     { href: "#tentang", label: "Tentang platform" },
@@ -282,5 +261,5 @@ export const FOOTER = {
   infoHeading: "Pusat informasi",
   infoBody:
     "Media ajar untuk institusi kejuruan dan politeknik bidang komputer dan jaringan.",
-  copyright: "© 2025 U-LAR · Penelitian Dosen Pemula, Universitas Negeri Padang",
+  copyright: `© ${new Date().getFullYear()} U-LAR · Penelitian Dosen Pemula, Universitas Negeri Padang`,
 };
