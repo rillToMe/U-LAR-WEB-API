@@ -1,0 +1,412 @@
+/* Design system halaman depan (landing page).
+ *
+ * Halaman depan BERDIRI SENDIRI: ia tidak memakai token desain lama di
+ * `theme.css` (milik panel admin / web ujian / halaman materi) dan tidak
+ * punya mode gelap. Semua nilai di bawah mengikuti
+ * `rules/stitch/ubiquitous_augmented_learning/DESIGN.md` dan `rules/PRD.md`:
+ * sage green, dusty rose, warm beige, Manrope + Plus Jakarta Sans.
+ *
+ * Caranya: token Tailwind didaftarkan lewat `@theme inline` dengan nama
+ * berawalan `landing-`, dan nilainya diambil dari variabel `--ld-*` yang
+ * hanya didefinisikan pada pembungkus `.landing`. Utilitas seperti
+ * `bg-landing-page` atau `text-landing-ink` hanya berarti di dalam
+ * `.landing`, jadi token lama tidak pernah bocor ke sini begitu pula
+ * sebaliknya — termasuk saat kelas `dark` aktif di dokumen.
+ *
+ * Tipografi (display, h2-h4, lead, body, eyebrow, tag, label tombol)
+ * didefinisikan sebagai kelas `.ld-*` di `@layer components`, lengkap
+ * dengan responsivitasnya, supaya komponen tidak mengulang angka
+ * ukuran huruf di mana-mana. */
+
+/* ---- Token Tailwind (nama saja, nilainya dari variabel --ld-*) ---- */
+@theme inline {
+  /* Kanvas dan permukaan */
+  --color-landing-page: var(--ld-page);
+  --color-landing-surface: var(--ld-surface);
+  --color-landing-surface-low: var(--ld-surface-low);
+  --color-landing-surface-container: var(--ld-surface-container);
+  --color-landing-surface-high: var(--ld-surface-high);
+  --color-landing-beige: var(--ld-beige);
+
+  /* Teks dan garis */
+  --color-landing-ink: var(--ld-ink);
+  --color-landing-ink-soft: var(--ld-ink-soft);
+  --color-landing-ink-mute: var(--ld-ink-mute);
+  --color-landing-line: var(--ld-line);
+  --color-landing-line-strong: var(--ld-line-strong);
+
+  /* Sage green: aksen utama */
+  --color-landing-sage: var(--ld-sage);
+  --color-landing-sage-soft: var(--ld-sage-soft);
+  --color-landing-sage-pale: var(--ld-sage-pale);
+  --color-landing-sage-deep: var(--ld-sage-deep);
+  --color-landing-sage-ink: var(--ld-sage-ink);
+
+  /* Dusty rose: aksen kedua, dipakai hemat */
+  --color-landing-rose: var(--ld-rose);
+  --color-landing-rose-soft: var(--ld-rose-soft);
+  --color-landing-rose-pale: var(--ld-rose-pale);
+  --color-landing-rose-ink: var(--ld-rose-ink);
+
+  /* Zona gelap: penutup dan panel kontras */
+  --color-landing-dark: var(--ld-dark);
+  --color-landing-dark-soft: var(--ld-dark-soft);
+  --color-landing-dark-line: var(--ld-dark-line);
+  --color-landing-dark-ink: var(--ld-dark-ink);
+  --color-landing-dark-ink-soft: var(--ld-dark-ink-soft);
+
+  /* Huruf */
+  --font-landing-display: var(--ld-font-display);
+  --font-landing-body: var(--ld-font-body);
+
+  /* Sudut: tombol 10-12px, kartu 16-20px, bingkai besar 24-28px */
+  --radius-landing-sm: 10px;
+  --radius-landing: 12px;
+  --radius-landing-md: 16px;
+  --radius-landing-lg: 20px;
+  --radius-landing-xl: 28px;
+
+  /* Bayangan ambient yang tersebar, bukan bayangan panel admin */
+  --shadow-landing-card: var(--ld-shadow-card);
+  --shadow-landing-card-hover: var(--ld-shadow-card-hover);
+  --shadow-landing-panel: var(--ld-shadow-panel);
+}
+
+/* ---- Nilai token, hanya hidup di dalam .landing ---- */
+.landing {
+  --ld-page: #f7f6f1;
+  --ld-surface: #ffffff;
+  --ld-surface-low: #f2f4ed;
+  --ld-surface-container: #ecefe8;
+  --ld-surface-high: #e7e9e2;
+  --ld-beige: #eae7dc;
+
+  --ld-ink: #242721;
+  --ld-ink-soft: #686c65;
+  --ld-ink-mute: #8e918b;
+  --ld-line: #dadcd4;
+  --ld-line-strong: #c5c8be;
+
+  --ld-sage: #55624d;
+  --ld-sage-soft: #98a68e;
+  --ld-sage-pale: #d9e7cd;
+  --ld-sage-deep: #3d4837;
+  --ld-sage-ink: #2f3c29;
+
+  --ld-rose: #755754;
+  --ld-rose-soft: #d9b4b0;
+  --ld-rose-pale: #fed7d2;
+  --ld-rose-ink: #795b58;
+
+  --ld-dark: #353a33;
+  --ld-dark-soft: #2e312d;
+  --ld-dark-line: #4a5048;
+  --ld-dark-ink: #f7f6f1;
+  --ld-dark-ink-soft: #b9bdb3;
+
+  /* Manrope dan Plus Jakarta Sans dipakai kalau terpasang (atau dimuat
+     halaman depan), selebihnya jatuh ke system stack seperti konvensi
+     `fonts.css`. */
+  --ld-font-display: "Manrope", "Plus Jakarta Sans", ui-sans-serif,
+    system-ui, sans-serif;
+  --ld-font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+
+  --ld-shadow-card: 0 4px 20px -2px rgb(36 39 33 / 0.04),
+    0 2px 6px -1px rgb(36 39 33 / 0.02);
+  --ld-shadow-card-hover: 0 12px 32px -4px rgb(36 39 33 / 0.07),
+    0 4px 12px -2px rgb(36 39 33 / 0.03);
+  --ld-shadow-panel: 0 24px 60px -20px rgb(36 39 33 / 0.12),
+    0 8px 20px -8px rgb(36 39 33 / 0.06);
+
+  background-color: var(--ld-page);
+  color: var(--ld-ink);
+  font-family: var(--ld-font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Aturan tingkat dokumen, aktif saat halaman depan tampil ----
+   `PublicLayout` memasang kelas `landing-page` di <html> seperti pola
+   `material-reader` / `exam-fit`: gulir halus ke jangkar dengan offset
+   menu, dan latar dokumen ikut warna kertas supaya tidak terlihat belang
+   saat overscroll. */
+html.landing-page {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  background-color: #f7f6f1;
+}
+
+html.landing-page body {
+  background-color: #f7f6f1;
+}
+
+html.landing-page ::selection {
+  background-color: #d9e7cd;
+  color: #242721;
+}
+
+html.landing-page :focus-visible {
+  outline: 2px solid var(--ld-sage-deep, #3d4837);
+  outline-offset: 2px;
+}
+
+/* ---- Komponen ---- */
+@layer components {
+  /* Wadah konten: 1280px, margin 80px desktop / 40px tablet / 20px HP. */
+  .ld-container {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 48rem) {
+    .ld-container {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .ld-container {
+      padding-inline: 5rem;
+    }
+  }
+
+  /* Irama vertikal antar-bagian: 88-120px desktop, 48-88 tablet,
+     32-48 HP. */
+  .ld-section {
+    padding-block: 3rem;
+  }
+
+  @media (min-width: 48rem) {
+    .ld-section {
+      padding-block: 4.5rem;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .ld-section {
+      padding-block: 6.5rem;
+    }
+  }
+
+  /* Skala tipografi dari DESIGN.md. */
+  .ld-display {
+    font-family: var(--ld-font-display);
+    font-weight: 700;
+    font-size: 2.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  @media (min-width: 64rem) {
+    .ld-display {
+      font-size: 4rem;
+      line-height: 1.125;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .ld-h2 {
+    font-family: var(--ld-font-display);
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  @media (min-width: 64rem) {
+    .ld-h2 {
+      font-size: 2.75rem;
+      line-height: 1.18;
+      letter-spacing: -0.015em;
+    }
+  }
+
+  .ld-h3 {
+    font-family: var(--ld-font-display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1.33;
+    letter-spacing: -0.01em;
+  }
+
+  .ld-h4 {
+    font-family: var(--ld-font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+
+  .ld-lead {
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+
+  .ld-body {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .ld-small {
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+
+  /* Label bab ala rambu teknis: kapital, renggang. */
+  .ld-eyebrow {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .ld-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: 0.02em;
+  }
+
+  /* Tombol: tinggi 48px, radius 12px, angkat 1px saat disentuh kursor. */
+  .ld-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 3rem;
+    padding-inline: 1.5rem;
+    border-radius: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      background-color 0.18s ease,
+      color 0.18s ease,
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+  }
+
+  .ld-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .ld-btn:active {
+    transform: translateY(0);
+  }
+
+  .ld-btn-primary {
+    background-color: var(--ld-sage-soft);
+    color: var(--ld-ink);
+  }
+
+  .ld-btn-primary:hover {
+    background-color: var(--ld-sage);
+    color: #ffffff;
+  }
+
+  .ld-btn-secondary {
+    background-color: var(--ld-surface);
+    border: 1px solid var(--ld-line);
+    color: var(--ld-ink);
+  }
+
+  .ld-btn-secondary:hover {
+    background-color: var(--ld-beige);
+    border-color: var(--ld-ink-mute);
+  }
+
+  /* Kartu: permukaan putih, garis rambut, bayangan ambient. */
+  .ld-card {
+    background-color: var(--ld-surface);
+    border: 1px solid var(--ld-line);
+    border-radius: 1.25rem;
+    box-shadow: var(--ld-shadow-card);
+  }
+
+  .ld-card-hover {
+    transition:
+      box-shadow 0.25s ease,
+      border-color 0.25s ease,
+      transform 0.25s ease;
+  }
+
+  .ld-card-hover:hover {
+    box-shadow: var(--ld-shadow-card-hover);
+    border-color: rgb(142 145 139 / 0.4);
+    transform: translateY(-2px);
+  }
+
+  /* Kotak ikon 48px di kepala kartu. */
+  .ld-icon-tile {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  /* Pola garis skema teknik yang sangat tipis untuk latar visual,
+     selalu dipudarkan dengan mask supaya tidak berisik. */
+  .ld-blueprint {
+    background-image:
+      linear-gradient(to right, rgb(218 220 212 / 0.55) 1px, transparent 1px),
+      linear-gradient(
+        to bottom,
+        rgb(218 220 212 / 0.55) 1px,
+        transparent 1px
+      );
+    background-size: 1.75rem 1.75rem;
+    mask-image: radial-gradient(
+      ellipse at 60% 40%,
+      #000 20%,
+      transparent 78%
+    );
+  }
+
+  /* Titik "hidup" di lencana status. */
+  .ld-pulse-dot {
+    animation: ld-pulse 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes ld-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+/* Gerakan dimatikan untuk yang memintanya: gulir jangkar langsung
+   meloncat, tidak ada denyut maupun angkatan tombol/kartu. */
+@media (prefers-reduced-motion: reduce) {
+  html.landing-page {
+    scroll-behavior: auto;
+  }
+
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .landing .ld-btn:hover,
+  .landing .ld-card-hover:hover {
+    transform: none;
+  }
+}

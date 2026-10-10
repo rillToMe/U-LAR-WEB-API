@@ -22,6 +22,11 @@ const MaterialsPage = lazy(() => import("../pages/admin/MaterialsPage"));
 const DocsPage = lazy(() => import("../pages/admin/DocsPage"));
 const AdminsPage = lazy(() => import("../pages/admin/AdminsPage"));
 
+// Halaman depan publik - dibuka tanpa login, termasuk oleh pengunjung umum.
+// Tema terang/gelap dan menu atasnya diatur PublicLayout.
+const PublicLayout = lazy(() => import("../layouts/PublicLayout"));
+const HomePage = lazy(() => import("../pages/public/HomePage"));
+
 // Halaman materi - dibuka WebView game tanpa login, jadi berada di luar
 // ProtectedRoute. Daftar di /materi, isi satu modul di /materi/{slug}.
 const MaterialReaderPage = lazy(
@@ -43,7 +48,7 @@ const ExamResultPage = lazy(
 function RouteFallback() {
   return (
     <div
-      className="mx-auto min-h-dvh w-full max-w-3xl space-y-4 bg-surface-muted p-6"
+      className="mx-auto min-h-dvh w-full max-w-6xl space-y-4 bg-surface-muted p-6 md:p-8"
       role="status"
       aria-label="Memuat halaman"
     >
@@ -61,6 +66,13 @@ export default function AppRoutes() {
     <BrowserRouter>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
+          {/* Halaman depan publik. Sebelumnya alamat "/" langsung dilempar ke
+              /login lewat aturan "*" di bawah; sekarang pengunjung umum
+              mendarat di sini dulu dan memilih sendiri mau ke mana. */}
+          <Route path="/" element={<PublicLayout />}>
+            <Route index element={<HomePage />} />
+          </Route>
+
           <Route path="/login" element={<LoginPage />} />
 
           <Route element={<ProtectedRoute />}>
@@ -109,7 +121,10 @@ export default function AppRoutes() {
           <Route path="/materi" element={<MaterialReaderPage />} />
           <Route path="/materi/:slug" element={<MaterialReaderPage />} />
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* Alamat yang tidak dikenal dikembalikan ke halaman depan, bukan
+              lagi ke halaman login: pengunjung umum tidak punya akun dan
+              tidak akan mengerti kenapa diminta masuk. */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

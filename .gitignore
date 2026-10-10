@@ -12,3 +12,6 @@ AGENT.md
 
 build/
 .env
+
+docs
+rules

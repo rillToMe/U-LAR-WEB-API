@@ -13,6 +13,20 @@
   --color-surface-dark: oklch(0.17 0.012 264.665);
   --color-surface-dark-soft: oklch(0.25 0.014 264.665);
 
+  /* Panel navy — sisi kiri halaman login dan panel hero homepage. Nilainya
+     diambil dari warna yang dulu ditulis langsung di LoginPage (#101a2d),
+     supaya kedua halaman memakai satu definisi dan bisa disesuaikan
+     bersama. Keluarganya sengaja tetap gelap di mode gelap: panel ini
+     memang selalu gelap, seperti panel login. */
+  --color-ink: oklch(0.219 0.04 262.419);
+  --color-ink-soft: oklch(0.254 0.049 263.185);
+  --color-ink-deep: oklch(0.187 0.033 262.251);
+  --color-ink-border: oklch(0.286 0.054 261.492);
+  --color-ink-fg: oklch(0.98 0.006 250);
+  --color-ink-fg-muted: oklch(0.84 0.02 252);
+  --color-ink-fg-subtle: oklch(0.7 0.025 252);
+  --color-ink-accent: oklch(0.8 0.13 220);
+
   /* Foreground */
   --color-fg: oklch(0.21 0.034 264.665);
   --color-fg-muted: oklch(0.373 0.034 259.733);

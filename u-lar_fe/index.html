@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/Logo.webp" />
@@ -7,11 +7,44 @@
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f9fafb" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101216" />
-    <title>u-lar_fe</title>
+    <title>U-LAR — Belajar Instalasi Media Transmisi Jaringan</title>
+    <meta
+      name="description"
+      content="U-LAR (Ubiquitous Learning Assisted by Augmented Reality) adalah media belajar instalasi media transmisi jaringan: materi interaktif, misi AR, dan simulasi pemasangan kabel UTP straight-through dan cross-over."
+    />
     <script>
       (function () {
         var path = window.location.pathname;
         var root = document.documentElement;
+
+        // Halaman depan berdiri sendiri dengan design system-nya sendiri:
+        // selalu terang, berlatar kertas hangat, dan memakai Manrope +
+        // Plus Jakarta Sans. Font dan latar ini hanya dimuat di sini -
+        // panel admin dan web ujian tidak ikut menanggungnya.
+        if (path === "/") {
+          root.classList.remove("dark");
+          root.style.colorScheme = "light";
+          root.style.backgroundColor = "#f7f6f1";
+
+          var preconnectFonts = document.createElement("link");
+          preconnectFonts.rel = "preconnect";
+          preconnectFonts.href = "https://fonts.googleapis.com";
+          document.head.appendChild(preconnectFonts);
+
+          var preconnectStatic = document.createElement("link");
+          preconnectStatic.rel = "preconnect";
+          preconnectStatic.href = "https://fonts.gstatic.com";
+          preconnectStatic.crossOrigin = "";
+          document.head.appendChild(preconnectStatic);
+
+          var landingFonts = document.createElement("link");
+          landingFonts.rel = "stylesheet";
+          landingFonts.href =
+            "https://fonts.googleapis.com/css2?family=Manrope:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap";
+          document.head.appendChild(landingFonts);
+
+          return;
+        }
 
         var inWebViewPage =
           path.indexOf("/ujian") === 0 ||

@@ -65,10 +65,10 @@ export default function LoginPage() {
 
   return (
     <div className="grid min-h-dvh bg-surface lg:grid-cols-[minmax(360px,0.9fr)_minmax(520px,1.1fr)]">
-      <aside className="relative hidden overflow-hidden bg-[#101a2d] p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-14">
-        <div className="absolute -right-32 -top-32 size-96 rounded-full border border-cyan-300/20" />
-        <div className="absolute -bottom-44 -left-24 size-[30rem] rounded-full border border-blue-200/10" />
-        <div className="absolute right-16 top-1/3 size-2 rounded-full bg-cyan-300 shadow-[0_0_0_8px_rgba(103,232,249,0.1)]" />
+      <aside className="relative hidden overflow-hidden bg-ink p-10 text-ink-fg lg:flex lg:flex-col lg:justify-between xl:p-14">
+        <div className="absolute -right-32 -top-32 size-96 rounded-full border border-ink-border" />
+        <div className="absolute -bottom-44 -left-24 size-[30rem] rounded-full border border-ink-border/60" />
+        <div className="absolute right-16 top-1/3 size-2 rounded-full bg-ink-accent shadow-[0_0_0_8px_oklch(0.8_0.13_220/0.12)]" />
 
         <div className="relative">
           <div className="h-24 w-52 overflow-hidden">
@@ -81,18 +81,18 @@ export default function LoginPage() {
         </div>
 
         <div className="relative max-w-md py-16">
-          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200/80">
+          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em] text-ink-accent">
             Laboratory administration ADMIN
           </p>
           <h2 className="text-4xl font-semibold leading-[1.08] tracking-tight xl:text-5xl">
             Kelola laboratorium dengan lebih terarah.
           </h2>
-          <p className="mt-6 max-w-sm text-sm leading-6 text-slate-300">
+          <p className="mt-6 max-w-sm text-sm leading-6 text-ink-fg-muted">
             Satu ruang kerja untuk mengatur data mahasiswa dan aktivitas laboratorium U-LAR.
           </p>
         </div>
 
-        <div className="relative flex items-center gap-3 text-xs text-slate-400">
+        <div className="relative flex items-center gap-3 text-xs text-ink-fg-subtle">
           <span className="size-2 rounded-full bg-emerald-400" />
           Sistem administrasi internal
         </div>
